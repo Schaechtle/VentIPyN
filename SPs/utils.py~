@@ -7,12 +7,6 @@ import numpy.linalg as npla
 import numbers
 import itertools
 
-from venture.lite.sp import SP, SPType
-from venture.lite.psp import NullRequestPSP, ESRRefOutputPSP, DeterministicPSP, TypedPSP
-
-def deterministic_typed_psp(f, args_types, return_type, descr=None, sim_grad=None, **kwargs):
-  return TypedPSP(deterministic_psp(f, descr, sim_grad), SPType(args_types, return_type, **kwargs))
-
 def ordering(d):
     orderings = [item for item in itertools.permutations(range(d))]
     dir_parameter=""

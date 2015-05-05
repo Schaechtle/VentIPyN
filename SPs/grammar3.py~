@@ -1,12 +1,12 @@
-from venture.lite.discrete import  DiscretePSP
+from discrete import  DiscretePSP
 import random
 import numpy as np
 from samba.dcerpc.atsvc import First
-from venture.lite.utils import simulateCategorical
-from venture.lite.sp import SP, SPType
+from utils import simulateCategorical
+from sp import SP, SPType
 from venture.lite.function import VentureFunction
-from venture.lite.value import AnyType
-from venture.lite.psp import RandomPSP
+from value import AnyType
+from psp import RandomPSP
 def lift_binary(op):
   def lifted(f1, f2):
     return lambda *xs: op(f1(*xs), f2(*xs))
