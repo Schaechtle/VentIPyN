@@ -1,12 +1,12 @@
-from discrete import  DiscretePSP
+from venture.lite.discrete import  DiscretePSP
 import random
 import numpy as np
 from samba.dcerpc.atsvc import First
-from utils import simulateCategorical
-from sp import SP, SPType
+from venture.lite.utils import simulateCategorical
+from venture.lite.sp import SP, SPType
 from venture.lite.function import VentureFunction
-from value import AnyType
-from psp import RandomPSP
+from venture.lite.value import AnyType
+from venture.lite.psp import RandomPSP
 def lift_binary(op):
   def lifted(f1, f2):
     return lambda *xs: op(f1(*xs), f2(*xs))
@@ -48,31 +48,27 @@ class Grammar(RandomPSP):
   def canAbsorb(self, _trace, _appNode, _parentNode): return False
   def simulate(self,args):
     covFunctions= args.operandValues[0]
-    covPrior = args.operandValues[1]
-    global_structure_prior = args.operandValues[3]
-    number_base_kernels = args.operandValues[2]
-    
+    max_number = 0
     list_of_cov_lists=[]
-    test_str=""
+
     for item in covFunctions:
           list_of_cov_lists.append(item)
-
-    for i in  range(number_base_kernels):
-        cov_index = simulateCategorical(covPrior)
-        if i ==0:
+          max_number+= len(item)
+    first = True
+    while (True):
+        cov_index = np.random.randint(0,len(list_of_cov_lists))
+        if first:
             K=list_of_cov_lists[cov_index].pop()
+            first=False
         else:
-            # get global-count determining mult, add
-            if i<global_structure_prior+1:
+
+            if random.random()<0.5:
                 K =addKernel(K, list_of_cov_lists[cov_index].pop())
             else:
                 K =prodKernel(K, list_of_cov_lists[cov_index].pop())
         if not list_of_cov_lists[cov_index]:
                 list_of_cov_lists.pop(cov_index)
-                covPrior= np.delete(covPrior,cov_index)
-    test_str=K.stuff['name']
-    print("test string")
-    print(test_str)
+        if (random.random()<0.5) or (not (list_of_cov_lists)): return K
     return K
   
   
