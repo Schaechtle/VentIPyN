@@ -1,3 +1,4 @@
+
 #
 # Some of this code is modified from the PyGPs package #    Copyright (c) by
 #    Marion Neumann, Daniel Marthaler, Shan Huang & Kristian Kersting
@@ -55,7 +56,7 @@ class GP(object):
             y = np.asmatrix(o2s).T
             K = self.cov_matrix(x2s,x2s)            # evaluate covariance matrix
             #print("np.exp(likfunc.hyp[0])",np.exp(likfunc.hyp[0]))
-            sn2   = 0.1                      # noise variance of likGauss
+            sn2   = 0.01                      # noise variance of likGauss
             #L     = np.linalg.cholesky(K/sn2+np.eye(n)).T         # Cholesky factor of covariance with noise
             L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
             alpha = solve_chol(L,y)/sn2
@@ -80,7 +81,6 @@ class GP(object):
         alpha = solve_chol(L,np.asmatrix(os).T)
         nlZ = np.dot(np.asmatrix(os),alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
         return -float(nlZ)
-
     '''
     def logDensity(self, xs, os):
         if len(self.samples) == 0:
@@ -92,7 +92,7 @@ class GP(object):
             y = np.asmatrix(os).T
             K = self.cov_matrix(xs,xs)            # evaluate covariance matrix
             #print("np.exp(likfunc.hyp[0])",np.exp(likfunc.hyp[0]))
-            sn2   = 0.1                      # noise variance of likGauss
+            sn2   = 0.01                      # noise variance of likGauss
             #L     = np.linalg.cholesky(K/sn2+np.eye(n)).T         # Cholesky factor of covariance with noise
             L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
             alpha = solve_chol(L,y)/sn2
@@ -120,7 +120,7 @@ class GP(object):
         K = self.cov_matrix(xs, xs)    # evaluate covariance matrix
         m = self.mean_array(xs)                             # ToDo: evaluate mean vector
         #sn2   = np.exp(likfunc.hyp[0])                       # noise variance of likGauss
-        sn2   = 0.1                       # noise variance of likGauss
+        sn2   = 0.01                       # noise variance of likGauss
         L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
         alpha = solve_chol(L,y-m)/sn2
 
@@ -202,4 +202,5 @@ class MakeGPOutputPSP(DeterministicPSP):
 
 makeGPType = SPType([v.AnyType("mean function"), v.AnyType("covariance function")], gpType)
 makeGPSP = SP(NullRequestPSP(), TypedPSP(MakeGPOutputPSP(), makeGPType))
+
 
