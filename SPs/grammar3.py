@@ -51,7 +51,7 @@ class Grammar(RandomPSP):
     covPrior = args.operandValues[1]
     global_structure_prior = args.operandValues[3]
     number_base_kernels = args.operandValues[2]
-    
+
     list_of_cov_lists=[]
 
     for item in covFunctions:
