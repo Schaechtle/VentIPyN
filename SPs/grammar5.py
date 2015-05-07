@@ -48,6 +48,8 @@ class Grammar(RandomPSP):
   def canAbsorb(self, _trace, _appNode, _parentNode): return False
   def simulate(self,args):
     covFunctions= args.operandValues[0]
+    number_covfunctions= args.operandValues[1].getNumber()+1
+
     max_number = 0
     list_of_cov_lists=[]
 
@@ -55,7 +57,7 @@ class Grammar(RandomPSP):
           list_of_cov_lists.append(item)
           max_number+= len(item)
     first = True
-    while (True):
+    for i in range(number_covfunctions):
         cov_index = np.random.randint(0,len(list_of_cov_lists))
         if first:
             K=list_of_cov_lists[cov_index].pop()
@@ -68,7 +70,6 @@ class Grammar(RandomPSP):
                 K =prodKernel(K, list_of_cov_lists[cov_index].pop())
         if not list_of_cov_lists[cov_index]:
                 list_of_cov_lists.pop(cov_index)
-        if (random.random()<0.5) or (not (list_of_cov_lists)): return K
     return K
   
   

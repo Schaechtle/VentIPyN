@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.linalg as la
 import numpy.random as npr
-
+from utils import jitchol, solve_chol
 # XXX Replace by scipy.stats.multivariate_normal.logpdf when we
 # upgrade to scipy 0.14.
 def multivariate_normal_logpdf(x, mu, sigma):
@@ -60,7 +60,7 @@ class GP(object):
         sigma12 = self.cov_matrix(xs, x2s)
         sigma21 = self.cov_matrix(x2s, xs)
 
-        sigma22 = self.cov_matrix(x2s, x2s)
+        sigma22 = self.cov_matrix(x2s,x2s)
         inv22 = la.pinv(sigma22)
         mu = mu1 +np.dot(sigma12,(np.dot(inv22, (a2 - mu2))))
         sigma = sigma11 - np.dot(sigma12,np.dot(inv22,sigma21))
@@ -91,15 +91,17 @@ class GP(object):
     sigma = self.cov_matrix(xs, xs)
     
     return multivariate_normal_logpdf(col_vec(os), mu, sigma)
-  def gradient(self,xs):
-    n, D = xs.shape
+  def gradient(self):
+    xs = self.samples.keys()
+    n = len(xs)
+    os = self.samples.values()
+    y = np.asmatrix(os).T
     K = self.cov_matrix(xs, xs)    # evaluate covariance matrix
     m = self.mean_array(xs)                             # ToDo: evaluate mean vector
     #sn2   = np.exp(likfunc.hyp[0])                       # noise variance of likGauss
     sn2   = 0.1                       # noise variance of likGauss
     L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
     alpha = solve_chol(L,y-m)/sn2
-    
     dnlZ = []
     Q = np.dot(alpha,alpha.T) - solve_chol(L,np.eye(n))/sn2 # precompute for convenience
     
@@ -107,9 +109,9 @@ class GP(object):
         dnlZ.append((Q*self.derivatives[i](xs,xs)).sum()/2.)
     return dnlZ
 
-from psp import DeterministicPSP, NullRequestPSP, RandomPSP, TypedPSP
-from sp import SP, VentureSPRecord, SPType
-import value as v
+from venture.lite.psp import DeterministicPSP, NullRequestPSP, RandomPSP, TypedPSP
+from venture.lite.sp import SP, VentureSPRecord, SPType
+import venture.lite.value as v
 
 class GPOutputPSP(RandomPSP):
   def __init__(self, mean, covariance):  
