@@ -14,6 +14,14 @@ from venture.lite.psp import NullRequestPSP, ESRRefOutputPSP, DeterministicPSP, 
 # Some of this code is modified from the PyGPs package #    Copyright (c) by
 #    Marion Neumann, Daniel Marthaler, Shan Huang & Kristian Kersting
 #
+def genSamples(x):
+    sampleString='(gp (array '
+    for i in range(len(x)):
+        sampleString+= str(x[i]) + ' '
+    sampleString+='))'
+    #print(sampleString)
+    return sampleString
+
 
 def jitchol(A,maxtries=5):
     ''' Copyright (c) 2012, GPy authors (James Hensman, Nicolo Fusi, Ricardo Andrade,
