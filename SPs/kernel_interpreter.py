@@ -19,7 +19,6 @@ class GrammarInterpreter(DeterministicPSP):
         outstring=""
         for j in range(len(products)):
             products[j]= ''.join(sorted(products[j]))
-            print(products[j])
             while ("22" in products[j]):
                 products[j]=products[j].replace("22","2")
             while (("13" in products[j]) or ("23" in products[j]) ):
