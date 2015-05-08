@@ -10,7 +10,7 @@ class GrammarInterpreter(DeterministicPSP):
     def simulate(self,args):
         K = args.operandValues[0]
         unsorted_string = K.stuff['name']
-        unsorted_string = args.operar.replace("x","")
+        unsorted_string = unsorted_string.replace("x","")
         for i in range(len(kernelList)):
             unsorted_string=unsorted_string.replace(kernelList[i],str(i))
         products = unsorted_string.split('+')
