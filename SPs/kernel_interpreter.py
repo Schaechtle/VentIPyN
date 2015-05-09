@@ -16,10 +16,9 @@ class GrammarInterpreter(DeterministicPSP):
         products = unsorted_string.split('+')
         products.sort()
         products.sort(key = lambda s: len(s))
-        outstring=""
+        out_string=""
         for j in range(len(products)):
             products[j]= ''.join(sorted(products[j]))
-            print(products[j])
             while ("22" in products[j]):
                 products[j]=products[j].replace("22","2")
             while (("13" in products[j]) or ("23" in products[j]) ):
@@ -30,17 +29,17 @@ class GrammarInterpreter(DeterministicPSP):
         products.sort()
         products.sort(key = lambda s: len(s))
         for j in range(len(products)):
-            outstring+=products[j]
+            out_string+=products[j]
             if j<(len(products)-1):
-                outstring+="+"
+                out_string+="+"
 
-        while ("0+0+" in outstring):
-            outstring=outstring.replace("0+0+","0+")
-        if outstring == "0+0":
-            outstring = "0"
+        while ("0+0+" in out_string):
+            out_string=out_string.replace("0+0+","0+")
+        if out_string == "0+0":
+            out_string = "0"
         for i in range(len(kernelList)):
-            outstring= outstring.replace(str(i),kernelList[i])
+            out_string= out_string.replace(str(i),kernelList[i])
 
 
-        return   VentureSymbol(outstring)  
+        return   VentureSymbol(out_string)  
     
