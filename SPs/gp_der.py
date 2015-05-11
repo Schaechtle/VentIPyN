@@ -111,7 +111,13 @@ class GP(object):
     m = self.mean_array(xs)                             # ToDo: evaluate mean vector
     #sn2   = np.exp(likfunc.hyp[0])                       # noise variance of likGauss
     sn2   = 0.1                       # noise variance of likGauss
-    L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
+    try:
+        L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
+    except:
+        print("numerical issues with K, trying the naive way")
+        mu, sigma = self.getNormal(xs)
+        return multivariate_normal_logpdf(col_vec(os), mu, sigma)
+
     alpha = solve_chol(L,y-m)/sn2
     dnlZ = []
     Q = np.dot(alpha,alpha.T) - solve_chol(L,np.eye(n))/sn2 # precompute for convenience
