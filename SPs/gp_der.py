@@ -28,7 +28,9 @@ class GP(object):
   def mean_array(self, xs):
     return col_vec(map(self.mean, xs))
   
-  def cov_matrix(self, x1s, x2s):
+  def cov_matrix(self, x1s, x2s=None):
+    if x2s is None:
+      return self.covariance(np.asmatrix(x1s).T)
     return self.covariance(np.asmatrix(x1s).T, np.asmatrix(x2s).T) #ToDo: that's ugly and inefficient
   
   def getNormal(self, xs):
@@ -59,12 +61,16 @@ class GP(object):
         sigma11 = self.cov_matrix(xs, xs)
         sigma12 = self.cov_matrix(xs, x2s)
         sigma21 = self.cov_matrix(x2s, xs)
-
-        sigma22 = self.cov_matrix(x2s,x2s)
+        sigma22 = self.cov_matrix(x2s)
         inv22 = la.pinv(sigma22)
+        #print(sigma11.shape)
+        #print(sigma12.shape)
+        #print(np.dot(inv22,sigma21).shape)
         mu = mu1 +np.dot(sigma12,(np.dot(inv22, (a2 - mu2))))
         sigma = sigma11 - np.dot(sigma12,np.dot(inv22,sigma21))
-    
+        #print(mu)
+        #print(sigma.shape)
+        #print(sigma.sum())
 
     return mu, sigma
 
@@ -75,9 +81,18 @@ class GP(object):
     return os
 
   def logDensity(self, xs, os):
-    """Log density of a set of samples."""
-    mu, sigma = self.getNormal(xs)
-    return multivariate_normal_logpdf(col_vec(os), mu, sigma)
+    n = len(xs)
+    K = self.cov_matrix(xs,xs)            # evaluate covariance matrix
+    m = self.mean_array(xs)
+    y = np.asmatrix(os).T                        # evaluate mean vector
+    #print("np.exp(likfunc.hyp[0])",np.exp(likfunc.hyp[0]))
+    sn2   = 0.1                       # noise variance of likGauss
+    #L     = np.linalg.cholesky(K/sn2+np.eye(n)).T         # Cholesky factor of covariance with noise
+    L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
+    alpha = solve_chol(L,y-m)/sn2
+    nlZ = np.dot((y-m).T,alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
+    lD = -float(nlZ)
+    return lD
 
   def logDensityOfCounts(self):
     """Log density of the current samples."""
