@@ -84,7 +84,12 @@ class GP(object):
     #print("np.exp(likfunc.hyp[0])",np.exp(likfunc.hyp[0]))
     sn2   = 0.1                       # noise variance of likGauss
     #L     = np.linalg.cholesky(K/sn2+np.eye(n)).T         # Cholesky factor of covariance with noise
-    L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
+    try:
+        L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
+    except:
+        print("numerical issues with K, trying the naive way")
+        mu, sigma = self.getNormal(xs)
+        return multivariate_normal_logpdf(col_vec(os), mu, sigma)
     alpha = solve_chol(L,y-m)/sn2
     nlZ = np.dot((y-m).T,alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
     lD = -float(nlZ)
@@ -111,13 +116,7 @@ class GP(object):
     m = self.mean_array(xs)                             # ToDo: evaluate mean vector
     #sn2   = np.exp(likfunc.hyp[0])                       # noise variance of likGauss
     sn2   = 0.1                       # noise variance of likGauss
-    try:
-        L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
-    except:
-        print("numerical issues with K, trying the naive way")
-        mu, sigma = self.getNormal(xs)
-        return multivariate_normal_logpdf(col_vec(os), mu, sigma)
-
+    L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
     alpha = solve_chol(L,y-m)/sn2
     dnlZ = []
     Q = np.dot(alpha,alpha.T) - solve_chol(L,np.eye(n))/sn2 # precompute for convenience
