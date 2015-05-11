@@ -63,14 +63,10 @@ class GP(object):
         sigma21 = self.cov_matrix(x2s, xs)
         sigma22 = self.cov_matrix(x2s)
         inv22 = la.pinv(sigma22)
-        #print(sigma11.shape)
-        #print(sigma12.shape)
-        #print(np.dot(inv22,sigma21).shape)
+
         mu = mu1 +np.dot(sigma12,(np.dot(inv22, (a2 - mu2))))
         sigma = sigma11 - np.dot(sigma12,np.dot(inv22,sigma21))
-        #print(mu)
-        #print(sigma.shape)
-        #print(sigma.sum())
+
 
     return mu, sigma
 
