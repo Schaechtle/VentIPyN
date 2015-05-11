@@ -61,7 +61,7 @@ class GP(object):
         sigma11 = self.cov_matrix(xs, xs)
         sigma12 = self.cov_matrix(xs, x2s)
         sigma21 = self.cov_matrix(x2s, xs)
-        sigma22 = self.cov_matrix(x2s)
+        sigma22 = self.cov_matrix(x2s,x2s)
         inv22 = la.pinv(sigma22)
 
         mu = mu1 +np.dot(sigma12,(np.dot(inv22, (a2 - mu2))))
