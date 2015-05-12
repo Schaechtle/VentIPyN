@@ -1,11 +1,10 @@
-from venture.lite.discrete import  DiscretePSP
+
 import random
 import numpy as np
-from samba.dcerpc.atsvc import First
-from venture.lite.utils import simulateCategorical
+
 from venture.lite.sp import SP, SPType
 from venture.lite.function import VentureFunction
-from venture.lite.value import AnyType
+from venture.lite.types import  AnyType
 from venture.lite.psp import RandomPSP
 def lift_binary(op):
   def lifted(f1, f2):
@@ -25,7 +24,7 @@ def addKernel(f1, f2):
       der[i]=f1.stuff['derivatives'][i]
   for j in range(len(f2.stuff['derivatives'])):
       der[i+1+j]=f2.stuff['derivatives'][j]
-  return VentureFunction(lifted_plus(f1, f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"+"+f2.stuff['name'])
+  return VentureFunction(lifted_plus(f1, f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"+"+f2.stuff['name'],parameter=f1.stuff['parameter']+f2.stuff['parameter'])
 
 
 
@@ -38,7 +37,7 @@ def prodKernel(f1, f2):
       der[i]= lambda *xs: np.dot(f1.stuff['derivatives'][i](*xs),f2.f(*xs))
   for j in range(len(f2.stuff['derivatives'])):
       der[i+1+j]= lambda *xs: np.dot(f2.stuff['derivatives'][j](*xs),f1.f(*xs))
-  return VentureFunction(lifted_mult(f1,f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"x"+f2.stuff['name'])
+  return VentureFunction(lifted_mult(f1,f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"x"+f2.stuff['name'],parameter=f1.stuff['parameter']+f2.stuff['parameter'])
 
 
 

@@ -10,20 +10,21 @@ import scipy.spatial.distance as spdist
 
 from venture.lite.function import VentureFunction
 from venture.lite.sp import SPType
+import venture.lite.types as t
 import venture.lite.value as v
 
 
 
 
-constantType = SPType([v.AnyType()], v.NumberType())
-covfunctionType = SPType([v.NumberType(), v.NumberType()], v.NumberType())
+constantType = SPType([t.AnyType()], t.NumberType())
+covfunctionType = SPType([t.NumberType(), t.NumberType()], t.NumberType())
 
 
 
 def makeConstFunc(c):
   return VentureFunction(lambda _: c, sp_type=constantType)
 def array(xs):
-  return v.VentureArrayUnboxed(np.array(xs),  v.NumberType())
+  return t.VentureArrayUnboxed(np.array(xs),  t.NumberType())
 #### Squared Exponential Covariance Function
 
 # In[6]:
@@ -57,9 +58,9 @@ def squared_exponential_der_sf(sf, l):
 
 
 
-squaredExponentialType = SPType([v.NumberType(), v.NumberType()], v.NumberType())
+squaredExponentialType = SPType([t.NumberType(), t.NumberType()], t.NumberType())
 def makeSquaredExponential(sf, l): 
-  return VentureFunction(squared_exponential(sf, l), sp_type=squaredExponentialType,derivatives={0:squared_exponential_der_l(sf,l),1:squared_exponential_der_sf(sf,l)},name="SE")
+  return VentureFunction(squared_exponential(sf, l), sp_type=squaredExponentialType,derivatives={0:squared_exponential_der_l(sf,l),1:squared_exponential_der_sf(sf,l)},name="SE",parameter=[sf,l])
 
 
 #### Periodic Covariance Function
@@ -125,7 +126,7 @@ def periodic_der_sf(l,p,sf):
   return f
 
 def makePeriodic(l,p,sf):  
-  return VentureFunction(periodic(l,p,sf), sp_type=covfunctionType,derivatives={0:periodic_der_l(l,p,sf),1:periodic_der_p(l,p,sf),2:periodic_der_sf(l,p,sf)},name="PER")
+  return VentureFunction(periodic(l,p,sf), sp_type=covfunctionType,derivatives={0:periodic_der_l(l,p,sf),1:periodic_der_p(l,p,sf),2:periodic_der_sf(l,p,sf)},name="PER",parameter=[l,p,sf])
 
 
 #### Linear Covariance Function
@@ -152,7 +153,7 @@ def linear_der_sf(sf):
 
 
 def makeLinear(sf): 
-  return VentureFunction(linear(sf), sp_type=covfunctionType,derivatives={0:linear_der_sf(sf)},name="LIN")
+  return VentureFunction(linear(sf), sp_type=covfunctionType,derivatives={0:linear_der_sf(sf)},name="LIN",parameter=[sf])
 
 
 #### White Noise Covariance Function
@@ -186,11 +187,11 @@ def noise_der(s):
   return f
 
 def makeNoise(s): 
-  return VentureFunction(noise(s), sp_type=covfunctionType,derivatives={0:noise_der(s)},name="WN")
+  return VentureFunction(noise(s), sp_type=covfunctionType,derivatives={0:noise_der(s)},name="WN",parameter=[s])
 
 
 #### Binary Operators
-
+'''
 # In[11]:
 
 def lift_binary(op):
@@ -199,7 +200,7 @@ def lift_binary(op):
   return lifted
 
 
-liftedBinaryType = SPType([v.AnyType(), v.AnyType()], v.AnyType())
+liftedBinaryType = SPType([t.AnyType(), t.AnyType()], t.AnyType())
 
 def makeLiftedAdd(op):
   lifted_op = lift_binary(op)
@@ -227,3 +228,4 @@ def makeLiftedMult(op):
     return VentureFunction(lifted_op(f1,f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"x"+f2.stuff['name'])
   return VentureFunction(wrapped, sp_type=liftedBinaryType)
 
+'''
