@@ -25,9 +25,29 @@ def makeConstFunc(c):
   return VentureFunction(lambda _: c, sp_type=constantType)
 def array(xs):
   return t.VentureArrayUnboxed(np.array(xs),  t.NumberType())
-#### Squared Exponential Covariance Function
 
-# In[6]:
+def const(sf):
+    sf2 = np.exp(sf)         # s2
+    def f(x1,  x2=None):
+        if x2 is None: # self-covariances for test cases           # self covariances for the test cases
+            nn,D = x1.shape
+            A = sf2 * np.ones((nn,1))
+        else:            # compute covariance matix for dataset x
+            n,D = x1.shape
+            A = sf2 * np.ones((n,n)) + np.eye(n)*1e-10
+        return A
+    return f
+
+def const_der(sf):
+    sf2 = np.exp(sf)         # s2
+    def f(x1,  x2=None):
+        n,D = x1.shape
+        A = sf2 * np.ones((n,n))
+        return 2. * A
+    return f
+def makeConst(sf):
+  return VentureFunction(const(sf), sp_type=covfunctionType,derivatives={0:const_der(sf)},name="C",parameter=[sf])
+
 
 def squared_exponential(sf, l):
   sf = np.exp(sf)

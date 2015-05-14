@@ -2,10 +2,6 @@ import numpy as np
 import numpy.linalg as la
 import numpy.random as npr
 from utils import jitchol, solve_chol
-from venture.lite.psp import DeterministicMakerAAAPSP, NullRequestPSP, RandomPSP, TypedPSP
-from venture.lite.sp import SP, VentureSPRecord, SPType
-import venture.lite.types as t
-
 # XXX Replace by scipy.stats.multivariate_normal.logpdf when we
 # upgrade to scipy 0.14.
 def multivariate_normal_logpdf(x, mu, sigma):
@@ -43,7 +39,6 @@ class GP(object):
     if len(self.samples) == 0:
         mu = self.mean_array(xs)
         sigma = self.cov_matrix(xs, xs)
-        print(sigma)
     else:
         '''
         n, D = xs.shape
@@ -66,12 +61,16 @@ class GP(object):
         sigma11 = self.cov_matrix(xs, xs)
         sigma12 = self.cov_matrix(xs, x2s)
         sigma21 = self.cov_matrix(x2s, xs)
-        sigma22 = self.cov_matrix(x2s,x2s)
+        sigma22 = self.cov_matrix(x2s)
         inv22 = la.pinv(sigma22)
-
+        #print(sigma11.shape)
+        #print(sigma12.shape)
+        #print(np.dot(inv22,sigma21).shape)
         mu = mu1 +np.dot(sigma12,(np.dot(inv22, (a2 - mu2))))
         sigma = sigma11 - np.dot(sigma12,np.dot(inv22,sigma21))
-
+        #print(mu)
+        #print(sigma.shape)
+        #print(sigma.sum())
 
     return mu, sigma
 
@@ -82,7 +81,6 @@ class GP(object):
     return os
 
   def logDensity(self, xs, os):
-    #print("logDensity")
     n = len(xs)
     K = self.cov_matrix(xs,xs)            # evaluate covariance matrix
     m = self.mean_array(xs)
@@ -90,43 +88,24 @@ class GP(object):
     #print("np.exp(likfunc.hyp[0])",np.exp(likfunc.hyp[0]))
     sn2   = 0.1                       # noise variance of likGauss
     #L     = np.linalg.cholesky(K/sn2+np.eye(n)).T         # Cholesky factor of covariance with noise
-    try:
-        L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
-    except:
-        #print("numerical issues with K, trying the naive way")
-        mu, sigma = self.getNormal(xs)
-        return multivariate_normal_logpdf(col_vec(os), mu, sigma)
+    L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
     alpha = solve_chol(L,y-m)/sn2
     nlZ = np.dot((y-m).T,alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
     lD = -float(nlZ)
-    #print(lD)
     return lD
 
   def logDensityOfCounts(self):
     """Log density of the current samples."""
-    #print("in logDensity of Counts")
     if len(self.samples) == 0:
       return 0
+    
     xs = self.samples.keys()
     os = self.samples.values()
-    n = len(xs)
-    K = self.cov_matrix(xs,xs)            # evaluate covariance matrix
-    m = self.mean_array(xs)
-    y = np.asmatrix(os).T                        # evaluate mean vector
-    #print("np.exp(likfunc.hyp[0])",np.exp(likfunc.hyp[0]))
-    sn2   = 0.1                       # noise variance of likGauss
-    #L     = np.linalg.cholesky(K/sn2+np.eye(n)).T         # Cholesky factor of covariance with noise
-    try:
-        L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
-    except:
-        #print("numerical issues with K, trying the naive way")
-        mu, sigma = self.getNormal(xs)
-        return multivariate_normal_logpdf(col_vec(os), mu, sigma)
-    alpha = solve_chol(L,y-m)/sn2
-    nlZ = np.dot((y-m).T,alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
-    lD = -float(nlZ)
-    #print(lD)
-    return lD
+    
+    mu = self.mean_array(xs)
+    sigma = self.cov_matrix(xs, xs)
+    
+    return multivariate_normal_logpdf(col_vec(os), mu, sigma)
   def gradient(self):
     xs = self.samples.keys()
     n = len(xs)
@@ -145,7 +124,9 @@ class GP(object):
         dnlZ.append((Q*self.derivatives[i](xs,xs)).sum()/2.)
     return dnlZ
 
-
+from venture.lite.psp import DeterministicPSP, NullRequestPSP, RandomPSP, TypedPSP
+from venture.lite.sp import SP, VentureSPRecord, SPType
+import venture.lite.value as v
 
 class GPOutputPSP(RandomPSP):
   def __init__(self, mean, covariance):  
@@ -167,8 +148,7 @@ class GPOutputPSP(RandomPSP):
   def logDensityOfCounts(self,samples):
     return self.makeGP(samples).logDensityOfCounts()
  
-  def gradientOfLogDensityOfCounts(self,args):
-    print("here")
+  def gradientOfLogDensity(self,args):
     samples = args.spaux
     xs = args.operandValues[0]
     return self.makeGP(samples).gradient(*xs)
@@ -176,7 +156,7 @@ class GPOutputPSP(RandomPSP):
   def incorporate(self,os,args):
     samples = args.spaux
     xs = args.operandValues[0]
-
+    
     for x, o in zip(xs, os):
       samples[x] = o
 
@@ -186,7 +166,7 @@ class GPOutputPSP(RandomPSP):
     for x in xs:
       del samples[x]
 
-gpType = SPType([t.ArrayUnboxedType(t.NumberType())], t.ArrayUnboxedType(t.NumberType()))
+gpType = SPType([v.ArrayUnboxedType(v.NumberType())], v.ArrayUnboxedType(v.NumberType()))
 
 class GPSP(SP):
   def __init__(self, mean, covariance):
@@ -198,24 +178,18 @@ class GPSP(SP):
   def constructSPAux(self): return {}
   def show(self,spaux): return GP(self.mean, self.covariance, spaux)
 
-class MakeGPOutputPSP(DeterministicMakerAAAPSP):
+class MakeGPOutputPSP(DeterministicPSP):
   def simulate(self,args):
     mean = args.operandValues[0]
     covariance = args.operandValues[1]
+
     return VentureSPRecord(GPSP(mean, covariance))
-  def gradientOfLogDensityOfCounts(self,aux,args):
-    import ipdb; ipdb.set_trace()
-    print("here make ")
 
-  def madeSpLogDensityOfCountsBound(self, _aux): return 0
-
-  def gradientOfLogDensity(self, _value, _args):
-      print("here goLD")
-      return 0
   def childrenCanAAA(self): return True
 
   def description(self, _name=None):
     return """Constructs a Gaussian Process with the given mean and covariance functions. Wrap the gp in a mem if input points might be sampled multiple times. Global Logscore is broken with GPs, as it is with all SPs that have auxen."""
 
-makeGPType = SPType([t.AnyType("mean function"), t.AnyType("covariance function")], gpType)
+makeGPType = SPType([v.AnyType("mean function"), v.AnyType("covariance function")], gpType)
 makeGPSP = SP(NullRequestPSP(), TypedPSP(MakeGPOutputPSP(), makeGPType))
+

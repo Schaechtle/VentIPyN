@@ -1,10 +1,11 @@
-
+from venture.lite.discrete import  DiscretePSP
 import random
 import numpy as np
-
+from samba.dcerpc.atsvc import First
+from venture.lite.utils import simulateCategorical
 from venture.lite.sp import SP, SPType
 from venture.lite.function import VentureFunction
-from venture.lite.types import  AnyType
+from venture.lite.value import AnyType
 from venture.lite.psp import RandomPSP
 def lift_binary(op):
   def lifted(f1, f2):
@@ -24,7 +25,7 @@ def addKernel(f1, f2):
       der[i]=f1.stuff['derivatives'][i]
   for j in range(len(f2.stuff['derivatives'])):
       der[i+1+j]=f2.stuff['derivatives'][j]
-  return VentureFunction(lifted_plus(f1, f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"+"+f2.stuff['name'],parameter=f1.stuff['parameter']+f2.stuff['parameter'])
+  return VentureFunction(lifted_plus(f1, f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"+"+f2.stuff['name'])
 
 
 
@@ -37,7 +38,7 @@ def prodKernel(f1, f2):
       der[i]= lambda *xs: np.dot(f1.stuff['derivatives'][i](*xs),f2.f(*xs))
   for j in range(len(f2.stuff['derivatives'])):
       der[i+1+j]= lambda *xs: np.dot(f2.stuff['derivatives'][j](*xs),f1.f(*xs))
-  return VentureFunction(lifted_mult(f1,f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"x"+f2.stuff['name'],parameter=f1.stuff['parameter']+f2.stuff['parameter'])
+  return VentureFunction(lifted_mult(f1,f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"x"+f2.stuff['name'])
 
 
 
@@ -45,24 +46,11 @@ def prodKernel(f1, f2):
 
 class Grammar(RandomPSP):
   def canAbsorb(self, _trace, _appNode, _parentNode): return False
-  #def childrenCanAAA(self): return True
   def simulate(self,args):
     covFunctions= args.operandValues[0]
-    number_covfunctions= args.operandValues[1].getNumber()+1
+    for Ktype in covFunctions:
+        itertools.combinations(iterable, r)
 
-    max_number = 0
-    list_of_cov_lists=[]
-
-    for item in covFunctions:
-          list_of_cov_lists.append(item)
-          max_number+= len(item)
-    first = True
-    for i in range(number_covfunctions):
-        cov_index = np.random.randint(0,len(list_of_cov_lists))
-        if first:
-            K=list_of_cov_lists[cov_index].pop()
-            first=False
-        else:
 
             if random.random()<0.5:
                 K =addKernel(K, list_of_cov_lists[cov_index].pop())
