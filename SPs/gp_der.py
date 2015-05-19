@@ -6,7 +6,6 @@ from venture.lite.psp import DeterministicMakerAAAPSP, NullRequestPSP, RandomPSP
 from venture.lite.sp import SP, VentureSPRecord, SPType
 import venture.lite.types as t
 import numpy.linalg as npla
-import ipdb
 
 # XXX Replace by scipy.stats.multivariate_normal.logpdf when we
 # upgrade to scipy 0.14.
