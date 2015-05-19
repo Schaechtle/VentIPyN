@@ -17,9 +17,9 @@ class Venture_GP_model():
         self.make_gp(self.ripl)
         #self.get_prior()
         self.makeObservations(x_training,y_training)
-        global_logs_core,residuals,base_line,mcmc_index = self.run_inference(x_test,f_test,f_error,outer_mcmc_steps)
+        global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle = self.run_inference(x_test,f_test,f_error,outer_mcmc_steps)
         self.ripl.clear()
-        return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'mcmc_index':mcmc_index})
+        return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle})
 
     def make_gp(self, ripl):
         raise ValueError('Covariance Structure not defined')
@@ -30,6 +30,8 @@ class Venture_GP_model():
         residuals=[]
         base_line =[]
         mcmc_index = []
+        mcmc_cycle = []
+        current_index = 0
         assert len(self.inf_cycles)==len(self.inf_strings)
         for i in range(int(outer_mcmc_steps)):
             for j in range(len(self.inf_strings)):
@@ -41,8 +43,10 @@ class Venture_GP_model():
                     y_posterior = self.ripl.sample(sampleString)
                     residuals.append(np.abs(f_test - y_posterior))
                     base_line.append(f_error)
-                    mcmc_index.append(j)
-        return global_logs_core,residuals,base_line,mcmc_index
+                    mcmc_index.append(current_index)
+                    current_index+=1
+                    mcmc_cycle.append(j)
+        return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle
 
     def get_inf_string(self,inf_string):
         self.inf_strings=[]
