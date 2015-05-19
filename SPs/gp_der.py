@@ -5,6 +5,8 @@ from utils import jitchol, solve_chol
 from venture.lite.psp import DeterministicMakerAAAPSP, NullRequestPSP, RandomPSP, TypedPSP
 from venture.lite.sp import SP, VentureSPRecord, SPType
 import venture.lite.types as t
+import numpy.linalg as npla
+import ipdb
 
 # XXX Replace by scipy.stats.multivariate_normal.logpdf when we
 # upgrade to scipy 0.14.
@@ -43,7 +45,7 @@ class GP(object):
     if len(self.samples) == 0:
         mu = self.mean_array(xs)
         sigma = self.cov_matrix(xs, xs)
-        print(sigma)
+        #print(sigma)
     else:
         '''
         n, D = xs.shape
@@ -168,15 +170,19 @@ class GPOutputPSP(RandomPSP):
     return self.makeGP(samples).logDensityOfCounts()
  
   def gradientOfLogDensityOfCounts(self,args):
-    print("here")
     samples = args.spaux
     xs = args.operandValues[0]
     return self.makeGP(samples).gradient(*xs)
- 
+
+
+
+
+
+
+
   def incorporate(self,os,args):
     samples = args.spaux
     xs = args.operandValues[0]
-
     for x, o in zip(xs, os):
       samples[x] = o
 
@@ -204,14 +210,35 @@ class MakeGPOutputPSP(DeterministicMakerAAAPSP):
     covariance = args.operandValues[1]
     return VentureSPRecord(GPSP(mean, covariance))
   def gradientOfLogDensityOfCounts(self,aux,args):
-    import ipdb; ipdb.set_trace()
-    print("here make ")
+    mean_array = args.operandValues[0]
+    cov_matrix = args.operandValues[1]
+    #ipdb.set_trace()
+    partial_derivatives=cov_matrix.stuff['derivatives']
+    xs = np.asmatrix(aux.keys()).T
+    n = len(xs)
+    os = aux.values()
+    y = np.asmatrix(os).T
+    K = cov_matrix(xs, xs)    # evaluate covariance matrix
+    m = mean_array(xs)                             # ToDo: evaluate mean vector
+    #sn2   = np.exp(likfunc.hyp[0])                       # noise variance of likGauss
+    sn2   = 0.1                       # noise variance of likGauss
+    L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
+    alpha = solve_chol(L,y-m)/sn2
+    dlZ = [0]
+    Q = np.dot(alpha,alpha.T) - solve_chol(L,np.eye(n))/sn2 # precompute for convenience
+    isigma = npla.inv(K) # ToDo: this is incorrect, stub for debugging!
+    gradX = -np.dot(isigma, xs)
+    for i in range(len(partial_derivatives)):
+        dlZ.append((Q*partial_derivatives[i](xs,xs)).sum()/2.)
+    #ipdb.set_trace()
+    #return (gradX.reshape(-1,).tolist()[0],dlZ)
+    #return (0,dlZ)
+    return [0.,0.]
 
-  def madeSpLogDensityOfCountsBound(self, _aux): return 0
-
-  def gradientOfLogDensity(self, _value, _args):
-      print("here goLD")
-      return 0
+  def cov_matrix(self, x1s, x2s=None):
+    if x2s is None:
+        return self.covariance(np.asmatrix(x1s).T)
+    return self.covariance(np.asmatrix(x1s).T, np.asmatrix(x2s).T) #ToDo: that's ugly and inefficient
   def childrenCanAAA(self): return True
 
   def description(self, _name=None):
