@@ -211,8 +211,7 @@ def makeNoise(s):
 
 
 #### Binary Operators
-'''
-# In[11]:
+
 
 def lift_binary(op):
   def lifted(f1, f2):
@@ -248,4 +247,3 @@ def makeLiftedMult(op):
     return VentureFunction(lifted_op(f1,f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"x"+f2.stuff['name'])
   return VentureFunction(wrapped, sp_type=liftedBinaryType)
 
-'''

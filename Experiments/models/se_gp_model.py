@@ -1,13 +1,13 @@
 __author__ = 'ulli'
 
-from gp_model import GP_model
+from venture_gp_model import Venture_GP_model
 from venture.lite.function import VentureFunction
 import venture.lite.types as t
 from covFunctions import makeSquaredExponential
 
-class SE_GP_Model(GP_model):
-    #def __init__(self):
-    #super(SE_GP_Model, self).__init__()
+class SE_Venture_GP_Model(Venture_GP_model):
+    def __init__(self):
+        Venture_GP_model.__init__(self)
     def make_gp(self, ripl):
         ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('gp',"""(tag (quote parameter) 0
