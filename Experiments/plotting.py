@@ -32,7 +32,6 @@ def load_experiments(ini_file_path,date_exp):
     Config.sections()
 
     models = dict(Config.items('inference'))
-
     number_data_points = ConfigSectionMap("test-data")['data-points'].split(',')
     list_noise_variance = ConfigSectionMap("test-data")['observation_noise'].split(',')
     repeat =  ConfigSectionMap("others")['repeat']
