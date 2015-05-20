@@ -12,13 +12,10 @@ class LIN_T_PER_Venture_GP_Model(Venture_GP_model):
         ripl.assume('make_lin',VentureFunction(makeLinear,[t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('make_per',VentureFunction(makePeriodic,[t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
 
-        ripl.assume("func_times", makeLiftedMult(lambda x1, x2:np.multiply(x1,x2)))
+        ripl.assume("func_times", makeLiftedMult(lambda x1, x2: np.multiply(x1,x2)))
 
         ripl.assume('gp',"""(tag (quote parameter) 0
-                                (make_gp_part_der zero
-                                    (func_plus
-                                        (apply_function make_lin (uniform_continuous 0 8 ))
-                                        (apply_function make_per (uniform_continuous 0 8 ) (uniform_continuous 0.1 8 ) (uniform_continuous 0 8 ))
-                                    )
-                                )
-                            )""")
+                            (make_gp_part_der zero
+                                (apply_function func_times
+                                (apply_function make_per (uniform_continuous 0 8 ) (uniform_continuous 0.1 8 ) (uniform_continuous 0 8 ) )
+                                (apply_function make_lin (uniform_continuous 0 8 ) ))))""")

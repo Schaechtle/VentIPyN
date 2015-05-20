@@ -15,10 +15,7 @@ class LIN_P_PER_Venture_GP_Model(Venture_GP_model):
         ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1+x2))
 
         ripl.assume('gp',"""(tag (quote parameter) 0
-                                (make_gp_part_der zero
-                                    (func_plus
-                                        (apply_function make_lin (uniform_continuous 0 8 ))
-                                        (apply_function make_per (uniform_continuous 0 8 ) (uniform_continuous 0.1 8 ) (uniform_continuous 0 8 ))
-                                    )
-                                )
-                            )""")
+                            (make_gp_part_der zero
+                                (apply_function func_plus
+                                (apply_function make_per (uniform_continuous 0 8 ) (uniform_continuous 0.1 8 ) (uniform_continuous 0 8 ) )
+                                (apply_function make_lin (uniform_continuous 0 8 ) ))))""")
