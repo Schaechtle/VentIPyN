@@ -65,7 +65,7 @@ if __name__ == '__main__':
         output.write("-------------------------\n")
         output.write(str(datetime.date.today())+"\n")
         output.write(ini_file_path+"\n")
-        output.write("writing to directory: "+date_exp+"\n")
+        output.write("writing to directory: "+str(date_exp)+"\n")
         output.write("Info: "+message+"\n")
         output.write("\n")
 
