@@ -10,9 +10,9 @@ class PER_Venture_GP_Model(Venture_GP_model):
         Venture_GP_model.__init__(self)
     def make_gp(self, ripl):
         ripl.assume('make_per',VentureFunction(makePeriodic,[t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
-        ripl.assume('l',"(tag (quote parameter) 0 (log (uniform_continuous 0.01 8 )))")
-        ripl.assume('p',"(tag (quote parameter) 1 (log (uniform_continuous 0.1 8 )))")
-        ripl.assume('sf',"(tag (quote parameter) 2 (log (uniform_continuous 0.01 8 )))")
+        ripl.assume('l',"(tag (quote parameter) 0  (uniform_continuous 0.01 8 ))")
+        ripl.assume('p',"(tag (quote parameter) 1 (uniform_continuous 0.1 8 ))")
+        ripl.assume('sf',"(tag (quote parameter) 2  (uniform_continuous 0.01 8 ))")
         ripl.assume('gp',"""(tag (quote model) 0
                                 (make_gp_part_der zero
                                     (apply_function make_per l p sf )))""")
