@@ -11,6 +11,8 @@ if __name__ == '__main__':
     ini_file_path="experiment.ini"
     date_exp=datetime.date.today()
     run_locally=False
+    cores  = 60
+    message = " no message "
     for i in range(1,len(sys.argv)):
             if str(sys.argv[i])=="-f":
                 ini_file_path = str(sys.argv[i+1])
@@ -18,7 +20,10 @@ if __name__ == '__main__':
                 date_exp = str(sys.argv[i+1])
             if str(sys.argv[i])=="--local":
                 run_locally = True
-
+            if str(sys.argv[i])=="--cores":
+                cores  = str(sys.argv[i+1])
+            if str(sys.argv[i])=="-m":
+                message = str(sys.argv[i+1])
 
     Config.read(ini_file_path)
     Config.sections()
@@ -49,9 +54,18 @@ if __name__ == '__main__':
             f_exp(item)
     else:
         from multiprocessing import Pool
-        pool = Pool(60)
+        pool = Pool(cores)
         pool.map(f_exp, condition)
-
-
-
+    with open("meta-file.txt") as input:
+        # Read non-empty lines from input file
+        lines = [line for line in input if line.strip()]
+    with open("meta-file.txt", "w") as output:
+        for line in lines:
+            output.write(line)
+        output.write("-------------------------\n")
+        output.write(str(datetime.date.today())+"\n")
+        output.write(ini_file_path+"\n")
+        output.write("writing to directory: "+date_exp+"\n")
+        output.write("Info: "+message+"\n")
+        output.write("\n")
 

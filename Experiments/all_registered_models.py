@@ -9,10 +9,6 @@ per_gp = PER_Venture_GP_Model()
 registered_models['venture-gp-per']=per_gp
 
 
-from models.per_gp_model_layered import PER_Venture_GP_Model_layered
-per_layered_gp = PER_Venture_GP_Model_layered()
-registered_models['venture-gp-per-layered']=per_layered_gp
-
 from models.lin_gp_model import LIN_Venture_GP_Model
 lin_gp = LIN_Venture_GP_Model()
 registered_models['venture-gp-lin']=lin_gp
