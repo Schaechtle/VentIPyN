@@ -5,7 +5,7 @@ import numpy as np
 from venture.lite.sp import SP, SPType
 from venture.lite.function import VentureFunction
 from venture.lite.types import  AnyType
-from venture.lite.psp import RandomPSP
+from venture.lite.psp import RandomPSP,LikelihoodFreePSP,DeterministicPSP
 def lift_binary(op):
   def lifted(f1, f2):
     return lambda *xs: op(f1(*xs), f2(*xs))
@@ -43,7 +43,7 @@ def prodKernel(f1, f2):
 
 
 
-class Grammar(RandomPSP):
+class Grammar(DeterministicPSP):
   def canAbsorb(self, _trace, _appNode, _parentNode): return False
   #def childrenCanAAA(self): return True
   def simulate(self,args):
