@@ -14,7 +14,7 @@ def generate_data(f, noise, n,number_of_testpoints):
     x_test = np.random.uniform(0,10,number_of_testpoints)
     f_test = f(x_test)
     y_test = f_test+np.random.normal(0,noise,number_of_testpoints)
-    f_error = np.abs(f_test - y_test)
+    f_error = f_test - y_test
     return x_training,y_training,x_test,y_test,f_test,f_error
 
 
