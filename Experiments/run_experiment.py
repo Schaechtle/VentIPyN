@@ -21,7 +21,7 @@ if __name__ == '__main__':
             if str(sys.argv[i])=="--local":
                 run_locally = True
             if str(sys.argv[i])=="--cores":
-                cores  = str(sys.argv[i+1])
+                cores  = int(sys.argv[i+1])
             if str(sys.argv[i])=="-m":
                 message = str(sys.argv[i+1])
 
