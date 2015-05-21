@@ -11,7 +11,7 @@ def saveXY_data(x_training,y_training,x_test,y_test,path):
 def generate_data(f, noise, n,number_of_testpoints):
     x_training = np.random.uniform(0,10,n)
     y_training = f(x_training)#+np.random.randn(0,noise,n)
-    x_test = np.random.uniform(0,10,number_of_testpoints)
+    x_test = np.random.uniform(10,12,number_of_testpoints)
     f_test = f(x_test)
     y_test = f_test+np.random.normal(0,noise,number_of_testpoints)
     f_error = f_test - y_test
