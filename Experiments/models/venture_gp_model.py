@@ -41,7 +41,7 @@ class Venture_GP_model():
                     global_logs_core.append(self.ripl.infer("global_posterior"))
                     sampleString=self.genSamples(x_test)
                     y_posterior = self.ripl.sample(sampleString)
-                    residuals.append(np.abs(f_test - y_posterior))
+                    residuals.append(f_test - y_posterior)
                     base_line.append(f_error)
                     mcmc_index.append(current_index)
                     current_index+=1
