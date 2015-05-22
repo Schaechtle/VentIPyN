@@ -38,7 +38,7 @@ class Venture_GP_model():
                 for k in range(int(self.inf_cycles[j])):
                     #import pdb; pdb.set_trace()
                     self.ripl.infer(self.inf_strings[j])
-                    global_logs_core.append(self.ripl.infer("global_posterior"))
+                    global_logs_core.append(self.ripl.infer("(posterior_at (quote parameter) 0)"))
                     sampleString=self.genSamples(x_test)
                     y_posterior = self.ripl.sample(sampleString)
                     residuals.append(f_test - y_posterior)

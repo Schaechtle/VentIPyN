@@ -22,6 +22,14 @@ from models.lin_times_per_gp_model import LIN_T_PER_Venture_GP_Model
 lin_t_per_gp = LIN_T_PER_Venture_GP_Model()
 registered_models['venture-gp-lin-t-per']=lin_t_per_gp
 
-from models.cov_by_grammar_gp import Venture_GP_Model
-venture_cov_learning = Venture_GP_Model()
+from models.cov_by_grammar_gp import Grammar_Venture_GP_model
+venture_cov_learning = Grammar_Venture_GP_model()
 registered_models['venture-cov-learning']=venture_cov_learning
+
+from models.cov_by_grammar_gp_testing import Grammar_Venture_GP_model_test
+venture_cov_learning = Grammar_Venture_GP_model_test()
+registered_models['venture-cov-learning-testing']=venture_cov_learning
+
+from models.cov_by_grammar_gp_simple import Grammar_Venture_GP_model_simple
+venture_cov_simple = Grammar_Venture_GP_model_simple()
+registered_models['venture_cov_simple']=venture_cov_simple

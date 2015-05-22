@@ -6,9 +6,10 @@ def average_frames(repeated_experiments):
     repeated = len(repeated_experiments)
     assert repeated == int(ConfigSectionMap("others")['repeat'])
     df = repeated_experiments[0]
+    df['residuals']=np.abs(df['residuals'])
     for i in range(1,repeated):
         df['logscore']+=repeated_experiments[i]['logscore']
-        df['residuals']+=repeated_experiments[i]['residuals']
+        df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
         df['base-line']+=repeated_experiments[i]['base-line']
 
         # this does not work for the log-score for some reason :/ different data type, I guess. Therefore, treated below
