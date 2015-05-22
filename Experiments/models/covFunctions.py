@@ -196,7 +196,7 @@ def noise(s):
   return f
 # gradient
 def noise_der(s):
-  sf = np.exp(s)
+  sf = np.exp(2. * s)
   def f(x1, x2):
     tol = 1.e-9                       # Tolerance for declaring two vectors "equal"
     M = spdist.cdist(x1, x2, 'sqeuclidean')
