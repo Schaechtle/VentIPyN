@@ -5,7 +5,7 @@ import numpy as np
 from venture.lite.sp import SP, SPType
 from venture.lite.function import VentureFunction
 from venture.lite.types import  AnyType
-from venture.lite.psp import RandomPSP,LikelihoodFreePSP,DeterministicPSP
+from venture.lite.psp import RandomPSP,LikelihoodFreePSP,DeterministicPSP,PSP
 def lift_binary(op):
   def lifted(f1, f2):
     return lambda *xs: op(f1(*xs), f2(*xs))
@@ -43,13 +43,14 @@ def prodKernel(f1, f2):
 
 
 
-class Grammar(DeterministicPSP):
+class Grammar(RandomPSP):
   def canAbsorb(self, _trace, _appNode, _parentNode): return False
   #def childrenCanAAA(self): return True
+  def isRandom(self): return True
   def simulate(self,args):
     covFunctions= args.operandValues[0]
     number_covfunctions= args.operandValues[1].getNumber()+1
-
+    assert (isinstance(number_covfunctions,int) or isinstance(number_covfunctions,float))
     max_number = 0
     list_of_cov_lists=[]
 
@@ -57,7 +58,7 @@ class Grammar(DeterministicPSP):
           list_of_cov_lists.append(item)
           max_number+= len(item)
     first = True
-    for i in range(number_covfunctions):
+    for i in range(int(number_covfunctions)):
         cov_index = np.random.randint(0,len(list_of_cov_lists))
         if first:
             K=list_of_cov_lists[cov_index].pop()

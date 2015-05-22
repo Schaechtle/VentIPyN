@@ -22,7 +22,7 @@ covfunctionType = SPType([t.NumberType(), t.NumberType()], t.NumberType())
 
 
 def makeConstFunc(c):
-  return VentureFunction(lambda _: c, sp_type=constantType)
+  return VentureFunction(lambda _: c, sp_type=constantType,derivatives={0:lambda _: 0})
 def array(xs):
   return t.VentureArrayUnboxed(np.array(xs),  t.NumberType())
 
