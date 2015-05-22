@@ -33,3 +33,7 @@ registered_models['venture-cov-learning-testing']=venture_cov_learning
 from models.cov_by_grammar_gp_simple import Grammar_Venture_GP_model_simple
 venture_cov_simple = Grammar_Venture_GP_model_simple()
 registered_models['venture_cov_simple']=venture_cov_simple
+
+from models.cov_by_grammar_gp_simpleSELINPER import Grammar_Venture_GP_model_simpleSELINPER
+venture_cov_simpleSELINPER = Grammar_Venture_GP_model_simpleSELINPER()
+registered_models['venture_cov_simple_SELINPER']=venture_cov_simpleSELINPER
