@@ -100,7 +100,8 @@ class GP(object):
     alpha = solve_chol(L,y-m)/sn2
     nlZ = np.dot((y-m).T,alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
     lD = -float(nlZ)
-    #print(lD)
+    if lD>0:
+        return -float('Inf')
     return lD
 
   def logDensityOfCounts(self):
