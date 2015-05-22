@@ -20,7 +20,7 @@ class Grammar_Venture_GP_model(Venture_GP_model):
         ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType()], t.AnyType("VentureFunction")))
 
         ripl.assume('a','(mem (lambda (i) (tag (quote parameter) i (uniform_continuous 0.1 8))))')
-        ripl.assume('sn','(tag (quote parameter) 10 (uniform_continuous 0.01 3))')
+        ripl.assume('sn','(tag (quote parameter) 10 (log (uniform_continuous 0.01 3)))')
         ripl.assume('sf','(mem (lambda (i) (tag (quote parameter) i (uniform_continuous 0.1 8 ))))')
         ripl.assume('sf2','(mem (lambda (i) (tag (quote parameter) i(uniform_continuous 0.1 8 ))))')
         ripl.assume('p','(mem (lambda (i) (tag (quote parameter) i (uniform_continuous 0.1 8))))')
