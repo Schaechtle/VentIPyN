@@ -19,12 +19,12 @@ class Grammar_Venture_GP_model_simple(Venture_GP_model):
         #ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
         #ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType()], t.AnyType("VentureFunction")))
 
-        ripl.assume('a','(mem (lambda (i) (tag (quote parameter) i (uniform_continuous 0.1 8))))')
+        ripl.assume('a','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8)))))')
         #ripl.assume('sn','(tag (quote parameter) 10 (uniform_continuous 0.01 3))')
-        ripl.assume('sf','(mem (lambda (i) (tag (quote parameter) i (uniform_continuous 0.1 8 ))))')
+        ripl.assume('sf','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8 )))))')
         #ripl.assume('sf2','(mem (lambda (i) (tag (quote parameter) i(uniform_continuous 0.1 8 ))))')
-        ripl.assume('p','(mem (lambda (i) (tag (quote parameter) i (uniform_continuous 0.1 8))))')
-        ripl.assume('l','(mem (lambda (i) (tag (quote parameter) i (uniform_continuous 0.1 8))))')
+        ripl.assume('p','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8)))))')
+        ripl.assume('l','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8)))))')
         #ripl.assume('l2','(mem (lambda (i) (tag (quote parameter) i (uniform_continuous 0.1 8))))')
         
         ripl.assume('lin1', "(apply_function make_linear ( a 0)  )")

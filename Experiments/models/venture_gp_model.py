@@ -11,23 +11,24 @@ class Venture_GP_model():
         self.inf_strings=[]
         self.inf_cycles=[]
 
-    def run(self,x_training,y_training,x_test,y_test,f_test,f_error,inf_string,outer_mcmc_steps):
+    def run(self,x_training,y_training,x_test,y_test,f_test,f_error,x_test_inner,f_test_inner,inf_string,outer_mcmc_steps):
         self.ripl= init_gp_ripl()
         self.get_inf_string(inf_string)
         self.make_gp(self.ripl)
         #self.get_prior()
         self.makeObservations(x_training,y_training)
-        global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle = self.run_inference(x_test,f_test,f_error,outer_mcmc_steps)
+        global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,residuals_inter = self.run_inference(x_test,f_test,f_error,x_test_inner,f_test_inner,outer_mcmc_steps)
         self.ripl.clear()
-        return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle})
+        return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'inter-residuals':residuals_inter})
 
     def make_gp(self, ripl):
         raise ValueError('Covariance Structure not defined')
         pass
 
-    def run_inference(self,x_test,f_test,f_error,outer_mcmc_steps):
+    def run_inference(self,x_test,f_test,f_error,x_test_inner,f_test_inner,outer_mcmc_steps):
         global_logs_core=[]
         residuals=[]
+        residuals_inter=[]
         base_line =[]
         mcmc_index = []
         mcmc_cycle = []
@@ -42,11 +43,14 @@ class Venture_GP_model():
                     sampleString=self.genSamples(x_test)
                     y_posterior = self.ripl.sample(sampleString)
                     residuals.append(f_test - y_posterior)
+                    sampleString=self.genSamples(x_test_inner)
+                    y_inner = self.ripl.sample(sampleString)
+                    residuals_inter.append(f_test_inner - y_inner)
                     base_line.append(f_error)
                     mcmc_index.append(current_index)
                     current_index+=1
                     mcmc_cycle.append(j)
-        return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle
+        return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,residuals_inter
 
     def get_inf_string(self,inf_string):
         self.inf_strings=[]
