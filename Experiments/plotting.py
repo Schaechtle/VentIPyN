@@ -71,7 +71,9 @@ def load_experiments(ini_file_path,date_exp):
                             except ValueError:
                                 ("could not open "+output_file_name)
         un_averaged_frames.append(pd.concat(frames))
-    return  average_frames(un_averaged_frames)
+    df_experiment = average_frames(un_averaged_frames)
+    df.to_pickle("results/experiment_"+date_exp)
+    return  df_experiment
 
 
 
