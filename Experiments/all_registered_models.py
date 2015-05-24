@@ -30,10 +30,6 @@ from models.cov_by_grammar_gp import Grammar_Venture_GP_model
 venture_cov_learning = Grammar_Venture_GP_model()
 registered_models['venture-cov-learning']=venture_cov_learning
 
-from models.cov_by_grammar_gp_testing import Grammar_Venture_GP_model_test
-venture_cov_learning = Grammar_Venture_GP_model_test()
-registered_models['venture-cov-learning-testing']=venture_cov_learning
-
 from models.cov_by_grammar_gp_simple import Grammar_Venture_GP_model_simple
 venture_cov_simple = Grammar_Venture_GP_model_simple()
 registered_models['venture_cov_simple']=venture_cov_simple
