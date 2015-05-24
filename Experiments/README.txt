@@ -101,4 +101,4 @@ We use ipython to plot the results. We can use/change the experiment.ini files f
 
 We also allow to just compare the residuals of the last n steps after a fixed number of runs with the function get_last_n_residuals(ini_file_path,date_exp,n_last_residuals) to get an indication of how good the learned function explains the data. This can be done with plot_final_residuals.ipnb.
 
-Edit: I ran a large set of experiments over the weekend. When I played with the IPython notebooks I have realised that it crashes due to DFs that are too large. I am creating a version now that produces graphs and saves pictures on probcomp-3 directly.
+Edit: I ran a large set of experiments over the weekend. When I played with the IPython notebooks I have realised that it crashes due to DFs that being too large. I am creating a version now that produces graphs and saves pictures on probcomp-3 directly.
