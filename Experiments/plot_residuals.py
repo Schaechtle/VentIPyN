@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import sys
 
 name = 'test'
-
+load_df =False
+cut =50
 def remove_massive_outliers(df,replace_by=50.):
   count=0
   for i in range(len(df.index)):
@@ -21,11 +22,20 @@ def remove_massive_outliers(df,replace_by=50.):
 
 for i in range(1,len(sys.argv)):
             if str(sys.argv[i])=="-n":
-                name== str(sys.argv[i+1])
+                name= str(sys.argv[i+1])
+            if str(sys.argv[i])=="--load":
+                load=str(sys.argv[i+1])
+                load_df = True
+            if str(sys.argv[i])=="--cut-off":
+                cut= float(sys.argv[i+1])
 
-df = pd.read_pickle("n_res_2015-05-23")
+if not load_df:
+    df = pd.read_pickle("n_res_2015-05-23")
+    df = remove_massive_outliers(df,cut)
+    df.to_pickle("results/cleaned/"+name)
+else:
+    df = pd.read_pickle(load)
 
-df = remove_massive_outliers(df,50)
 
 sns.set_context(rc={"figure.figsize": (8, 8)})
 sns.set(font_scale=2) 
