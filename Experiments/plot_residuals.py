@@ -1,7 +1,7 @@
 import seaborn as sns
 import pylab as pl
-
-def remove_massive_outliers(df,replace_by=50.)
+import pandas as pd
+def remove_massive_outliers(df,replace_by=50.):
   count=0
   for i in range(len(df.index)):
       current =df['residuals'].iloc[i]
@@ -14,7 +14,7 @@ def remove_massive_outliers(df,replace_by=50.)
   print("ratio: "+ str(float(count)/i))
   return df
 
-df = pd.read_pickle("results/n_res_2015-05-23")
+df = pd.read_pickle("n_res_2015-05-23")
  
 sns.set_context(rc={"figure.figsize": (8, 8)})
 sns.set(font_scale=2) 
@@ -27,8 +27,8 @@ for i in range(len(order)):
     df_temp=df.loc[df['model'] == order[i]]
     residual_list.append(df_temp['residuals'].tolist())
     model_names.append(order[i])
-fig = plt.figure(figsize=(8,8), dpi=200)
+
 g = sns.boxplot(residual_list,names=model_names)
 g.set_xticklabels(model_names,rotation=30)
 g.set_ylabel("Residuals")
-plt.savefig(format='png')
+g.savefig(format='png')
