@@ -23,7 +23,7 @@ for i in range(1,len(sys.argv)):
             if str(sys.argv[i])=="-n":
                 name== str(sys.argv[i+1])
 
-df = pd.read_pickle("results/n_res_2015-05-23")
+df = pd.read_pickle("n_res_2015-05-23")
 
 df = remove_massive_outliers(df,50)
 
