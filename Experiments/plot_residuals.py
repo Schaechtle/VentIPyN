@@ -32,6 +32,7 @@ sns.set(font_scale=2)
 
 order = ['venture-gp-lin','venture-gp-se','venture-gp-per','venture-gp-lin-p-per','venture-gp-lin-t-per','venture_cov_simple','venture_cov_simple_selinper','venture-cov-learning']
 
+
 residual_list=[]
 model_names = []
 for i in range(len(order)):
