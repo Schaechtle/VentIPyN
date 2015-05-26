@@ -2,24 +2,18 @@ import pandas as pd
 from util import Config,ConfigSectionMap
 import numpy as np
 import os.path
-import scipy.stats
+import scipy.stats as scs
 def average_frames(repeated_experiments):
     repeated = len(repeated_experiments)
     assert repeated == int(ConfigSectionMap("others")['repeat'])
     df = repeated_experiments[0]
     df['residuals']=np.abs(df['residuals'])
-    residual_list=[df['residuals'].values]
+
     for i in range(1,repeated):
         df['logscore']+=repeated_experiments[i]['logscore']
         df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
         df['inter-residuals']+=np.abs(repeated_experiments[i]['inter-residuals'])
-        df['base-line']+=repeated_experiments[i]['base-line']
-        residual_list.append(repeated_experiments[i]['residuals'].values)
-    median_matrix=np.matrix(residual_list)
-    print(median_matrix.shape)
-    median_residuals=scipy.stats.median(median_matrix,axis=0)
-    print(median_residuals.shape)
-    df['median-residuals']=median_residuals
+        df['base-line']+=np.abs(repeated_experiments[i]['base-line'])
     averaged_log_scores = []
     mean_residuals=[]
 
@@ -160,3 +154,51 @@ def get_dataFrame(date_experiment,ini_file_path):
     else:
         return load_experiments(ini_file_path,date_experiment)
 
+
+def load_median_experiments(ini_file_path,date_exp):
+    Config.read(ini_file_path)
+    Config.sections()
+
+    models = dict(Config.items('inference'))
+    number_data_points = ConfigSectionMap("test-data")['data-points'].split(',')
+    list_noise_variance = ConfigSectionMap("test-data")['observation_noise'].split(',')
+    repeat =  ConfigSectionMap("others")['repeat']
+    number_test_points =  ConfigSectionMap("others")['number-test-points']
+    test_problems =  ConfigSectionMap("test-data")['test-problems'].split(',')
+    total_steps_outer = ConfigSectionMap("MCMC")["total-steps-outer"]
+
+
+    directory="results/"+date_exp
+    residual_list = []
+
+
+    for key in models:
+        df_list= []
+        all_inf_string = ConfigSectionMap("inference")[key]
+        list_of_infer= all_inf_string.split(";")
+        for infer in list_of_infer:
+            for test_problem in test_problems:
+                for noise in list_noise_variance:
+                    for n in number_data_points:
+                        df = pd.DataFrame()
+                        for index in range(int(repeat)):
+                            experiment_name = key+'_'+infer+'_'+total_steps_outer+'_'\
+                                               + test_problem +'_'+noise+'_'+n+'_'+number_test_points+'_'+str(index)
+                            output_file_name = directory+"/exp_"+ experiment_name
+                            try:
+                                df = pd.read_pickle(output_file_name)
+                                residual_list.append(df['residuals'].values)
+
+                            except ValueError:
+                                ("could not open "+output_file_name)
+
+                        df['median-residual']=pd.Series(np.median(np.matrix(residual_list)),axis=0 )
+                        df['model'] = pd.Series([key for _ in range(len(df.index))], index=df.index)
+                        df['test_problem'] = pd.Series([test_problem for _ in range(len(df.index))], index=df.index)
+                        df['noise'] = pd.Series([noise for _ in range(len(df.index))], index=df.index)
+                        df['n'] = pd.Series([n for _ in range(len(df.index))], index=df.index)
+                        df['repeat'] = pd.Series([index for _ in range(len(df.index))], index=df.index)
+                        df_list.append(df)
+    df_experiment=pd.concat(df_list)
+    df_experiment.to_pickle("results/median_residual_"+date_exp)
+    return  df_experiment
