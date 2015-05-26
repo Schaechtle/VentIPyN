@@ -15,14 +15,12 @@ def average_frames(repeated_experiments):
         df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
         df['inter-residuals']+=np.abs(repeated_experiments[i]['inter-residuals'])
         df['base-line']+=repeated_experiments[i]['base-line']
-        # this does not work for the log-score for some reason :/ different data type, I guess. Therefore, treated below
     averaged_log_scores = []
     mean_residuals=[]
-    mean_inter_residuals=[]
-    std_residuals=[]
+
     mean_baseline=[]
     df['residuals']=df['residuals']/repeated
-    #df['inter-residuals']=df['inter-residuals']/repeated
+
     df['base-line']=df['base-line']/repeated
     for j in range(len(df.index)):
         averaged_log_scores.append(np.mean(df['logscore'].iloc[j]))
