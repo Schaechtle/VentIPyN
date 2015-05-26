@@ -8,6 +8,7 @@ def average_frames(repeated_experiments):
     df = repeated_experiments[0]
     df['residuals']=np.abs(df['residuals'])
     median_matrix=np.matrix([frame['residuals'].values for frame in repeated_experiments])
+    print(median_matrix.shape)
     df['median-residuals']=np.median(median_matrix,axis=0)
     for i in range(1,repeated):
         df['logscore']+=repeated_experiments[i]['logscore']
