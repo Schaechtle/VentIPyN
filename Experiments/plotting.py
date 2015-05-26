@@ -155,7 +155,7 @@ def get_dataFrame(date_experiment,ini_file_path):
         return load_experiments(ini_file_path,date_experiment)
 
 def get_dataFrame_median(date_experiment,ini_file_path):
-    file_path="results/experiment_"+date_experiment
+    file_path="results/median_residual_"+date_experiment
     if os.path.isfile(file_path):
         return pd.read_pickle(file_path)
     else:
@@ -198,7 +198,7 @@ def load_median_experiments(ini_file_path,date_exp):
                             except ValueError:
                                 ("could not open "+output_file_name)
 
-                        df['median-residual']=pd.Series(np.median(np.matrix(residual_list)),axis=0 )
+                        df['median-residual']=pd.Series(np.median(np.matrix(residual_list),axis=0 ))
                         df['model'] = pd.Series([key for _ in range(len(df.index))], index=df.index)
                         df['test_problem'] = pd.Series([test_problem for _ in range(len(df.index))], index=df.index)
                         df['noise'] = pd.Series([noise for _ in range(len(df.index))], index=df.index)
