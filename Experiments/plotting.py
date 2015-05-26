@@ -198,7 +198,7 @@ def load_median_experiments(ini_file_path,date_exp):
                             except ValueError:
                                 ("could not open "+output_file_name)
 
-                        df['median-residual']=pd.Series(np.median(np.matrix(residual_list),axis=0 ))
+                        df['median-residual']=pd.Series(np.median(np.matrix(residual_list),axis=1 ))
                         df['model'] = pd.Series([key for _ in range(len(df.index))], index=df.index)
                         df['test_problem'] = pd.Series([test_problem for _ in range(len(df.index))], index=df.index)
                         df['noise'] = pd.Series([noise for _ in range(len(df.index))], index=df.index)
