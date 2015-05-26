@@ -1,7 +1,7 @@
 import pandas as pd
 from util import Config,ConfigSectionMap
 import numpy as np
-
+import os.path
 def average_frames(repeated_experiments):
     repeated = len(repeated_experiments)
     assert repeated == int(ConfigSectionMap("others")['repeat'])
@@ -147,4 +147,11 @@ def get_last_n_residuals(ini_file_path,date_exp,n_last_residuals):
                             except ValueError:
                                 ("could not open "+output_file_name)
     return pd.DataFrame({'residuals':residuals,'model':model,'test_problem':problem,'noise':noise_level,'n':n_training_data}),np.mean(base_line)
+
+def get_dataFrame(date_experiment,ini_file_path):
+    file_path="results/experiment_"+date_experiment
+    if os.path.isfile(file_path):
+        return pd.read_pickle(file_path)
+    else:
+        return load_experiments(ini_file_path,date_experiment)
 
