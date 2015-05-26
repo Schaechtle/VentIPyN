@@ -7,7 +7,7 @@ def average_frames(repeated_experiments):
     assert repeated == int(ConfigSectionMap("others")['repeat'])
     df = repeated_experiments[0]
     df['residuals']=np.abs(df['residuals'])
-    residual_list=[df['residuals']]
+    residual_list=[df['residuals'].values]
     for i in range(1,repeated):
         df['logscore']+=repeated_experiments[i]['logscore']
         df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
