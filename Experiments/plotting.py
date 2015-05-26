@@ -7,7 +7,6 @@ def average_frames(repeated_experiments):
     assert repeated == int(ConfigSectionMap("others")['repeat'])
     df = repeated_experiments[0]
     df['residuals']=np.abs(df['residuals'])
-    df['inter-residuals']=np.abs(df['inter-residuals'])
     median_matrix=np.matrix([frame['residuals'].values for frame in repeated_experiments])
     df['median-residuals']=np.median(median_matrix,axis=0)
     for i in range(1,repeated):
