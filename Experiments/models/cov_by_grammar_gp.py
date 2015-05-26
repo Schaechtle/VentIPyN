@@ -9,10 +9,12 @@ import itertools
 import sys
 sys.path.append('../SPs/')
 from grammar5 import Grammar
+from kernel_interpreter import GrammarInterpreter
 
 class Grammar_Venture_GP_model(Venture_GP_model):
     def __init__(self):
         Venture_GP_model.__init__(self)
+        self.record_interpretation = True
     def make_gp(self, ripl):
         ripl.assume('make_linear', VentureFunction(makeLinear, [t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('make_periodic', VentureFunction(makePeriodic, [t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
@@ -70,6 +72,10 @@ class Grammar_Venture_GP_model(Venture_GP_model):
         #ripl.assume("interp","(covfunc_interpreter grammar)")
 
         ripl.assume('gp','(tag (quote model) 0 (make_gp_part_der zero cov_structure))')
+
+        ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
+        ripl.assume("interp","(covfunc_interpreter cov_structure)")
+
 
 
 

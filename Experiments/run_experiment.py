@@ -47,7 +47,8 @@ if __name__ == '__main__':
                 for noise in list_noise_variance:
                     for n in number_data_points:
                         for index in range(int(repeat)):
-                            condition.append([key,infer,total_steps_outer,test_problem,noise,n,str(index),number_test_points,str(date_exp)])
+                            #experiment(key, infer, total_steps_outer, test_problem, number_test_points, date_exp, index_str, n=None,noise=None)
+                            condition.append([key,infer,total_steps_outer,test_problem,number_test_points,str(date_exp),str(index),n,noise])
 
     if run_locally:
         for item in condition:

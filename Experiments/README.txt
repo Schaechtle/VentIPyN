@@ -61,6 +61,12 @@ Run Experiments over conditions:
 Every experimental condition of the experiment.ini file will be added to a list to be subsequently run with multi-process ( I guess that there are way more elegant solutions, yet mine is simple and easy to modify)
 
 -----------------------------------------
+Problems:
+We register problems with synthetic data in the simplest form in all_registered_problems.py (see this file for examples). Real world data set problems need to start with the string “real_world_” in the .ini file. Also, we do not need as much information in the .ini file - we do not rely on noise levels any more and want to define n only in case we want to work on a
+subset of the data.
+run_experiment sets the repeat index to the number of datapoints in the real world experiments. The repeat index serves in this setting as the index of the left out data point in the cross validation. This index is passed to the experiment function. Where, unlike for the synthetic data sets, we don't call a data generation algorithm but simply load the data,  set x_test,y_test and f_test to the data-point with the bespoken index, set x_train, and y_train to the rest of the data and f_error to zero, since we don't know the baseline. The rest will work as with synthetic data.
+ToDo: From now on, we are also recording an interpretation of structure if this is defined in the model. This means, an interp SP has to be assumed in the make gp functions in the individual models.This sp is recorded every sweep. The flag set to record interpretations is set in the .ini file.
+-----------------------------------------
 
 Data-Management:
 

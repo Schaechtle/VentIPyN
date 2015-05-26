@@ -10,6 +10,7 @@ class Venture_GP_model():
 
         self.inf_strings=[]
         self.inf_cycles=[]
+        self.record_interpretation = False
 
     def run(self,x_training,y_training,x_test,y_test,f_test,f_error,x_test_inner,f_test_inner,inf_string,outer_mcmc_steps):
         self.ripl= init_gp_ripl()
@@ -17,9 +18,12 @@ class Venture_GP_model():
         self.make_gp(self.ripl)
         #self.get_prior()
         self.makeObservations(x_training,y_training)
-        global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,residuals_inter = self.run_inference(x_test,f_test,f_error,x_test_inner,f_test_inner,outer_mcmc_steps)
+        global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,residuals_inter,interpretations = self.run_inference(x_test,f_test,f_error,x_test_inner,f_test_inner,outer_mcmc_steps)
         self.ripl.clear()
-        return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'inter-residuals':residuals_inter})
+        if self.record_interpretation:
+            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'inter-residuals':residuals_inter,'Covariance Structure':interpretations})
+        else:
+            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'inter-residuals':residuals_inter})
 
     def make_gp(self, ripl):
         raise ValueError('Covariance Structure not defined')
@@ -33,6 +37,7 @@ class Venture_GP_model():
         mcmc_index = []
         mcmc_cycle = []
         current_index = 0
+        interpreation =[]
         assert len(self.inf_cycles)==len(self.inf_strings)
         for i in range(int(outer_mcmc_steps)):
             for j in range(len(self.inf_strings)):
@@ -50,7 +55,9 @@ class Venture_GP_model():
                     mcmc_index.append(current_index)
                     current_index+=1
                     mcmc_cycle.append(j)
-        return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,residuals_inter
+                    if self.record_interpretation:
+                        interpreation.append(self.ripl.sample("interp"))
+        return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,residuals_inter,interpreation
 
     def get_inf_string(self,inf_string):
         self.inf_strings=[]
