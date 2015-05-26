@@ -7,14 +7,18 @@ def average_frames(repeated_experiments):
     assert repeated == int(ConfigSectionMap("others")['repeat'])
     df = repeated_experiments[0]
     df['residuals']=np.abs(df['residuals'])
-    median_matrix=np.matrix([frame['residuals'].values for frame in repeated_experiments])
-    print(median_matrix.shape)
-    df['median-residuals']=np.median(median_matrix,axis=0)
+    residual_list=[df['residuals']]
     for i in range(1,repeated):
         df['logscore']+=repeated_experiments[i]['logscore']
         df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
         df['inter-residuals']+=np.abs(repeated_experiments[i]['inter-residuals'])
         df['base-line']+=repeated_experiments[i]['base-line']
+        residual_list.append(repeated_experiments[i]['residuals'])
+    median_matrix=np.matrix([frame['residuals'].values for frame in repeated_experiments])
+    print(median_matrix.shape)
+    df['median-residuals']=np.median(median_matrix,axis=0)
+
+
     averaged_log_scores = []
     mean_residuals=[]
 
