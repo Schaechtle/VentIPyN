@@ -2,6 +2,7 @@ import pandas as pd
 from util import Config,ConfigSectionMap
 import numpy as np
 import os.path
+import scipy.stats
 def average_frames(repeated_experiments):
     repeated = len(repeated_experiments)
     assert repeated == int(ConfigSectionMap("others")['repeat'])
@@ -16,7 +17,7 @@ def average_frames(repeated_experiments):
         residual_list.append(repeated_experiments[i]['residuals'].values)
     median_matrix=np.matrix(residual_list)
     print(median_matrix.shape)
-    median_residuals=np.median(median_matrix,axis=0,overwrite_input=True)
+    median_residuals=scipy.stats.median(median_matrix,axis=0)
     print(median_residuals.shape)
     df['median-residuals']=median_residuals
     averaged_log_scores = []
