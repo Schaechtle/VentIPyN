@@ -13,12 +13,10 @@ def average_frames(repeated_experiments):
         df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
         df['inter-residuals']+=np.abs(repeated_experiments[i]['inter-residuals'])
         df['base-line']+=repeated_experiments[i]['base-line']
-        residual_list.append(repeated_experiments[i]['residuals'])
-    median_matrix=np.matrix([frame['residuals'].values for frame in repeated_experiments])
+        residual_list.append(repeated_experiments[i]['residuals'].values)
+    median_matrix=np.matrix(residual_list)
     print(median_matrix.shape)
     df['median-residuals']=np.median(median_matrix,axis=0)
-
-
     averaged_log_scores = []
     mean_residuals=[]
 
