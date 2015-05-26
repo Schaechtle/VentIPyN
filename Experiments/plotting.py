@@ -8,12 +8,13 @@ def average_frames(repeated_experiments):
     df = repeated_experiments[0]
     df['residuals']=np.abs(df['residuals'])
     df['inter-residuals']=np.abs(df['inter-residuals'])
+    median_matrix=np.matrix([frame['residuals'].values for frame in repeated_experiments])
+    df['median-residuals']=np.median(median_matrix,axis=0)
     for i in range(1,repeated):
         df['logscore']+=repeated_experiments[i]['logscore']
         df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
         df['inter-residuals']+=np.abs(repeated_experiments[i]['inter-residuals'])
         df['base-line']+=repeated_experiments[i]['base-line']
-
         # this does not work for the log-score for some reason :/ different data type, I guess. Therefore, treated below
     averaged_log_scores = []
     mean_residuals=[]
@@ -21,20 +22,21 @@ def average_frames(repeated_experiments):
     std_residuals=[]
     mean_baseline=[]
     df['residuals']=df['residuals']/repeated
-    df['inter-residuals']=df['inter-residuals']/repeated
+    #df['inter-residuals']=df['inter-residuals']/repeated
     df['base-line']=df['base-line']/repeated
     for j in range(len(df.index)):
         averaged_log_scores.append(np.mean(df['logscore'].iloc[j]))
         mean_residuals.append(np.mean(df['residuals'].iloc[j]))
-        mean_inter_residuals.append(np.mean(df['inter-residuals'].iloc[j]))
+        #mean_inter_residuals.append(np.mean(df['inter-residuals'].iloc[j]))
         mean_baseline.append(np.mean(df['base-line'].iloc[j]))
-        std_residuals.append(np.std(df['residuals'].iloc[j]))
+        #std_residuals.append(np.std(df['residuals'].iloc[j]))
     df['logscore']=averaged_log_scores
     df['residuals']= mean_residuals
-    df['inter-residuals']= mean_inter_residuals
+    #df['inter-residuals']= mean_inter_residuals
     df['base-line']=mean_baseline
     df['mean-residuals']= pd.Series(mean_residuals, index=df.index)
-    df['std-residuals']=pd.Series(std_residuals, index=df.index)
+
+    #df['std-residuals']=pd.Series(std_residuals, index=df.index)
     return df
 
 def load_experiments(ini_file_path,date_exp):
