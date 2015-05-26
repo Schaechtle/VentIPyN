@@ -16,7 +16,7 @@ def average_frames(repeated_experiments):
         residual_list.append(repeated_experiments[i]['residuals'].values)
     median_matrix=np.matrix(residual_list)
     print(median_matrix.shape)
-    median_residuals=np.median(median_matrix,axis=0)
+    median_residuals=np.median(median_matrix,axis=0,overwrite_input=True)
     print(median_residuals.shape)
     df['median-residuals']=median_residuals
     averaged_log_scores = []
