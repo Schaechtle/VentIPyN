@@ -1,3 +1,4 @@
+# register models to be testesd in the experiment here
 registered_models={}
 
 from models.se_gp_model import SE_Venture_GP_Model
