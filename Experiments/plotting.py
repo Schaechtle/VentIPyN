@@ -183,8 +183,6 @@ def load_median_experiments(ini_file_path,date_exp):
     df_list= []
     index=0
     for key in models:
-        print(index)
-        index+=1
         all_inf_string = ConfigSectionMap("inference")[key]
         list_of_infer= all_inf_string.split(";")
         for infer in list_of_infer:
@@ -192,6 +190,8 @@ def load_median_experiments(ini_file_path,date_exp):
                 for noise in list_noise_variance:
                     for n in number_data_points:
                         df = pd.DataFrame()
+                        print(index)
+                        index+=1
                         for index in range(int(repeat)):
                             experiment_name = key+'_'+infer+'_'+total_steps_outer+'_'\
                                                + test_problem +'_'+noise+'_'+n+'_'+number_test_points+'_'+str(index)
