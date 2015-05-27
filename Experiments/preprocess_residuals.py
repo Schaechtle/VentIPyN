@@ -3,7 +3,7 @@ import pylab as pl
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
-
+from plotting import get_last_n_residuals
 import os.path
 
 
