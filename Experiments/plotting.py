@@ -199,7 +199,7 @@ def load_median_experiments(ini_file_path,date_exp):
                             try:
                                 df = pd.read_pickle(output_file_name)
 
-                                residual_list.append(df['residuals'].values)
+                                residual_list.append(np.abs(df['residuals'].values))
 
                             except ValueError:
                                 ("could not open "+output_file_name)
