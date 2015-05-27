@@ -3,6 +3,7 @@ from util import Config,ConfigSectionMap
 import numpy as np
 import os.path
 import scipy.stats as scs
+
 def average_frames(repeated_experiments):
     repeated = len(repeated_experiments)
     assert repeated == int(ConfigSectionMap("others")['repeat'])
@@ -157,8 +158,10 @@ def get_dataFrame(date_experiment,ini_file_path):
 def get_dataFrame_median(date_experiment,ini_file_path):
     file_path="results/median_residual_"+date_experiment
     if os.path.isfile(file_path):
+        print("loading existing df")
         return pd.read_pickle(file_path)
     else:
+        print("creating df from scratch")
         return load_median_experiments(ini_file_path,date_experiment)
 
 def load_median_experiments(ini_file_path,date_exp):
@@ -177,9 +180,11 @@ def load_median_experiments(ini_file_path,date_exp):
     directory="results/"+date_exp
     residual_list = []
 
-
+    df_list= []
+    index=0
     for key in models:
-        df_list= []
+        print(index)
+        index+=1
         all_inf_string = ConfigSectionMap("inference")[key]
         list_of_infer= all_inf_string.split(";")
         for infer in list_of_infer:
@@ -193,12 +198,14 @@ def load_median_experiments(ini_file_path,date_exp):
                             output_file_name = directory+"/exp_"+ experiment_name
                             try:
                                 df = pd.read_pickle(output_file_name)
+
                                 residual_list.append(df['residuals'].values)
 
                             except ValueError:
                                 ("could not open "+output_file_name)
                         res_matrix = np.matrix(residual_list)
-                        df['median-residual']=pd.Series([np.median(res_matrix[:,i]) for i in df.index ])
+                        residual_list = []
+                        df['median-residual']=pd.Series([np.median(res_matrix[:,i].tolist()) for i in df.index ])
                         df['model'] = pd.Series([key for _ in range(len(df.index))], index=df.index)
                         df['test_problem'] = pd.Series([test_problem for _ in range(len(df.index))], index=df.index)
                         df['noise'] = pd.Series([noise for _ in range(len(df.index))], index=df.index)
