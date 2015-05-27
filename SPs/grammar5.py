@@ -82,7 +82,7 @@ class Grammar(RandomPSP):
     for item in covFunctions:
           max_number+= len(item)
     possible_subsets=sc.factorial(max_number)/sc.factorial(max_number-number_components) #subsets n! / (n - r)!
-    return number_components * np.log(0.5) + np.log(1/possible_subsets)
+    return number_components * np.log(0.5) + np.log(1./possible_subsets)
 
 
 
