@@ -6,6 +6,7 @@ from venture.lite.sp import SP, SPType
 from venture.lite.function import VentureFunction
 from venture.lite.types import  AnyType
 from venture.lite.psp import RandomPSP,LikelihoodFreePSP,DeterministicPSP,PSP
+import scipy
 import scipy.misc as sc
 def lift_binary(op):
   def lifted(f1, f2):
@@ -77,12 +78,31 @@ class Grammar(RandomPSP):
 
   def logDensity(self,val,args):
     covFunctions= args.operandValues[0]
-    number_components = args.operandValues[1].getNumber()+1
+    number_operators = args.operandValues[1].getNumber() # number components minus one
     max_number =0
     for item in covFunctions:
-          max_number+= len(item)
-    possible_subsets=sc.factorial(max_number)/sc.factorial(max_number-number_components) #subsets n! / (n - r)!
-    return number_components * np.log(0.5) + np.log(1./possible_subsets)
+         max_number+= len(item)
+
+    if val:
+        K_str = val.stuff['name']
+        global_flips,local_flips = self.parse_global_vs_linear(K_str)
+        if global_flips+local_flips!=number_operators:
+            return -float("inf")
+        else:
+            if number_operators==0:
+                return np.log(1./max_number)
+            else:
+                number_components=number_operators+1
+                p_subsets=sc.factorial(number_components)/sc.factorial(max_number) #subsets n! / (n - r)!
+                return scipy.stats.binom.logpmf(global_flips,number_operators,0.5) + np.log(p_subsets)
+    else:
+        raise ValueError('Log density evaluated without value')
+    #return number_components * np.log(0.5) + np.log(1./possible_subsets)
+  def parse_global_vs_linear(self,K_str):
+      global_flips =  K_str.count('+')
+      local_flips = K_str.count('x')
+      return global_flips,local_flips
+
 
 
 
