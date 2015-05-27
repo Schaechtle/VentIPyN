@@ -37,3 +37,7 @@ registered_models['venture_cov_simple']=venture_cov_simple
 from models.cov_by_grammar_gp_simpleSELINPER import Grammar_Venture_GP_model_simpleSELINPER
 venture_cov_simpleSELINPER = Grammar_Venture_GP_model_simpleSELINPER()
 registered_models['venture_cov_simple_selinper']=venture_cov_simpleSELINPER
+
+from models.cov_by_grammar_gp_simpleLINPERWN import Grammar_Venture_GP_model_simpleLINPERWN
+venture_cov_simpleLINPERWN = Grammar_Venture_GP_model_simpleLINPERWN()
+registered_models['venture gp cov learning 4']=venture_cov_simpleLINPERWN
