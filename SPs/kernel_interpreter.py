@@ -10,6 +10,16 @@ class GrammarInterpreter(DeterministicPSP):
     def simulate(self,args):
         K = args.operandValues[0]
         unsorted_string = K.stuff['name']
+        return   VentureSymbol(unsorted_string)
+
+
+'''
+Old interpreter, does not work anymore with new grammar
+class GrammarInterpreter(DeterministicPSP):
+
+    def simulate(self,args):
+        K = args.operandValues[0]
+        unsorted_string = K.stuff['name']
         unsorted_string = unsorted_string.replace("x","")
         for i in range(len(kernelList)):
             unsorted_string=unsorted_string.replace(kernelList[i],str(i))
@@ -41,5 +51,5 @@ class GrammarInterpreter(DeterministicPSP):
             out_string= out_string.replace(str(i),kernelList[i])
 
 
-        return   VentureSymbol(out_string)  
-    
+        return   VentureSymbol(out_string)
+'''
