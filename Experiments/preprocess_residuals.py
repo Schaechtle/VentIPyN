@@ -33,6 +33,7 @@ if os.path.isfile(fname):
 else:
     print("loading from scratch")
     df,b=get_last_n_residuals("experiment.ini",date_str,100)
+    df.to_pickle("fname")
 
 
 df = remove_massive_outliers(df,cut)
