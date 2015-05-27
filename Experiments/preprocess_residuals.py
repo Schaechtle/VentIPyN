@@ -34,7 +34,7 @@ else:
     print("loading from scratch")
     df,b=get_last_n_residuals("experiment.ini",date_str,100)
 
-df = pd.read_pickle("results/n_res_"+date_str)
+
 df = remove_massive_outliers(df,cut)
 df.to_pickle("results/cleaned/"+name+date_str)
 
