@@ -6,6 +6,7 @@ from venture.lite.sp import SP, SPType
 from venture.lite.function import VentureFunction
 from venture.lite.types import  AnyType
 from venture.lite.psp import RandomPSP,LikelihoodFreePSP,DeterministicPSP,PSP
+import scipy.misc as sc
 def lift_binary(op):
   def lifted(f1, f2):
     return lambda *xs: op(f1(*xs), f2(*xs))
@@ -24,7 +25,7 @@ def addKernel(f1, f2):
       der[i]=f1.stuff['derivatives'][i]
   for j in range(len(f2.stuff['derivatives'])):
       der[i+1+j]=f2.stuff['derivatives'][j]
-  return VentureFunction(lifted_plus(f1, f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"+"+f2.stuff['name'],parameter=f1.stuff['parameter']+f2.stuff['parameter'])
+  return VentureFunction(lifted_plus(f1, f2), sp_type=sp_type,derivatives=der,name="("+f1.stuff['name']+"+"+f2.stuff['name']+")",parameter=f1.stuff['parameter']+f2.stuff['parameter'])
 
 
 
@@ -37,14 +38,14 @@ def prodKernel(f1, f2):
       der[i]= lambda *xs: np.dot(f1.stuff['derivatives'][i](*xs),f2.f(*xs))
   for j in range(len(f2.stuff['derivatives'])):
       der[i+1+j]= lambda *xs: np.dot(f2.stuff['derivatives'][j](*xs),f1.f(*xs))
-  return VentureFunction(lifted_mult(f1,f2), sp_type=sp_type,derivatives=der,name=f1.stuff['name']+"x"+f2.stuff['name'],parameter=f1.stuff['parameter']+f2.stuff['parameter'])
+  return VentureFunction(lifted_mult(f1,f2), sp_type=sp_type,derivatives=der,name="("+f1.stuff['name']+"x"+f2.stuff['name']+")",parameter=f1.stuff['parameter']+f2.stuff['parameter'])
 
 
 
 
 
 class Grammar(RandomPSP):
-  def canAbsorb(self, _trace, _appNode, _parentNode): return False
+  #def canAbsorb(self, _trace, _appNode, _parentNode): return False
   #def childrenCanAAA(self): return True
   def isRandom(self): return True
   def simulate(self,args):
@@ -72,6 +73,21 @@ class Grammar(RandomPSP):
         if not list_of_cov_lists[cov_index]:
                 list_of_cov_lists.pop(cov_index)
     return K
+
+
+  def logDensity(self,val,args):
+    covFunctions= args.operandValues[0]
+    number_components = args.operandValues[1].getNumber()+1
+    max_number =0
+    for item in covFunctions:
+          max_number+= len(item)
+    possible_subsets=sc.factorial(max_number)/sc.factorial(max_number-number_components) #subsets n! / (n - r)!
+    return number_components * np.log(0.5) + np.log(1/possible_subsets)
+
+
+
+
+
   
   
   
