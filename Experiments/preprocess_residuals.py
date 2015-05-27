@@ -8,7 +8,7 @@ import os.path
 
 
 name = 'cut_off_50'
-
+ini_file="experiment.ini"
 cut =50
 
 
@@ -25,6 +25,8 @@ for i in range(1,len(sys.argv)):
                 cut= float(sys.argv[i+1])
             if str(sys.argv[i])=="-d":
                 date_str= str(sys.argv[i+1])
+            if str(sys.argv[i])=="-f":
+                ini_file= str(sys.argv[i+1])
 
 fname = "results/n_res_"+date_str
 if os.path.isfile(fname):
@@ -32,7 +34,7 @@ if os.path.isfile(fname):
     df = pd.read_pickle(fname)
 else:
     print("loading from scratch")
-    df,b=get_last_n_residuals("experiment.ini",date_str,100)
+    df,b=get_last_n_residuals(ini_file,date_str,100)
     df.to_pickle("fname")
 
 
