@@ -3,7 +3,7 @@ from all_registered_problems import registered_problems
 import os.path
 import numpy as np
 import scipy.io as scio
-from sklearn import cross_validation
+
 def saveXY_data(x_training,y_training,x_test,y_test,path):
     np.save(path+'_X_train',x_training)
     np.save(path+'_Y_train',y_training)
