@@ -2,6 +2,7 @@ __author__ = 'ulli'
 
 from venture_gp_model import Venture_GP_model
 from venture.lite.function import VentureFunction
+from venture.lite.types import VentureSimplex
 import venture.lite.types as t
 from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise
 from venture.lite.builtin import typed_nr
@@ -22,7 +23,8 @@ class Grammar_Venture_GP_model(Venture_GP_model):
         ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType()], t.AnyType("VentureFunction")))
 
         ripl.assume('a','(mem (lambda (i) (tag (quote parameter) i (log  (uniform_continuous 0.1 8)))))')
-        ripl.assume('sn','(tag (quote parameter) 10 (log (uniform_continuous 1 2)))')
+        ripl.assume('sn','(tag (quote parameter) 10 (log (uniform_continuous 1 3)))')
+        #ripl.assume('sn','0.7')
         ripl.assume('sf','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8 )))))')
         ripl.assume('sf2','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8 )))))')
         ripl.assume('p','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8)))))')
@@ -64,10 +66,9 @@ class Grammar_Venture_GP_model(Venture_GP_model):
 
         simplex+=" )"
 
-        ripl.assume("number_components","(tag (quote parameter) 11 (categorical "+simplex+"))")
         ripl.bind_foreign_sp("gp_grammar", typed_nr(Grammar(), [t.HomogeneousArrayType(t.HomogeneousArrayType(t.AnyType())),t.AnyType()], covfunctionType, min_req_args=0))
 
-        ripl.assume("cov_structure","(tag (quote grammar) 0 (gp_grammar (array max_lin max_wn max_per max_se) number_components ))")
+        ripl.assume("cov_structure","(tag (quote grammar) 0 (gp_grammar (array max_lin max_wn max_per max_se) "+simplex+" ))")
         #ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
         #ripl.assume("interp","(covfunc_interpreter grammar)")
 

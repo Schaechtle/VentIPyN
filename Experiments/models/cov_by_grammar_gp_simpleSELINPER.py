@@ -64,10 +64,9 @@ class Grammar_Venture_GP_model_simpleSELINPER(Venture_GP_model):
 
         simplex+=" )"
 
-        ripl.assume("number_components","(tag (quote parameter) 0  (categorical "+simplex+"))")
         ripl.bind_foreign_sp("gp_grammar", typed_nr(Grammar(), [t.HomogeneousArrayType(t.HomogeneousArrayType(t.AnyType())),t.AnyType()], covfunctionType, min_req_args=0))
 
-        ripl.assume("cov_structure","(tag (quote grammar) 0 (gp_grammar (array max_lin max_se  max_per ) number_components ))")
+        ripl.assume("cov_structure","(tag (quote grammar) 0 (gp_grammar (array max_lin max_se  max_per ) "+simplex+" ))")
         #ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
         #ripl.assume("interp","(covfunc_interpreter grammar)")
 
