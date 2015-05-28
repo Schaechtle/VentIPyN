@@ -31,6 +31,11 @@ from models.cov_by_grammar_gp import Grammar_Venture_GP_model
 venture_cov_learning = Grammar_Venture_GP_model()
 registered_models['venture-cov-learning']=venture_cov_learning
 
+from models.cov_by_grammar_gp_unif_number import Grammar_Venture_GP_model_unif
+venture_cov_learning_unif = Grammar_Venture_GP_model_unif()
+registered_models['venture-cov-learning-unif']=venture_cov_learning_unif
+
+
 from models.cov_by_grammar_gp_simple import Grammar_Venture_GP_model_simple
 venture_cov_simple = Grammar_Venture_GP_model_simple()
 registered_models['venture_cov_simple']=venture_cov_simple
@@ -42,3 +47,4 @@ registered_models['venture_cov_simple_selinper']=venture_cov_simpleSELINPER
 from models.cov_by_grammar_gp_simpleLINPERWN import Grammar_Venture_GP_model_simpleLINPERWN
 venture_cov_simpleLINPERWN = Grammar_Venture_GP_model_simpleLINPERWN()
 registered_models['venture gp cov learning 4']=venture_cov_simpleLINPERWN
+
