@@ -51,22 +51,21 @@ class Grammar(RandomPSP):
   def isRandom(self): return True
   def simulate(self,args):
     covFunctions= args.operandValues[0]
-    number_covfunctions= args.operandValues[1].getNumber()+1
-    assert (isinstance(number_covfunctions,int) or isinstance(number_covfunctions,float))
+    p = args.operandValues[1].getSimplex()
+    number_covfunctions=np.random.multinomial(1, p).argmax()+1
     max_number = 0
     list_of_cov_lists=[]
-
     for item in covFunctions:
           list_of_cov_lists.append(item)
           max_number+= len(item)
     first = True
+    assert max_number == len(p)
     for i in range(int(number_covfunctions)):
         cov_index = np.random.randint(0,len(list_of_cov_lists))
         if first:
             K=list_of_cov_lists[cov_index].pop()
             first=False
         else:
-
             if random.random()<0.5:
                 K =addKernel(K, list_of_cov_lists[cov_index].pop())
             else:
@@ -77,27 +76,27 @@ class Grammar(RandomPSP):
 
 
   def logDensity(self,val,args):
-    covFunctions= args.operandValues[0]
-    number_operators = args.operandValues[1].getNumber() # number components minus one
-    max_number =0
-    for item in covFunctions:
-         max_number+= len(item)
-
+    p = args.operandValues[1].getSimplex()
     if val:
         K_str = val.stuff['name']
         global_flips,local_flips = self.parse_global_vs_linear(K_str)
-        if global_flips+local_flips!=number_operators:
-            return -float("inf")
+        for i in range(len(p)):
+            if (global_flips+local_flips)==i:
+                p_n = p[i]
+                if i==0:
+                    p_choose_kernel = 1./len(p)
+                    return np.log(p_choose_kernel) + np.log(p_n)
+                break
+        p_subsets=sc.factorial(i+1)/sc.factorial(len(p)) #subsets n! / (n - r)!
+        log_dens =np.log(p_subsets) + np.log(p_n)
+        if log_dens <=0:
+            return log_dens
         else:
-            if number_operators==0:
-                return np.log(1./max_number)
-            else:
-                number_components=number_operators+1
-                p_subsets=sc.factorial(number_components)/sc.factorial(max_number) #subsets n! / (n - r)!
-                return scipy.stats.binom.logpmf(global_flips,number_operators,0.5) + np.log(p_subsets)
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            return float("-inf")
     else:
         raise ValueError('Log density evaluated without value')
-    #return number_components * np.log(0.5) + np.log(1./possible_subsets)
+
   def parse_global_vs_linear(self,K_str):
       global_flips =  K_str.count('+')
       local_flips = K_str.count('x')
