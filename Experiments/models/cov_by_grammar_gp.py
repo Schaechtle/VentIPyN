@@ -77,6 +77,8 @@ class Grammar_Venture_GP_model(Venture_GP_model):
         ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
         ripl.assume("interp","(covfunc_interpreter cov_structure)")
 
+    def collect_parameters(self,ripl):
+        return [ripl.sample("(l2 7)"),ripl.sample("(l2 9)"),ripl.sample("(sf2 6)"),ripl.sample("(sf2 8)")]
 
 
 

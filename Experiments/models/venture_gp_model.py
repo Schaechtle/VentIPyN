@@ -18,12 +18,12 @@ class Venture_GP_model():
         self.make_gp(self.ripl)
         #self.get_prior()
         self.makeObservations(x_training,y_training)
-        global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,interpretations = self.run_inference(x_test,f_test,f_error,outer_mcmc_steps)
+        global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,interpretations,parameters = self.run_inference(x_test,f_test,f_error,outer_mcmc_steps)
         self.ripl.clear()
         if self.record_interpretation:
-            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'Covariance Structure':interpretations})
+            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'Parameters':parameters,'Covariance Structure':interpretations})
         else:
-            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle})
+            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'Parameters':parameters})
 
     def make_gp(self, ripl):
         raise ValueError('Covariance Structure not defined')
@@ -38,6 +38,7 @@ class Venture_GP_model():
         mcmc_cycle = []
         current_index = 0
         interpreation =[]
+        parameters=[] # list of lists
         assert len(self.inf_cycles)==len(self.inf_strings)
         for i in range(int(outer_mcmc_steps)):
             for j in range(len(self.inf_strings)):
@@ -50,7 +51,7 @@ class Venture_GP_model():
                     sampleString=self.genSamples(x_test)
                     y_posterior = self.ripl.sample(sampleString)
                     residuals.append(f_test - y_posterior)
-
+                    parameters.append(self.collect_parameters(self.ripl))
                     assert current_global_posterior[0] <= 0
 
 
@@ -62,7 +63,7 @@ class Venture_GP_model():
                     mcmc_cycle.append(j)
                     if self.record_interpretation:
                         interpreation.append(self.ripl.sample("interp"))
-        return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,interpreation
+        return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,interpreation,parameters
 
     def get_inf_string(self,inf_string):
         self.inf_strings=[]
@@ -86,7 +87,7 @@ class Venture_GP_model():
     def makeObservations(self,x,y):
         xString = self.genSamples(x)
         self.ripl.observe(xString, array(y.tolist()))
-    def collect_parameters(self):
+    def collect_parameters(self,_):
         return []
 
 
