@@ -46,13 +46,13 @@ def experiment(key, infer, total_steps_outer, test_problem, number_test_points, 
             x_training = np.delete(X,index)
             y_training = np.delete(y,index)
             f_test =y_test
-            df = model.run(x_training,y_training,x_test,y_test,f_test,[0],[0],[0],infer,total_steps_outer)
+            df = model.run(x_training,y_training,x_test,y_test,f_test,[0],infer,total_steps_outer)
             saveXY_data(x_training,y_training,x_test,y_test,directory+'/XYdata/'+experiment_name)
             df.to_pickle(output_file_name)
         else:
             data_func = registered_problems[test_problem]
             x_training,y_training,x_test,y_test,f_test,f_error,x_test_inner,f_test_inner=generate_data(data_func,float(noise),int(n),int(number_test_points))
-            df = model.run(x_training,y_training,x_test,y_test,f_test,f_error,x_test_inner,f_test_inner,infer,total_steps_outer)
+            df = model.run(x_training,y_training,x_test,y_test,f_test,f_error,infer,total_steps_outer)
             saveXY_data(x_training,y_training,x_test,y_test,directory+'/XYdata/'+experiment_name)
             df.to_pickle(output_file_name)
 

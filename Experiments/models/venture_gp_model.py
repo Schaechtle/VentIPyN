@@ -12,24 +12,24 @@ class Venture_GP_model():
         self.inf_cycles=[]
         self.record_interpretation = False
 
-    def run(self,x_training,y_training,x_test,y_test,f_test,f_error,x_test_inner,f_test_inner,inf_string,outer_mcmc_steps):
+    def run(self,x_training,y_training,x_test,y_test,f_test,f_error,inf_string,outer_mcmc_steps):
         self.ripl= init_gp_ripl()
         self.get_inf_string(inf_string)
         self.make_gp(self.ripl)
         #self.get_prior()
         self.makeObservations(x_training,y_training)
-        global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,residuals_inter,interpretations = self.run_inference(x_test,f_test,f_error,x_test_inner,f_test_inner,outer_mcmc_steps)
+        global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,interpretations = self.run_inference(x_test,f_test,f_error,outer_mcmc_steps)
         self.ripl.clear()
         if self.record_interpretation:
-            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'inter-residuals':residuals_inter,'Covariance Structure':interpretations})
+            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'Covariance Structure':interpretations})
         else:
-            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle,'inter-residuals':residuals_inter})
+            return pd.DataFrame({'residuals':residuals,'logscore':global_logs_core,'base-line':base_line,'index':mcmc_index,'cycle':mcmc_cycle})
 
     def make_gp(self, ripl):
         raise ValueError('Covariance Structure not defined')
         pass
 
-    def run_inference(self,x_test,f_test,f_error,x_test_inner,f_test_inner,outer_mcmc_steps):
+    def run_inference(self,x_test,f_test,f_error,outer_mcmc_steps):
         global_logs_core=[]
         residuals=[]
         residuals_inter=[]
@@ -52,17 +52,17 @@ class Venture_GP_model():
                     residuals.append(f_test - y_posterior)
 
                     assert current_global_posterior[0] <= 0
-                    sampleString=self.genSamples(x_test_inner)
 
-                    y_inner = self.ripl.sample(sampleString)
-                    residuals_inter.append(f_test_inner - y_inner)
+
+
+
                     base_line.append(f_error)
                     mcmc_index.append(current_index)
                     current_index+=1
                     mcmc_cycle.append(j)
                     if self.record_interpretation:
                         interpreation.append(self.ripl.sample("interp"))
-        return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,residuals_inter,interpreation
+        return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,interpreation
 
     def get_inf_string(self,inf_string):
         self.inf_strings=[]
@@ -86,6 +86,8 @@ class Venture_GP_model():
     def makeObservations(self,x,y):
         xString = self.genSamples(x)
         self.ripl.observe(xString, array(y.tolist()))
+    def collect_parameters(self):
+        return []
 
 
 
