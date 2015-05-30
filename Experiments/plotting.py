@@ -2,7 +2,7 @@ import pandas as pd
 from util import Config,ConfigSectionMap
 import numpy as np
 import os.path
-import scipy.stats as scs
+from simplify_kernel import simplify
 
 def average_frames(repeated_experiments):
     repeated = len(repeated_experiments)
@@ -214,4 +214,60 @@ def load_median_experiments(ini_file_path,date_exp):
                         df_list.append(df)
     df_experiment=pd.concat(df_list)
     df_experiment.to_pickle("results/median_residual_"+date_exp)
+    return  df_experiment
+
+def get_posterior_structure(date_experiment,ini_file_path):
+    file_path="results/structure_posterior"+date_experiment
+    if os.path.isfile(file_path):
+        return pd.read_pickle(file_path)
+    else:
+        return load_posterior_structure(ini_file_path,date_experiment)
+def load_posterior_structure(ini_file_path,date_exp):
+    Config.read(ini_file_path)
+    Config.sections()
+
+    models = dict(Config.items('inference'))
+    number_data_points = ConfigSectionMap("test-data")['data-points'].split(',')
+    list_noise_variance = ConfigSectionMap("test-data")['observation_noise'].split(',')
+    repeat =  ConfigSectionMap("others")['repeat']
+    number_test_points =  ConfigSectionMap("others")['number-test-points']
+    test_problems =  ConfigSectionMap("test-data")['test-problems'].split(',')
+    total_steps_outer = ConfigSectionMap("MCMC")["total-steps-outer"]
+
+
+    directory="results/"+date_exp
+    residual_list = []
+
+    df_list= []
+    index_it=0
+    for key in models:
+        all_inf_string = ConfigSectionMap("inference")[key]
+        list_of_infer= all_inf_string.split(";")
+        for infer in list_of_infer:
+            for test_problem in test_problems:
+                for noise in list_noise_variance:
+                    for n in number_data_points:
+                        df = pd.DataFrame()
+
+                        for index in range(int(repeat)):
+                            print(index_it)
+                            index_it+=1
+                            experiment_name = key+'_'+infer+'_'+total_steps_outer+'_'\
+                                               + test_problem +'_'+noise+'_'+n+'_'+number_test_points+'_'+str(index)
+                            output_file_name = directory+"/exp_"+ experiment_name
+                            try:
+                                df = pd.read_pickle(output_file_name)
+                                df['Covariance Structure']=df['Covariance Structure'].apply(simplify)
+                                df['model'] = pd.Series([key for _ in range(len(df.index))], index=df.index)
+                                df['test_problem'] = pd.Series([test_problem for _ in range(len(df.index))], index=df.index)
+                                df['noise'] = pd.Series([noise for _ in range(len(df.index))], index=df.index)
+                                df['n'] = pd.Series([n for _ in range(len(df.index))], index=df.index)
+                                df['repeat'] = pd.Series([index for _ in range(len(df.index))], index=df.index)
+                                df_list.append(df)
+
+                            except ValueError:
+                                ("could not open "+output_file_name)
+
+    df_experiment=pd.concat(df_list)
+    df_experiment.to_pickle("results/structure_posterior"+date_exp)
     return  df_experiment
