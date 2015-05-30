@@ -236,7 +236,6 @@ def load_posterior_structure(ini_file_path,date_exp):
 
 
     directory="results/"+date_exp
-    residual_list = []
 
     df_list= []
     index_it=0
