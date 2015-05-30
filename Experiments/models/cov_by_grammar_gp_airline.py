@@ -23,7 +23,7 @@ class Grammar_Venture_GP_model_airline(Venture_GP_model):
         ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType()], t.AnyType("VentureFunction")))
 
         ripl.assume('a','(mem (lambda (i) (tag (quote parameter) i (log  (uniform_continuous 1 8)))))')
-        ripl.assume('sn','(tag (quote parameter) 10 (log (uniform_continuous 1 3)))')
+        ripl.assume('sn','(tag (quote parameter) 10 (log (uniform_continuous 1 100)))')
         #ripl.assume('sn','0.7')
         ripl.assume('sf','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8 )))))')
         ripl.assume('sf2','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8 )))))')

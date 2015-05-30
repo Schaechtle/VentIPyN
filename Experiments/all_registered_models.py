@@ -55,3 +55,7 @@ registered_models['venture-cov-learning-airline']=venture_cov_learning_airline
 from models.cov_by_grammar_gp_unif_number_airline import Grammar_Venture_GP_model_unif_airline
 venture_cov_learning_unif_airline = Grammar_Venture_GP_model_unif_airline()
 registered_models['venture-cov-learning-unif-airline']=venture_cov_learning_unif_airline
+
+from models.cov_by_grammar_gp_unif_number_gamma import Grammar_Venture_GP_model_unif_gamma
+venture_cov_learning_unif_gamma = Grammar_Venture_GP_model_unif_gamma()
+registered_models['venture-cov-learning-unif-gamma']=venture_cov_learning_unif_gamma

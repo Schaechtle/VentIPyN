@@ -11,7 +11,6 @@ class Venture_GP_model():
         self.inf_strings=[]
         self.inf_cycles=[]
         self.record_interpretation = False
-
     def run(self,x_training,y_training,x_test,y_test,f_test,f_error,inf_string,outer_mcmc_steps):
         self.ripl= init_gp_ripl()
         self.get_inf_string(inf_string)
@@ -40,6 +39,7 @@ class Venture_GP_model():
         interpreation =[]
         parameters=[] # list of lists
         assert len(self.inf_cycles)==len(self.inf_strings)
+        step_counter = 0
         for i in range(int(outer_mcmc_steps)):
             for j in range(len(self.inf_strings)):
                 for k in range(int(self.inf_cycles[j])):
@@ -52,8 +52,9 @@ class Venture_GP_model():
                     y_posterior = self.ripl.sample(sampleString)
                     residuals.append(f_test - y_posterior)
                     parameters.append(self.collect_parameters(self.ripl))
-                    assert current_global_posterior[0] <= 0
+                    #assert current_global_posterior[0] <= 0
 
+                    step_counter+=1
 
 
 

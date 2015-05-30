@@ -12,7 +12,7 @@ sys.path.append('../SPs/')
 from grammar5 import Grammar
 from kernel_interpreter import GrammarInterpreter
 
-class Grammar_Venture_GP_model_unif_airline(Venture_GP_model):
+class Grammar_Venture_GP_model_unif_gamma(Venture_GP_model):
     def __init__(self):
         Venture_GP_model.__init__(self)
         self.record_interpretation = True
@@ -22,14 +22,17 @@ class Grammar_Venture_GP_model_unif_airline(Venture_GP_model):
         ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType()], t.AnyType("VentureFunction")))
 
-        ripl.assume('a','(mem (lambda (i) (tag (quote parameter) i (log  (uniform_continuous 1 8)))))')
-        ripl.assume('sn','(tag (quote parameter) 10 (log (uniform_continuous 1 100)))')
+        ripl.assume('alpha','(lambda (i) (tag (quote hypers) 0 (gamma 2 2)))')
+        ripl.assume('theta','(lambda (i) (tag (quote hypers) 1 (gamma 1 2)))')
+
+        ripl.assume('a','(lambda (i) (tag (quote parameter) i (log  (gamma (alpha i) (theta i) ))))')
+        ripl.assume('sn','(tag (quote parameter) 10 (log  (gamma 7.5 1 )))')
         #ripl.assume('sn','0.7')
-        ripl.assume('sf','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8 )))))')
-        ripl.assume('sf2','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8 )))))')
-        ripl.assume('p','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8)))))')
-        ripl.assume('l','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8)))))')
-        ripl.assume('l2','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 0.1 8)))))')
+        ripl.assume('sf',' (lambda (i) (tag (quote parameter) i (log (gamma (alpha i) (theta i)))))')
+        ripl.assume('sf2','(lambda (i) (tag (quote parameter) i (log (gamma (alpha i) (theta i)))))')
+        ripl.assume('p',' (lambda (i) (tag (quote parameter) i (log (gamma (alpha i) (theta i)))))')
+        ripl.assume('l',' (lambda (i) (tag (quote parameter) i (log (gamma (alpha i) (theta i)))))')
+        ripl.assume('l2','(lambda (i) (tag (quote parameter) i (log (gamma (alpha i) (theta i)))))')
         
         ripl.assume('lin1', "(apply_function make_linear ( a 0)  )")
         ripl.assume('lin2', "(apply_function make_linear ( a 1)  )")
@@ -39,7 +42,7 @@ class Grammar_Venture_GP_model_unif_airline(Venture_GP_model):
         ripl.assume('se2', "(apply_function make_se ( sf2 8) ( l2 9))")
 
 
-        ripl.assume('wn', "(apply_function make_noise sn)")
+        ripl.assume('wn', "(apply_function make_noise sn  )")
 
          #### GP Structure Prior
 
