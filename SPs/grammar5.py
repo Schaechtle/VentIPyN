@@ -80,15 +80,17 @@ class Grammar(RandomPSP):
     if val:
         K_str = val.stuff['name']
         global_flips,local_flips = self.parse_global_vs_linear(K_str)
+        total_operator_flips=global_flips+local_flips
         for i in range(len(p)):
-            if (global_flips+local_flips)==i:
+
+            if (total_operator_flips)==i:
                 p_n = p[i]
                 if i==0:
                     p_choose_kernel = 1./len(p)
                     return np.log(p_choose_kernel) + np.log(p_n)
                 break
         p_subsets=sc.factorial(i+1)/sc.factorial(len(p)) #subsets n! / (n - r)!
-        log_dens =np.log(p_subsets) + np.log(p_n)
+        log_dens =scipy.stats.binom.logpmf(global_flips,total_operator_flips,0.5) + np.log(p_subsets) + np.log(p_n)
         if log_dens <=0:
             return log_dens
         else:
