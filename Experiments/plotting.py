@@ -13,7 +13,7 @@ def average_frames(repeated_experiments):
     for i in range(1,repeated):
         df['logscore']+=repeated_experiments[i]['logscore']
         df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
-        df['inter-residuals']+=np.abs(repeated_experiments[i]['inter-residuals'])
+        #df['inter-residuals']+=np.abs(repeated_experiments[i]['inter-residuals'])
         df['base-line']+=np.abs(repeated_experiments[i]['base-line'])
     averaged_log_scores = []
     mean_residuals=[]
@@ -148,16 +148,16 @@ def get_last_n_residuals(ini_file_path,date_exp,n_last_residuals):
                                 ("could not open "+output_file_name)
     return pd.DataFrame({'residuals':residuals,'model':model,'test_problem':problem,'noise':noise_level,'n':n_training_data}),np.mean(base_line)
 
-def get_dataFrame(date_experiment,ini_file_path):
+def get_dataFrame(date_experiment,ini_file_path,overwrite=False):
     file_path="results/experiment_"+date_experiment
-    if os.path.isfile(file_path):
+    if os.path.isfile(file_path) and not overwrite:
         return pd.read_pickle(file_path)
     else:
         return load_experiments(ini_file_path,date_experiment)
 
-def get_dataFrame_median(date_experiment,ini_file_path):
+def get_dataFrame_median(date_experiment,ini_file_path,overwrite=False):
     file_path="results/median_residual_"+date_experiment
-    if os.path.isfile(file_path):
+    if os.path.isfile(file_path) and not overwrite:
         print("loading existing df")
         return pd.read_pickle(file_path)
     else:
@@ -216,9 +216,9 @@ def load_median_experiments(ini_file_path,date_exp):
     df_experiment.to_pickle("results/median_residual_"+date_exp)
     return  df_experiment
 
-def get_posterior_structure(date_experiment,ini_file_path):
+def get_posterior_structure(date_experiment, ini_file_path, overwrite=False):
     file_path="results/structure_posterior"+date_experiment
-    if os.path.isfile(file_path):
+    if os.path.isfile(file_path) and not overwrite:
         return pd.read_pickle(file_path)
     else:
         return load_posterior_structure(ini_file_path,date_experiment)
@@ -260,8 +260,8 @@ def load_posterior_structure(ini_file_path,date_exp):
                                 df['Covariance Structure']=df['Covariance Structure'].apply(simplify)
                                 df['model'] = pd.Series([key for _ in range(len(df.index))], index=df.index)
                                 df['test_problem'] = pd.Series([test_problem for _ in range(len(df.index))], index=df.index)
-                                df['noise'] = pd.Series([noise for _ in range(len(df.index))], index=df.index)
-                                df['n'] = pd.Series([n for _ in range(len(df.index))], index=df.index)
+                                #df['noise'] = pd.Series([noise for _ in range(len(df.index))], index=df.index)
+                                #df['n'] = pd.Series([n for _ in range(len(df.index))], index=df.index)
                                 df['repeat'] = pd.Series([index for _ in range(len(df.index))], index=df.index)
                                 df_list.append(df)
 
