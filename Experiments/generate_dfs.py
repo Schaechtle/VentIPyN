@@ -30,11 +30,11 @@ if overwrite_existing and last_n_residuals:
 
 
 if structure_posterior:
-    df = get_posterior_structure(date_experiment, experiment_ini_file,overwrite_existing)
+    _ = get_posterior_structure(date_experiment, experiment_ini_file,overwrite_existing)
 if mean_residuals:
-    df = get_dataFrame(date_experiment,experiment_ini_file,overwrite_existing)
+    _ = get_dataFrame(date_experiment,experiment_ini_file,overwrite_existing)
 if median_residuals:
-    df = get_dataFrame_median(date_experiment,experiment_ini_file,overwrite_existing)
+    _ = get_dataFrame_median(date_experiment,experiment_ini_file,overwrite_existing)
 if last_n_residuals:
    os.system("preprocess_residuals.py -d "+date_experiment+" -f "+experiment_ini_file)
 
