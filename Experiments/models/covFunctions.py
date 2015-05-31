@@ -210,6 +210,56 @@ def makeNoise(s):
   return VentureFunction(noise(s), sp_type=covfunctionType,derivatives={0:noise_der(s)},name="WN",parameter=[s])
 
 
+def rationalQuadratic(log_ell,log_sf2,log_alpha):
+    def f(x1, x2=None):
+        ell   = np.exp(log_ell)       # characteristic length scale
+        sf2   = np.exp(2.*log_sf2)    # signal variance
+        alpha = np.exp(log_alpha)
+        if x2 is None:           # self covariances for the test cases
+            nn,D = x1.shape
+            D2 = np.zeros((nn,1))
+        else:             # compute covariance between data sets x and z
+            D2 = spdist.cdist(x1.ell, x2/ell, 'sqeuclidean')
+        A = sf2 * ( ( 1.0 + 0.5*D2/alpha )**(-alpha) )
+        return A
+    return f
+
+def rationalQuadratic_der_l(log_ell,log_sf2,log_alpha):
+    def f(x1, x2=None):
+        ell   = np.exp(log_ell)       # characteristic length scale
+        sf2   = np.exp(2.*log_sf2)    # signal variance
+        alpha = np.exp(log_alpha)
+        D2 = spdist.cdist(x1/ell, x2/ell, 'sqeuclidean')
+        A = sf2 * ( 1.0 + 0.5*D2/alpha )**(-alpha-1) * D2
+        return A
+    return f
+
+def rationalQuadratic_der_sf2(log_ell,log_sf2,log_alpha):
+    def f(x1, x2=None):
+        ell   = np.exp(log_ell)       # characteristic length scale
+        sf2   = np.exp(2.*log_sf2)    # signal variance
+        alpha = np.exp(log_alpha)
+        D2 = spdist.cdist(x1/ell, x2/ell, 'sqeuclidean')
+        A = 2.* sf2 * ( ( 1.0 + 0.5*D2/alpha )**(-alpha) )
+        return A
+    return f
+
+def rationalQuadratic_der_alpha(log_ell,log_sf2,log_alpha):
+    def f(x1, x2=None):
+        ell   = np.exp(log_ell)       # characteristic length scale
+        sf2   = np.exp(2.*log_sf2)    # signal variance
+        alpha = np.exp(log_alpha)
+        D2 = spdist.cdist(x1/ell, x2/ell, 'sqeuclidean')
+        K = ( 1.0 + 0.5*D2/alpha )
+        A = sf2 * K**(-alpha) * (0.5*D2/K - alpha*np.log(K) )
+        return A
+    return f
+
+def makeRQ(l,sf,alpha):
+  return VentureFunction(rationalQuadratic(l,sf,alpha), sp_type=covfunctionType,derivatives={0:rationalQuadratic_der_l(l,sf,alpha),1:rationalQuadratic_der_sf2(l,sf,alpha),2:rationalQuadratic_der_alpha(l,sf,alpha)},name="RQ",parameter=[l,sf,alpha])
+
+
+
 #### Binary Operators
 
 
