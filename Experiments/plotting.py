@@ -14,14 +14,14 @@ def average_frames(repeated_experiments):
         df['logscore']+=repeated_experiments[i]['logscore']
         df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
         #df['inter-residuals']+=np.abs(repeated_experiments[i]['inter-residuals'])
-        df['base-line']+=np.abs(repeated_experiments[i]['base-line'])
+        #df['base-line']+=np.abs(repeated_experiments[i]['base-line'])
     averaged_log_scores = []
     mean_residuals=[]
 
     mean_baseline=[]
     df['residuals']=df['residuals']/repeated
 
-    df['base-line']=df['base-line']/repeated
+    #df['base-line']=df['base-line']/repeated
     for j in range(len(df.index)):
         averaged_log_scores.append(np.mean(df['logscore'].iloc[j]))
         mean_residuals.append(np.mean(df['residuals'].iloc[j]))
@@ -31,7 +31,7 @@ def average_frames(repeated_experiments):
     df['logscore']=averaged_log_scores
     df['residuals']= mean_residuals
     #df['inter-residuals']= mean_inter_residuals
-    df['base-line']=mean_baseline
+    #df['base-line']=mean_baseline
     df['mean-residuals']= pd.Series(mean_residuals, index=df.index)
 
     #df['std-residuals']=pd.Series(std_residuals, index=df.index)
