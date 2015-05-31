@@ -256,7 +256,6 @@ def load_posterior_structure(ini_file_path,date_exp):
                             output_file_name = directory+"/exp_"+ experiment_name
                             try:
                                 df = pd.read_pickle(output_file_name)
-                                df['Covariance Structure']=df['Covariance Structure'].apply(simplify)
                                 df['model'] = pd.Series([key for _ in range(len(df.index))], index=df.index)
                                 df['test_problem'] = pd.Series([test_problem for _ in range(len(df.index))], index=df.index)
                                 #df['noise'] = pd.Series([noise for _ in range(len(df.index))], index=df.index)
@@ -268,5 +267,7 @@ def load_posterior_structure(ini_file_path,date_exp):
                                 ("could not open "+output_file_name)
 
     df_experiment=pd.concat(df_list)
+    df_experiment['Covariance Structure']=df_experiment['Covariance Structure'].apply(simplify)
     df_experiment.to_pickle("results/structure_posterior"+date_exp)
+
     return  df_experiment
