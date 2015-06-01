@@ -3,10 +3,10 @@ import numpy.linalg as la
 import numpy.random as npr
 from utils import jitchol, solve_chol
 from venture.lite.psp import DeterministicMakerAAAPSP, NullRequestPSP, RandomPSP, TypedPSP
-from venture.lite.sp import SP, VentureSPRecord, SPType
+from venture.lite.sp import SP, VentureSPRecord, SPType,SPAux
 import venture.lite.types as t
 import numpy.linalg as npla
-
+import copy
 # XXX Replace by scipy.stats.multivariate_normal.logpdf when we
 # upgrade to scipy 0.14.
 def multivariate_normal_logpdf(x, mu, sigma):
@@ -101,6 +101,7 @@ class GP(object):
     nlZ = np.dot((y-m).T,alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
     lD = -float(nlZ)
     if lD>0:
+        print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
         return -float('Inf')
     return lD
 
@@ -128,6 +129,7 @@ class GP(object):
     nlZ = np.dot((y-m).T,alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
     lD = -float(nlZ)
     if lD>0:
+        print(":oooooooooooooooooooooooooooooooooooooooooooooo")
         return -float('Inf')
     return lD
   def gradient(self):
@@ -149,51 +151,55 @@ class GP(object):
     return dnlZ
 
 
-
 class GPOutputPSP(RandomPSP):
-  def __init__(self, mean, covariance):  
+  def __init__(self, mean, covariance):
     self.mean = mean
     self.covariance = covariance
+
   def makeGP(self, samples):
     return GP(self.mean, self.covariance, samples)
-  
+
   def simulate(self,args):
-    samples = args.spaux
+    samples = args.spaux.samples
     xs = args.operandValues[0]
     return self.makeGP(samples).sample(*xs)
 
   def logDensity(self,os,args):
-    samples = args.spaux
+    samples = args.spaux.samples
     xs = args.operandValues[0]
     return self.makeGP(samples).logDensity(xs, os)
 
-  def logDensityOfCounts(self,samples):
+  def logDensityOfCounts(self,args):
+    samples = args.samples
     return self.makeGP(samples).logDensityOfCounts()
- 
-  def gradientOfLogDensityOfCounts(self,args):
-    samples = args.spaux
-    xs = args.operandValues[0]
-    return self.makeGP(samples).gradient(*xs)
-
-
-
-
-
-
 
   def incorporate(self,os,args):
-    samples = args.spaux
+    samples = args.spaux.samples
     xs = args.operandValues[0]
+
     for x, o in zip(xs, os):
       samples[x] = o
 
   def unincorporate(self,_os,args):
-    samples = args.spaux
+    samples = args.spaux.samples
     xs = args.operandValues[0]
     for x in xs:
       del samples[x]
 
+  def gradientOfLogDensityOfCounts(self,args):
+    samples = args.spaux.samples
+    xs = args.operandValues[0]
+    return self.makeGP(samples).gradient(*xs)
+
 gpType = SPType([t.ArrayUnboxedType(t.NumberType())], t.ArrayUnboxedType(t.NumberType()))
+
+
+class GPSPAux(SPAux):
+  def __init__(self, samples):
+    self.samples = samples
+  def copy(self):
+    return GPSPAux(copy.copy(self.samples))
+
 
 class GPSP(SP):
   def __init__(self, mean, covariance):
@@ -202,7 +208,7 @@ class GPSP(SP):
     output = TypedPSP(GPOutputPSP(mean, covariance), gpType)
     super(GPSP, self).__init__(NullRequestPSP(),output)
 
-  def constructSPAux(self): return {}
+  def constructSPAux(self): return GPSPAux({})
   def show(self,spaux): return GP(self.mean, self.covariance, spaux)
 
 class MakeGPOutputPSP(DeterministicMakerAAAPSP):
@@ -215,9 +221,9 @@ class MakeGPOutputPSP(DeterministicMakerAAAPSP):
     cov_matrix = args.operandValues[1]
     #ipdb.set_trace()
     partial_derivatives=cov_matrix.stuff['derivatives']
-    xs = np.asmatrix(aux.keys()).T
+    xs = np.asmatrix(aux.samples.keys()).T
     n = len(xs)
-    os = aux.values()
+    os = aux.samples.values()
     y = np.asmatrix(os).T
     K = cov_matrix(xs, xs)    # evaluate covariance matrix
     m = mean_array(xs)                             # ToDo: evaluate mean vector
@@ -231,10 +237,10 @@ class MakeGPOutputPSP(DeterministicMakerAAAPSP):
     gradX = -np.dot(isigma, xs)
     for i in range(len(partial_derivatives)):
         dlZ.append((Q*partial_derivatives[i](xs,xs)).sum()/2.)
-    #ipdb.set_trace()
-    #return (gradX.reshape(-1,).tolist()[0],dlZ)
-    #return (0,dlZ)
-    return [0.,0.]
+    import ipdb;ipdb.set_trace()
+    #    return (0,dlZ)
+    return dlZ
+
 
   def cov_matrix(self, x1s, x2s=None):
     if x2s is None:

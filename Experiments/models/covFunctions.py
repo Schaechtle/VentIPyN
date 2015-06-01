@@ -219,7 +219,7 @@ def rationalQuadratic(log_ell,log_sf2,log_alpha):
             nn,D = x1.shape
             D2 = np.zeros((nn,1))
         else:             # compute covariance between data sets x and z
-            D2 = spdist.cdist(x1.ell, x2/ell, 'sqeuclidean')
+            D2 = spdist.cdist(x1/ell, x2/ell, 'sqeuclidean')
         A = sf2 * ( ( 1.0 + 0.5*D2/alpha )**(-alpha) )
         return A
     return f
