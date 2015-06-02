@@ -52,7 +52,7 @@ def experiment(key, infer, total_steps_outer, test_problem, number_test_points, 
 
 
             f_test =y_test
-            df = model.run(x_training,y_training,x_test,y_test,f_test,[0],infer,total_steps_outer)
+            df = model.run(x_training,y_training,[x_test],[y_test],[f_test],[0],infer,total_steps_outer)
             saveXY_data(x_training,y_training,x_test,y_test,directory+'/XYdata/'+experiment_name)
             df.to_pickle(output_file_name)
         else:
