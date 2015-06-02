@@ -40,7 +40,9 @@ def experiment(key, infer, total_steps_outer, test_problem, number_test_points, 
             mat_contents =scio.loadmat("real_world_data/"+test_problem.replace("real_world_","")+".mat")
             X = mat_contents['X']
             y= mat_contents['y']
-
+            y = np.reshape(y,y.shape[0])
+            X = np.reshape(X,X.shape[0])
+            y = y - np.mean(y)
             index = int(index_str)
             x_test= X[index]
             y_test = y[index]
