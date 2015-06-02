@@ -271,3 +271,14 @@ def load_posterior_structure(ini_file_path,date_exp):
     df_experiment.to_pickle("results/structure_posterior"+date_exp)
 
     return  df_experiment
+
+def simple_load(date_str,str_2_start="",n=10):
+    path= "results/"+date_str+"/"
+    file_str = 'exp_'+ str_2_start
+    df_list =[]
+    for i in os.listdir(path):
+        if os.path.isfile(os.path.join(path,i)) and 'exp_' in i:
+            df = pd.read_pickle(path+i)
+            df_list.append(df)
+    df_experiment=  pd.concat(df_list)
+    df_experiment.to_pickle("results/simple"+date_str)
