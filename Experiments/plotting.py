@@ -281,4 +281,5 @@ def simple_load(date_str,str_2_start="",n=10):
             df = pd.read_pickle(path+i)
             df_list.append(df)
     df_experiment=  pd.concat(df_list)
+    df_experiment['Covariance Structure']=df_experiment['Covariance Structure'].apply(simplify)
     df_experiment.to_pickle("results/simple"+date_str)
