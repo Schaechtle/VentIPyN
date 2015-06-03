@@ -45,9 +45,9 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
 
         ###### for simplicity, I start with the max amount of kernel per type given
 
-        ripl.assume("max_lin","(array  lin1 )")
+        ripl.assume("max_lin","(array  lin1 lin2)")
         ripl.assume("max_per","(array  per1 )")
-        ripl.assume("max_se","(array  se1 se2)")
+        ripl.assume("max_se","(array  se1 )")
         ripl.assume("max_rq","(array  rq)")
 
 
