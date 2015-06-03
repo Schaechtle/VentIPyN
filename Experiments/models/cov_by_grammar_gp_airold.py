@@ -27,7 +27,7 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
         ripl.assume('l',' (tag (quote parameter) 4 (log (uniform_continuous  0 10)))')
 
         ripl.assume('l1',' (tag (quote parameter) 5 (log (uniform_continuous  0 10)))')
-        ripl.assume('l2',' (tag (quote parameter) 6 (log (uniform_continuous  0 10)))')
+        ripl.assume('sf1',' (tag (quote parameter) 6 (log (uniform_continuous  0 10)))')
         ripl.assume('sf_rq','(tag (quote hypers) 7 (log (uniform_continuous 0 10)))')
         ripl.assume('l_rq','(tag (quote hypers) 8 (log (uniform_continuous 0 10)))')
         ripl.assume('alpha','(tag (quote hypers)9 (log (uniform_continuous 0 10)))')
@@ -36,7 +36,7 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
        
 
         ripl.assume('lin1', "(apply_function make_linear a   )")
-        ripl.assume('lin2', "(apply_function make_linear a   )")
+        ripl.assume('lin2', "(apply_function make_linear a2   )")
         ripl.assume('per1', "(apply_function make_periodic l  p  sf ) ")
         ripl.assume('se1', "(apply_function make_se sf1 l1)")
         ripl.assume('rq', "(apply_function make_rq l_rq sf_rq alpha)")
