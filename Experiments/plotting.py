@@ -272,7 +272,7 @@ def load_posterior_structure(ini_file_path,date_exp):
 
     return  df_experiment
 
-def simple_load(date_str,str_2_start="",n=10):
+def simple_load(date_str,str_2_start="",apply_simplificatin=False,n=10):
     path= "results/"+date_str+"/"
     file_str = 'exp_'+ str_2_start
     df_list =[]
@@ -281,5 +281,6 @@ def simple_load(date_str,str_2_start="",n=10):
             df = pd.read_pickle(path+i)
             df_list.append(df)
     df_experiment=  pd.concat(df_list)
-    df_experiment['Covariance Structure']=df_experiment['Covariance Structure'].apply(simplify)
+    if apply_simplificatin:
+        df_experiment['Covariance Structure']=df_experiment['Covariance Structure'].apply(simplify)
     df_experiment.to_pickle("results/simple"+date_str)
