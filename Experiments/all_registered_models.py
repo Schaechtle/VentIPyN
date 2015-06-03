@@ -72,3 +72,7 @@ registered_models['venture-cov-learning-co2']=venture_cov_learning_mauna
 from models.cov_by_grammar_gp_unif_number_co2 import Grammar_Venture_GP_model_unif_mauna
 venture_cov_learning_unif_mauna = Grammar_Venture_GP_model_unif_mauna()
 registered_models['venture-cov-learning-unif-co2']=venture_cov_learning_unif_mauna
+
+from models.cov_by_grammar_gp_airold import Grammar_Venture_GP_model_airold
+venture_cov_learning_airold = Grammar_Venture_GP_model_airold()
+registered_models['venture-cov-learning-airold']=venture_cov_learning_airold
