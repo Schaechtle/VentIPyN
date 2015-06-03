@@ -23,7 +23,7 @@ class SE_T_PER_Venture_GP_Model(Venture_GP_model):
         ripl.assume('ell','(tag (quote hyper) 2 (log (uniform_continuous 0 10)))')
         ripl.assume('p','(tag (quote hyper) 3 (log (uniform_continuous 0 10)))')
         ripl.assume('s','(tag (quote hyper) 4 (log (uniform_continuous 0 10)))')
-
+        ripl.assume("func_times", makeLiftedMult(lambda x1, x2: np.multiply(x1,x2)))
 
         ripl.assume('se', "(apply_function make_se sf1 l1 )")
 
