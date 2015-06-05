@@ -30,11 +30,11 @@ def logassess(params):
     (sigma, l) = params
     return draw_sigma.logassess(sigma) + draw_l.logassess(l)
 
-# TODO define the true function f_true
+# Just an example of a function that could be used
 def f_true(x):
     f_true.count += 1
     # raise Exception("f_true needs to be unstubbed")
-    return (-(x-3.2)**2)
+    return (-(x-7.8)**2)
 f_true.count = 0
 
 def sample_conditional_hparams(gp):
@@ -71,7 +71,7 @@ def search_for_argmax(f):
 gpt = [gphelper.GPSnapshot(draw_gp_params())]
 
 def not_yet_happy():
-    TOTAL_STEPS = 30
+    TOTAL_STEPS = 15
     not_yet_happy.count += 1
     if not_yet_happy.count % 50 == 0:
         print "not_yet_happy.count = %d" % (not_yet_happy.count,)
@@ -87,7 +87,7 @@ while not_yet_happy():
     gpnew.set_params(new_params)
     gpt.append(gpnew)
 
-print "Inferred sigma = %.2f, l = %.2f" % gpt[-1].get_params
+print "Inferred sigma = %.2f, l = %.2f" % gpt[-1].get_params()
 i = np.argmax(gpt[-1].Yseen)
 x = gpt[-1].Xseen[i]
 y = gpt[-1].Yseen[i]

@@ -17,14 +17,14 @@ class GPSnapshot:
         return self.sigma**2 * np.exp(-(x1-x2)**2 / (2 * self.l**2))
 
     def prior_covmatrix(self, x1s, x2s):
-        return np.array([[self.prior_cov(x1, x2) for x2 in x2s] for x1 in x1s])
+        return np.matrix([[self.prior_cov(x1, x2) for x2 in x2s] for x1 in x1s])
 
     def params_local_ll(self, params):
         covmat = self.prior_covmatrix(self.Xseen, self.Xseen)
         invcovmat = la.pinv(covmat)
-        y = self.Yseen
+        y = np.array(self.Yseen).reshape(1, len(self.Yseen))
         return (-0.5 * np.log(la.det(covmat))
-                - 0.5 * np.dot(y, np.dot(invcovmat, y)))
+                - 0.5 * np.dot(y, np.dot(invcovmat, y.T)))
 
     def copy(self):
         c = GPSnapshot((self.sigma, self.l))
@@ -34,14 +34,14 @@ class GPSnapshot:
 
     def observe(self, x, y):
         if x in self.Xseen:
-            raise Exception("Observed two data points with the same x-value")
+            print "Warning: Observed two data points with the same x-value"
+            return
         self.Xseen.append(x)
         self.Yseen.append(y)
         # TODO should some other data structures exist that would need to be
         # updated?
 
     def sample_at(self, xs):
-        xs = np.array(xs)
         # Stole and adapted this from backend/lite/gp.py
         if len(self.Xseen) == 0:
             mu = np.zeros(xs.shape)
@@ -60,15 +60,16 @@ class GPSnapshot:
             sigma22 = self.prior_covmatrix(x2s, x2s)
             inv22 = la.pinv(sigma22)
 
-            mu = mu1 + sigma12 * (inv22 * (y2s - mu2))
+            mu = mu1 + sigma12 * (inv22 * (y2s - mu2).reshape(inv22.shape[0],1))
+            mu = np.array(mu).flatten()
             sigma = sigma11 - sigma12 * inv22 * sigma21
         
-        # XXX I'm currently debugging this
-        print "len(xs), mu.shape, sigma.shape = %s, %s, %s" % (len(xs), mu.shape, sigma.shape)
+        # Isn't this fun to debug :-)
+        # print "len(xs), len(Xseen), mu.shape, sigma.shape = %s, %s, %s, %s" % (len(xs), len(self.Xseen), mu.shape, sigma.shape)
         return np.random.multivariate_normal(mu.flatten(), sigma)
 
     def sample_at_point(self, x):
-        xs = [x]
+        xs = np.array([x])
         ys = self.sample_at(xs)
         assert len(ys) == 1
         return ys[0]
