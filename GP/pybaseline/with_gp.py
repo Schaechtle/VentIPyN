@@ -2,6 +2,7 @@ import utils as u
 import gphelper
 import numpy as np
 from numpy.random import random as rand
+import matplotlib.pyplot as plt
 
 # Hyperparameters for the distribution of sigma
 sigmahyper_k = 1.0
@@ -33,8 +34,7 @@ def logassess(params):
 # Just an example of a function that could be used
 def f_true(x):
     f_true.count += 1
-    # raise Exception("f_true needs to be unstubbed")
-    return (-(x-7.8)**2)
+    return (0.2 + np.exp(-0.1*abs(x-2))) * np.cos(0.4*x)
 f_true.count = 0
 
 def sample_conditional_hparams(gp):
@@ -71,7 +71,7 @@ def search_for_argmax(f):
 gpt = [gphelper.GPSnapshot(draw_gp_params())]
 
 def not_yet_happy():
-    TOTAL_STEPS = 15
+    TOTAL_STEPS = 30
     not_yet_happy.count += 1
     if not_yet_happy.count % 50 == 0:
         print "not_yet_happy.count = %d" % (not_yet_happy.count,)
@@ -93,4 +93,28 @@ x = gpt[-1].Xseen[i]
 y = gpt[-1].Yseen[i]
 print "Best (x,y) pair: (%.2f, %.2f)" % (x, y)
 print "f_true.count = %d" % (f_true.count,)
+print "Xseen = %s" % (gpt[-1].Xseen,)
 
+# Visualize the point samples of some of the GP snapshots
+xs = np.linspace(-20, 20, 40)
+def scalarify(mean_and_cov):
+    mean, cov = mean_and_cov
+    assert mean.size == 1
+    assert cov.size == 1
+    return (mean[0], cov[0,0])
+snapshots = (gpt[-25], gpt[-15], gpt[-1])
+linestyles = ('g-', 'y-', 'r-')
+labels = ('25th-most recent', '15th-most recent', 'most recent')
+plt.plot(xs, [f_true(x) for x in xs], 'b-', label='true')
+for (s, style, label) in zip(snapshots, linestyles, labels):
+    outputs = [scalarify(s.mean_and_cov_at(np.array([x]))) for x in xs]
+    means = np.array([mean for (mean, var) in outputs])
+    variances = np.array([var for (mean, var) in outputs])
+    stdevs = np.sqrt(variances)
+
+    plt.plot(xs, means, style, label=label)
+    plt.plot(xs, means + stdevs, style + '-')
+    plt.plot(xs, means - stdevs, style + '-')
+
+plt.legend()
+plt.show()

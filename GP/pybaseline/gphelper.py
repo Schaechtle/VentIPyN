@@ -41,7 +41,7 @@ class GPSnapshot:
         # TODO should some other data structures exist that would need to be
         # updated?
 
-    def sample_at(self, xs):
+    def mean_and_cov_at(self, xs):
         # Stole and adapted this from backend/lite/gp.py
         if len(self.Xseen) == 0:
             mu = np.zeros(xs.shape)
@@ -66,7 +66,11 @@ class GPSnapshot:
         
         # Isn't this fun to debug :-)
         # print "len(xs), len(Xseen), mu.shape, sigma.shape = %s, %s, %s, %s" % (len(xs), len(self.Xseen), mu.shape, sigma.shape)
-        return np.random.multivariate_normal(mu.flatten(), sigma)
+        return mu, sigma
+
+    def sample_at(self, xs):
+        mu, sigma = self.mean_and_cov_at(xs)
+        return np.random.multivariate_normal(mu, sigma)
 
     def sample_at_point(self, x):
         xs = np.array([x])
