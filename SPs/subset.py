@@ -9,9 +9,6 @@ import scipy.misc as sc
 
 
 
-
-
-
 class Subset(RandomPSP):
 
   def isRandom(self): return True
