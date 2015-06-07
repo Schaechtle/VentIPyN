@@ -4,7 +4,7 @@ from venture_gp_model import Venture_GP_model
 from venture.lite.function import VentureFunction
 from venture.lite.types import VentureSimplex
 import venture.lite.types as t
-from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise
+from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise,makeRQ
 from venture.lite.builtin import typed_nr
 import itertools
 import sys
@@ -20,38 +20,40 @@ class Grammar_Venture_GP_model_airline(Venture_GP_model):
         ripl.assume('make_linear', VentureFunction(makeLinear, [t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('make_periodic', VentureFunction(makePeriodic, [t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
-        ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType()], t.AnyType("VentureFunction")))
-
-        ripl.assume('a','(mem (lambda (i) (tag (quote parameter) i (log  (uniform_continuous 1 8)))))')
-        ripl.assume('sn','(tag (quote parameter) 10 (log (uniform_continuous 2 5)))')
-        #ripl.assume('sn','0.7')
-        ripl.assume('sf','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 1 8 )))))')
-        ripl.assume('sf2','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 1 8 )))))')
-        ripl.assume('p','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 1 8)))))')
-        ripl.assume('l','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 1 8)))))')
-        ripl.assume('l2','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 1 8)))))')
-        
-        ripl.assume('lin1', "(apply_function make_linear ( a 0)  )")
-        ripl.assume('lin2', "(apply_function make_linear ( a 1)  )")
-        ripl.assume('lin3', "(apply_function make_linear ( a 2)  )")
-        ripl.assume('per1', "(apply_function make_periodic ( l 3) ( p 4) ( sf 5) )")
-        ripl.assume('se1', "(apply_function make_se ( sf2 6) ( l2 7))")
-        ripl.assume('se2', "(apply_function make_se ( sf2 8) ( l2 9))")
+        ripl.assume('make_rq',VentureFunction(makeRQ, [t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
 
 
-        ripl.assume('wn', "(apply_function make_noise sn)")
+        ripl.assume('a','(tag (quote parameter) 0 (log  (uniform_continuous  0 5)))')
+        ripl.assume('sf1','(tag (quote parameter) 1 (log (uniform_continuous  0 5 )))')
+        ripl.assume('sf2',' (tag (quote parameter) 2 (log (uniform_continuous  0 5 )))')
+        ripl.assume('p',' (tag (quote parameter) 3 (log (uniform_continuous  0.01 5)))')
+        ripl.assume('l',' (tag (quote parameter) 4 (log (uniform_continuous  0 5)))')
+
+        ripl.assume('l1',' (tag (quote parameter) 5 (log (uniform_continuous  0 5)))')
+        ripl.assume('l2',' (tag (quote parameter) 6 (log (uniform_continuous  0 5)))')
+        ripl.assume('sf_rq','(tag (quote hypers) 7 (log (uniform_continuous 0 5)))')
+        ripl.assume('l_rq','(tag (quote hypers) 8 (log (uniform_continuous 0 5)))')
+        ripl.assume('alpha','(tag (quote hypers)9 (log (uniform_continuous 0 5)))')
+        ripl.assume('sf',' (tag (quote parameter) 10 (log (uniform_continuous  0 5)))')
+
+        ripl.assume('lin1', "(apply_function make_linear a   )")
+        ripl.assume('per1', "(apply_function make_periodic l  p  sf )")
+        ripl.assume('se1', "(apply_function make_se sf1 l1)")
+        ripl.assume('se2', "(apply_function make_se sf2 l2)")
+        ripl.assume('rq', "(apply_function make_rq l_rq sf_rq alpha)")
 
          #### GP Structure Prior
 
         ###### for simplicity, I start with the max amount of kernel per type given
 
-        ripl.assume("max_lin","(array  lin1 lin2 lin3 )")
+        ripl.assume("max_lin","(array  lin1 )")
         ripl.assume("max_per","(array  per1 )")
         ripl.assume("max_se","(array  se1 se2)")
-        ripl.assume("max_wn","(array wn)")
+        ripl.assume("max_rq","(array  rq)")
 
 
-        number = 7
+
+        number = 5
         simplex = "( simplex  "
         total_perms =0
         perms = []
