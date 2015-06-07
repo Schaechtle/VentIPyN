@@ -55,7 +55,7 @@ class Grammar_Venture_GP_model_airline(Venture_GP_model):
         ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
     
     
-        ripl.assume('cov_list','(list lin1 per1 se1 se2 rq)')
+        ripl.assume('cov_list','(list lin1 lin2 per1 se1 se2 rq)')
         ripl.bind_foreign_sp("subset",typed_nr(Subset(), [t.ListType(),t.SimplexType()], t.ListType()))
     
         number = 6
