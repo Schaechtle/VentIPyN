@@ -58,7 +58,7 @@ class Grammar_Venture_GP_model_airline(Venture_GP_model):
         ripl.assume('cov_list','(list lin1 per1 se1 se2 rq)')
         ripl.bind_foreign_sp("subset",typed_nr(Subset(), [t.ListType(),t.SimplexType()], t.ListType()))
     
-        number = 10
+        number = 6
     
         total_perms =0
         perms = []
@@ -96,7 +96,7 @@ class Grammar_Venture_GP_model_airline(Venture_GP_model):
 
 
     def collect_parameters(self,ripl):
-        return [ripl.sample("(l2 7)"),ripl.sample("(l2 9)"),ripl.sample("(sf2 6)"),ripl.sample("(sf2 10)")]
+cd         return [ripl.sample("(l2 7)"),ripl.sample("(l2 9)"),ripl.sample("(sf2 6)"),ripl.sample("(sf2 10)")]
 
 
 
