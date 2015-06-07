@@ -96,7 +96,7 @@ class Grammar_Venture_GP_model_airline(Venture_GP_model):
 
 
     def collect_parameters(self,ripl):
-cd         return [ripl.sample("(l2 7)"),ripl.sample("(l2 9)"),ripl.sample("(sf2 6)"),ripl.sample("(sf2 10)")]
+        return [ripl.sample("(l2 7)"),ripl.sample("(l2 9)"),ripl.sample("(sf2 6)"),ripl.sample("(sf2 10)")]
 
 
 
