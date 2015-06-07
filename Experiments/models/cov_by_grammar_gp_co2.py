@@ -4,14 +4,16 @@ from venture_gp_model import Venture_GP_model
 from venture.lite.function import VentureFunction
 from venture.lite.types import VentureSimplex
 import venture.lite.types as t
-from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise,makeRQ
+from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise,makeRQ,makeLiftedMult,makeLiftedAdd
 from venture.lite.builtin import typed_nr
 import itertools
 import sys
+import numpy as np
 sys.path.append('../SPs/')
 from grammar5 import Grammar
 from kernel_interpreter import GrammarInterpreter
 from subset import Subset
+
 
 class Grammar_Venture_GP_model_mauna(Venture_GP_model):
     def __init__(self):
@@ -45,6 +47,9 @@ class Grammar_Venture_GP_model_mauna(Venture_GP_model):
          #### GP Structure Prior
 
         ###### for simplicity, I start with the max amount of kernel per type given
+
+        ripl.assume("func_times", makeLiftedMult(lambda x1, x2: np.multiply(x1,x2)))
+        ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
 
 
         ripl.assume('cov_list','(list lin1 per1 se1 se2 rq)')
