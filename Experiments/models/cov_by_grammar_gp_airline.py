@@ -22,7 +22,8 @@ class Grammar_Venture_GP_model_airline(Venture_GP_model):
         ripl.assume('make_periodic', VentureFunction(makePeriodic, [t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('make_rq',VentureFunction(makeRQ, [t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
-    
+        ripl.assume('make_linear', VentureFunction(makeLinear, [t.NumberType()], t.AnyType("VentureFunction")))
+
         ripl.assume('a1','(tag (quote parameter) 0 (log  (uniform_continuous  0 10)))')
         ripl.assume('sf1','(tag (quote parameter) 1 (log (uniform_continuous  0 10 )))')
         ripl.assume('sf2',' (tag (quote parameter) 2 (log (uniform_continuous  0 10 )))')
