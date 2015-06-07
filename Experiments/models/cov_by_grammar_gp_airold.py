@@ -4,13 +4,15 @@ from venture_gp_model import Venture_GP_model
 from venture.lite.function import VentureFunction
 from venture.lite.types import VentureSimplex
 import venture.lite.types as t
-from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise,makeRQ
+from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise,makeRQ,makeLiftedAdd,makeLiftedMult
 from venture.lite.builtin import typed_nr
 import itertools
 import sys
 sys.path.append('../SPs/')
 from grammar5 import Grammar
 from kernel_interpreter import GrammarInterpreter
+from subset import Subset
+import numpy as np
 
 class Grammar_Venture_GP_model_airold(Venture_GP_model):
     def __init__(self):
@@ -22,38 +24,38 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
         ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('make_rq',VentureFunction(makeRQ, [t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
 
-        ripl.assume('a','(tag (quote parameter) 0 (log  (uniform_continuous  0 10)))')
-        ripl.assume('p',' (tag (quote parameter) 3 (log (uniform_continuous  0.01 10)))')
-        ripl.assume('l',' (tag (quote parameter) 4 (log (uniform_continuous  0 10)))')
+        ripl.assume('a','(tag (quote parameter) 0 (log  (uniform_continuous  0 5)))')
+        ripl.assume('sf1','(tag (quote parameter) 1 (log (uniform_continuous  0 5 )))')
+        ripl.assume('sf2',' (tag (quote parameter) 2 (log (uniform_continuous  0 5 )))')
+        ripl.assume('p',' (tag (quote parameter) 3 (log (uniform_continuous  0.01 5)))')
+        ripl.assume('l',' (tag (quote parameter) 4 (log (uniform_continuous  0 5)))')
 
-        ripl.assume('l1',' (tag (quote parameter) 5 (log (uniform_continuous  0 10)))')
-        ripl.assume('sf1',' (tag (quote parameter) 6 (log (uniform_continuous  0 10)))')
-        ripl.assume('sf_rq','(tag (quote hypers) 7 (log (uniform_continuous 0 10)))')
-        ripl.assume('l_rq','(tag (quote hypers) 8 (log (uniform_continuous 0 10)))')
-        ripl.assume('alpha','(tag (quote hypers)9 (log (uniform_continuous 0 10)))')
-        ripl.assume('sf',' (tag (quote parameter) 1 (log (uniform_continuous  0 10)))')
-        ripl.assume('a2','(tag (quote parameter) 2 (log  (uniform_continuous  0 10)))')
-       
+        ripl.assume('l1',' (tag (quote parameter) 5 (log (uniform_continuous  0 5)))')
+        ripl.assume('l2',' (tag (quote parameter) 6 (log (uniform_continuous  0 5)))')
+        ripl.assume('sf_rq','(tag (quote hypers) 7 (log (uniform_continuous 0 5)))')
+        ripl.assume('l_rq','(tag (quote hypers) 8 (log (uniform_continuous 0 5)))')
+        ripl.assume('alpha','(tag (quote hypers)9 (log (uniform_continuous 0 5)))')
+        ripl.assume('sf',' (tag (quote parameter) 10 (log (uniform_continuous  0 5)))')
 
         ripl.assume('lin1', "(apply_function make_linear a   )")
-        ripl.assume('lin2', "(apply_function make_linear a2   )")
         ripl.assume('per1', "(apply_function make_periodic l  p  sf ) ")
         ripl.assume('se1', "(apply_function make_se sf1 l1)")
+        ripl.assume('se2', "(apply_function make_se sf2 l2)")
         ripl.assume('rq', "(apply_function make_rq l_rq sf_rq alpha)")
 
          #### GP Structure Prior
 
         ###### for simplicity, I start with the max amount of kernel per type given
 
-        ripl.assume("max_lin","(array  lin1 lin2)")
-        ripl.assume("max_per","(array  per1 )")
-        ripl.assume("max_se","(array  se1 )")
-        ripl.assume("max_rq","(array  rq)")
+        ripl.assume("func_times", makeLiftedMult(lambda x1, x2: np.multiply(x1,x2)))
+        ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
 
 
+        ripl.assume('cov_list','(list lin1 per1 se1 se2 rq)')
+        ripl.bind_foreign_sp("subset",typed_nr(Subset(), [t.ListType(),t.SimplexType()], t.ListType()))
 
         number = 5
-        simplex = "( simplex  "
+
         total_perms =0
         perms = []
         for i in range(number):
@@ -66,19 +68,26 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
             simplex+=str(float(perms[i])/total_perms) + " "
 
         simplex+=" )"
+        ripl.assume('s','(tag (quote grammar) 1 (subset cov_list '+simplex + ' ))')
+        ripl.assume('cov_compo',"""
+         (tag (quote grammar) 0
+             (lambda (l )
+                (if (lte ( size l) 1)
+                     (first l)
+                         (if (flip)
+                             (apply_function func_plus (first l) (cov_compo (rest l)))
+                             (apply_function func_times (first l) (cov_compo (rest l)))
+                    )
+        )))
+        """)
 
-        ripl.bind_foreign_sp("gp_grammar", typed_nr(Grammar(), [t.HomogeneousArrayType(t.HomogeneousArrayType(t.AnyType())),t.AnyType()], covfunctionType, min_req_args=0))
-
-        ripl.assume("cov_structure","(tag (quote grammar) 0 (gp_grammar (array max_lin max_rq max_per max_se) "+simplex+" ))")
         #ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
         #ripl.assume("interp","(covfunc_interpreter grammar)")
-
+        ripl.assume('cov_structure','(cov_compo s)')
         ripl.assume('gp','(tag (quote model) 0 (make_gp_part_der zero cov_structure))')
 
         ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
         ripl.assume("interp","(covfunc_interpreter cov_structure)")
-
-
 
 
 
