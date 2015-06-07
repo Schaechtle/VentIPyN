@@ -79,7 +79,7 @@ class Grammar_Venture_GP_model_mauna(Venture_GP_model):
 
         #ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
         #ripl.assume("interp","(covfunc_interpreter grammar)")
-
+        ripl.assume('cov_structure','(cov_compo s)')
         ripl.assume('gp','(tag (quote model) 0 (make_gp_part_der zero cov_structure))')
 
         ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
