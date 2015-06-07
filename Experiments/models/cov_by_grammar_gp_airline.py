@@ -8,6 +8,7 @@ from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSqua
 from venture.lite.builtin import typed_nr
 import itertools
 import sys
+import  numpy as np
 
 sys.path.append('../SPs/')
 from grammar5 import Grammar
