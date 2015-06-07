@@ -12,7 +12,6 @@ import scipy.misc as sc
 
 
 
-
 class Subset(RandomPSP):
 
   def isRandom(self): return True
@@ -21,7 +20,6 @@ class Subset(RandomPSP):
     subset_size = args.operandValues[1]
     assert subset_size <= len(list_of_items)
     return random.sample(list_of_items,subset_size)
-
 
 
   def logDensity(self,val,args):
