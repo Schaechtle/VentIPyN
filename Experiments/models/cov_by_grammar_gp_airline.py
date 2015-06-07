@@ -10,7 +10,7 @@ import itertools
 import sys
 
 sys.path.append('../SPs/')
-from grammar10 import Grammar
+from grammar5 import Grammar
 from kernel_interpreter import GrammarInterpreter
 from subset import Subset
 
