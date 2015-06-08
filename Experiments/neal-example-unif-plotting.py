@@ -28,18 +28,19 @@ figheigth = 10
 sns.set(font_scale=2)
 
 n_it = 1
+n = 100
 
 no = "b"
 outlier_sigma=1
 for i in range(1,len(sys.argv)):
-            if str(sys.argv[i])=="-n": # structure posterior
+            if str(sys.argv[i])=="--no": # structure posterior
                 no = str(sys.argv[i+1])
             if str(sys.argv[i])=="-s": # structure posterior
                 outlier_sigma = float(sys.argv[i+1])
             if str(sys.argv[i])=="-i": # structure posterior
                 n_it = int(sys.argv[i+1])
-
-n = 500
+            if str(sys.argv[i])=="-n": # structure posterior
+                n = int(sys.argv[i+1])
 
 
 
