@@ -29,8 +29,8 @@ sns.set(font_scale=2)
 
 n_it = 1
 n = 100
-particles = '2'
-no = "c"
+particles = '10'
+no = "d"
 outlier_sigma=1
 for i in range(1,len(sys.argv)):
             if str(sys.argv[i])=="--no": # structure posterior
@@ -100,7 +100,6 @@ def plot_hyper(n_it):
             y[i] = f(x[i]) + np.random.normal(0,outlier_sigma,1)
 
 
-    # In[12]:
 
     ripl = shortcuts.make_lite_church_prime_ripl()
     ripl.bind_foreign_sp("make_gp_part_der",gp_der.makeGPSP)
@@ -108,11 +107,6 @@ def plot_hyper(n_it):
     ripl.assume('zero', "(apply_function make_const_func 0)")
 
 
-    # Out[12]:
-
-    #     <function models.covFunctions.<lambda>>
-
-    # In[13]:
 
     ripl.infer('(resample '+ particles +' )')
 
@@ -151,83 +145,18 @@ def plot_hyper(n_it):
 
 
 
-    '''
-    fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
-    xpost= np.random.uniform(-3,3,100)
-    for i in range(100):
 
-        sampleString=genSamples(xpost)
-        ypost = ripl.sample(sampleString)
-        yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
-        pl.plot(sorted(xpost),yp,c="red",alpha=0.1,linewidth=2)
-
-    pl.scatter(x,y,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5',)
-    plt.axis((-2,2,-1,3))
-    pl.plot(x2plot,f2plot,c='black')
-    fig.savefig('/home/ulli/Paper_VentureGP/figs/neal_se_1'+no+'.svg', dpi=fig.dpi)
-    fig.savefig('/home/ulli/Paper_VentureGP/figs/neal_se_1'+no+'.png', dpi=fig.dpi)
-    '''
-
-
-    # Out[20]:
-
-    #     '\nfig = plt.figure(figsize=(figlength,figheigth), dpi=200)\nxpost= np.random.uniform(-3,3,100)\nfor i in range(100):\n \n    sampleString=genSamples(xpost)\n    ypost = ripl.sample(sampleString)\n    yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]\n    pl.plot(sorted(xpost),yp,c="red",alpha=0.1,linewidth=2)\n\npl.scatter(x,y,color=\'black\',marker=\'x\',s=50,edgecolor=\'black\',linewidth=\'1.5\',)\nplt.axis((-2,2,-1,3))\npl.plot(x2plot,f2plot,c=\'black\')\nfig.savefig(\'/home/ulli/Paper_VentureGP/figs/neal_se_1\'+no+\'.svg\', dpi=fig.dpi)\nfig.savefig(\'/home/ulli/Paper_VentureGP/figs/neal_se_1\'+no+\'.png\', dpi=fig.dpi)\n'
-
-    # In[21]:
 
     makeObservations(x,y,ripl)
 
 
-    # In[22]:
-
-    '''
-    fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
-    xpost= np.random.uniform(-3,3,100)
-    for i in range(100):
-
-        sampleString=genSamples(xpost)
-        ypost = ripl.sample(sampleString)
-        yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
-        pl.plot(sorted(xpost),yp,c="red",alpha=0.1,linewidth=2)
-
-    pl.scatter(x,y,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')
-    plt.axis((-2,2,-1,3))
-    pl.plot(x2plot,f2plot,c='black')
-    fig.savefig('/home/ulli/Paper_VentureGP/figs/neal_se_2'+no+'.svg', dpi=fig.dpi)
-    fig.savefig('/home/ulli/Paper_VentureGP/figs/neal_se_2'+no+'.png', dpi=fig.dpi)
-    '''
 
 
-    # Out[22]:
-
-    #     '\nfig = plt.figure(figsize=(figlength,figheigth), dpi=200)\nxpost= np.random.uniform(-3,3,100)\nfor i in range(100):\n \n    sampleString=genSamples(xpost)\n    ypost = ripl.sample(sampleString)\n    yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]\n    pl.plot(sorted(xpost),yp,c="red",alpha=0.1,linewidth=2)\n    \npl.scatter(x,y,color=\'black\',marker=\'x\',s=50,edgecolor=\'black\',linewidth=\'1.5\')\nplt.axis((-2,2,-1,3))\npl.plot(x2plot,f2plot,c=\'black\')\nfig.savefig(\'/home/ulli/Paper_VentureGP/figs/neal_se_2\'+no+\'.svg\', dpi=fig.dpi)\nfig.savefig(\'/home/ulli/Paper_VentureGP/figs/neal_se_2\'+no+\'.png\', dpi=fig.dpi)\n'
-
-    # In[23]:
 
     ripl.infer("(mh (quote hyper) one 200)")
 
 
-    # Out[23]:
 
-    #     []
-
-    # In[24]:
-
-    '''
-    fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
-    xpost= np.random.uniform(-3,3,100)
-    for i in range(100):
-
-        sampleString=genSamples(xpost)
-        ypost = ripl.sample(sampleString)
-        yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
-        pl.plot(sorted(xpost),yp,c="red",alpha=0.1,linewidth=2)
-    pl.scatter(x,y,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')
-    plt.axis((-2,2,-1,3))
-    pl.plot(x2plot,f2plot,c='black')
-    fig.savefig('/home/ulli/Paper_VentureGP/figs/neal_se_3'+no+'.svg', dpi=fig.dpi)
-    fig.savefig('/home/ulli/Paper_VentureGP/figs/neal_se_3'+no+'.png', dpi=fig.dpi)
-    '''
 
 
 
@@ -236,21 +165,16 @@ def plot_hyper(n_it):
     df['Hyper-Parameter Learning']= pd.Series(['after' for _ in range(len(df.index))], index=df.index)
 
 
-    df_all=pd.concat([df_before,df])
-
-
-
-    #g = sns.FacetGrid(df_all, col="Hyper-Parameter Learning", palette="Greens_d",col_order=['before','after'],size=4, aspect=2, xlim=(0, 5),margin_titles=True)
-    #g.map(sns.distplot, "sigma",norm_hist=True);
-    #g.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_'+no+str(n_it)+'.png', dpi=200)
 
     sns.plt.yticks([])
+    sns.plt.xlabel(" ")
     sns.distplot(df_before['sigma'])
-    plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_before_'+no+str(n_it)+'.png', dpi=200)
+    plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_before_'+no+str(n_it)+'.png', dpi=200,bbox_inches='tight')
     plt.figure(0)
     sns.distplot(df['sigma'])
     sns.plt.yticks([])
-    plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_after_'+no+str(n_it)+'.png', dpi=200)
+    sns.plt.xlabel(" ")
+    plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_after_'+no+str(n_it)+'.png', dpi=200,bbox_inches='tight')
     #from matplotlib2tikz import save as tikz_save
     #tikz_save('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_before_'+no+str(n_it)+'.tikz', figureheight='8cm', figurewidth='8cm' )
 
