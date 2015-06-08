@@ -29,8 +29,8 @@ sns.set(font_scale=2)
 
 n_it = 1
 n = 100
-
-no = "b"
+particles = '2'
+no = "c"
 outlier_sigma=1
 for i in range(1,len(sys.argv)):
             if str(sys.argv[i])=="--no": # structure posterior
@@ -41,6 +41,8 @@ for i in range(1,len(sys.argv)):
                 n_it = int(sys.argv[i+1])
             if str(sys.argv[i])=="-n": # structure posterior
                 n = int(sys.argv[i+1])
+            if str(sys.argv[i])=="-p": # structure posterior
+                particles = str(sys.argv[i+1])
 
 
 
@@ -112,7 +114,7 @@ def plot_hyper(n_it):
 
     # In[13]:
 
-    ripl.infer('(resample 100)')
+    ripl.infer('(resample '+ particles +' )')
 
     ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
     ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
@@ -238,9 +240,13 @@ def plot_hyper(n_it):
 
 
 
-    g = sns.FacetGrid(df_all, col="Hyper-Parameter Learning", palette="Greens_d",col_order=['before','after'],size=4, aspect=2, xlim=(0, 5),margin_titles=True)
-    g.map(sns.distplot, "sigma",norm_hist=True);
-    g.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_'+no+str(n_it)+'.png', dpi=200)
+    #g = sns.FacetGrid(df_all, col="Hyper-Parameter Learning", palette="Greens_d",col_order=['before','after'],size=4, aspect=2, xlim=(0, 5),margin_titles=True)
+    #g.map(sns.distplot, "sigma",norm_hist=True);
+    #g.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_'+no+str(n_it)+'.png', dpi=200)
+    sns.distplot(df['sigma'])
+    plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_before_'+no+str(n_it)+'.png', dpi=200)
+    #from matplotlib2tikz import save as tikz_save
+    #tikz_save('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_before_'+no+str(n_it)+'.tikz', figureheight='8cm', figurewidth='8cm' )
 
 for i in range(n_it):
     plot_hyper(i)
