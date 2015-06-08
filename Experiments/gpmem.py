@@ -1,95 +1,59 @@
-from venture.lite.psp import DeterministicPSP, TypedPSP
+from venture.lite.psp import PSP, DeterministicPSP, TypedPSP, RandomPSP
 from venture.lite.sp import SP, VentureSPRecord, SPType
 from venture.lite.env import VentureEnvironment
 from venture.lite.request import Request,ESR
 from venture.lite.address import emptyAddress
 from venture.lite.builtin import no_request, typed_nr, deterministic_typed, typed_func_psp
+from venture.lite.function import VentureFunction
 import venture.lite.types as t
-import collections
-import copy
-from gp_der import GPOutputPSP
+from gp_der import GPOutputPSP, GPSP
 
-# Prior mean is fixed to zero, because the current GP implementation assumes
-# this
-def gpmem_output(ftrue_sp, prior_covariance_sp):
-    state = GPMemState(ftrue_sp, prior_covariance_sp)
-    compute = state.get_computer()
-    emu = state.get_emulator()
-    getXseen = state.get_Xseen_getter()
-    getYseen = state.get_Yseen_getter()
+class MakeGPMSPOutputPSP(DeterministicPSP):
+    def simulate(self, args):
+        f_node = args.operandNodes[0]
+        prior_covariance_function = args.operandValues[1]
+        f_compute = VentureSPRecord(
+                SP(GPMComputerRequestPSP(f_node), GPMComputerOutputPSP()))
+        # Prior mean is fixed to zero, because the current GP implementation
+        # assumes this
+        f_emu = VentureSPRecord(GPSP(zero_function, prior_covariance_function))
+        f_compute.spAux = f_emu.spAux
+        # TODO ways to get_Xseen and get_Yseen? maybe this belongs in the
+        # inference side
+        return t.pythonListToVentureList([f_compute, f_emu])
 
-    return [VentureSPRecord(p) for p in [compute, emu, getXseen, getYseen]]
+gpmemSP = no_request(MakeGPMSPOutputPSP())
 
-gpmemSP = deterministic_typed(gpmem_output, [t.AnyType(), t.AnyType()], t.HomogeneousListType(t.AnyType()))
+zero_function = VentureFunction(lambda x: 0, [t.AnyType()], t.NumberType())
 
-zero_sp = deterministic_typed(lambda xs: len(xs)*[0], [t.HomogeneousArrayType(t.AnyType())], t.HomogeneousArrayType(t.NumberType()))
+# TODO treat this as not necessarily random?
+class GPMComputerRequestPSP(RandomPSP):
+    def __init__(self, f_node):
+        self.f_node = f_node
 
-class GPMemState:
-    def __init__(self, ftrue_sp, prior_covariance_sp):
-        self.ftrue_sp = ftrue_sp
-        self.gp = GPOutputPSP(zero_sp, prior_covariance_sp)
-        # TODO I am redundantly storing samples here...
-        self.samples = collections.OrderedDict()
+    def simulate(self, args):
+        id = str(args.operandValues)
+        exp = ["gpmemmedSP"] + [["quote",val] for val in args.operandValues]
+        env = VentureEnvironment(None,["gpmemmedSP"],[self.f_node])
+        return Request([ESR(id,exp,emptyAddress,env)])
 
-    def get_computer(self):
-        #def compute_at_point(x):
-        #    return self.ftrue_sp(x)
-        #def logDensity(x, y):
-        #    return self.ftrue_sp.logDensity(x, y)
-        #def incorporate(value, args):
-        #    self[args.operandValues[0]] = value
-        #    self.gp.incorporate(value, args)
-        #def unincorporate(value, args):
-        #    x = args.operandValues[0]
-        #    if x in self.samples:
-        #        del self.samples[x]
-        #    self.gp.unincorporate(value, args)
-        #def isRandom():
-        #    return self.ftrue.isRandom()
-        #computerPSP = typed_func_psp(compute_at_point, [t.NumberType()], t.NumberType())
-        #computerPSP.logDensity = logDensity
-        #computerPSP.incorporate = incorporate
-        #computerPSP.unincorporate = unincorporate
-        #computerPSP.isRandom = isRandom
-        #return no_request(computerPSP)
+# TODO Perhaps this could subclass ESRRefOutputPSP to correctly handle
+# back-propagation?
+class GPMComputerOutputPSP(DeterministicPSP):
+    def simulate(self,args):
+        assert len(args.esrNodes) ==  1
+        return args.esrValues[0]
 
-        ### TAKE TWO
-        ### Er uh er
-        # computerSP = copy.copy(self.ftrue_sp)
-        # computerPSP = computerSP.outputPSP
-        # old_incorporate = computerPSP.incorporate
-        # old_unincorporate = computerPSP.unincorporate
-        # def incorporate(value, args):
-        #     old_incorporate(value, args)
+    def incorporate(self, value, args):
+        # TODO maybe best to just call on someone else's incorporate method
+        # instead? idk
+        x = args.operandValues[0].getNumber()
+        y = value.getNumber()
+        args.spaux.samples[x] = y
 
-        #     self[args.operandValues[0]] = value
-        #     self.gp.incorporate(value, args)
-        # def unincorporate(value, args):
-        #     x = args.operandValues[0]
-        #     if x in self.samples:
-        #         del self.samples[x]
-        #     self.gp.unincorporate(value, args)
+    def unincorporate(self, value, args):
+        x = args.operandValues[0].getNumber()
+        samples = args.spaux.samples
+        if x in samples:
+            del samples[x]
 
-        #     old_unincorporate(value, args)
-        # computerPSP.incorporate = incorporate
-        # computerPSP.unincorporate = unincorporate
-        # return no_request(computerPSP)
-
-    def get_emulator(self):
-        #def sample_at(x):
-        #    return self.gp.sample(x)
-        #def logDensity(x, y):
-        #    return self.gp.logDensity([x], [y])
-        ## TODO wrap sample_at into an SP (that reports its likelihood) and
-        ## return that SP
-        return no_request(self.gp)
-
-    def get_Xseen_getter(self):
-        def get_Xseen():
-            return self.samples.keys()
-        return deterministic_typed(get_Xseen, [], t.HomogeneousArrayType(t.AnyType()))
-
-    def get_Yseen_getter(self):
-        def get_Yseen():
-            return self.samples.values()
-        return deterministic_typed(get_Yseen, [], t.HomogeneousArrayType(t.AnyType()))
