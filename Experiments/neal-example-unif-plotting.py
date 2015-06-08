@@ -167,8 +167,9 @@ def plot_hyper(n_it):
 
     plt.figure(n_it)
     sns.plt.yticks([])
-    sns.plt.xlabel(" ")
+
     sns.distplot(df_before['sigma'])
+    sns.plt.xlabel(" ")
     plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_before_'+no+str(n_it)+'.png', dpi=200,bbox_inches='tight')
     plt.figure(n_it+100)
     sns.distplot(df['sigma'])
