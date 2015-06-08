@@ -30,10 +30,12 @@ sns.set(font_scale=2)
 
 
 no = "x"
-
+outlier_sigma=1
 for i in range(1,len(sys.argv)):
             if str(sys.argv[i])=="-n": # structure posterior
                 no = str(sys.argv[i+1])
+            if str(sys.argv[i])=="-s": # structure posterior
+                outlier_sigma = float(sys.argv[i+1])
 
 n = 500
 
@@ -59,7 +61,7 @@ for i in range(n):
     if random.random()>0.3:
         y[i] = f(x[i]) + np.random.normal(0,0.1,1)
     else:
-        y[i] = f(x[i]) + np.random.normal(0,1,1)
+        y[i] = f(x[i]) + np.random.normal(0,outlier_sigma,1)
 
 
 
