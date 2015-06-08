@@ -35,7 +35,7 @@ for i in range(1,len(sys.argv)):
             if str(sys.argv[i])=="-n": # structure posterior
                 no = str(sys.argv[i+1])
 
-n = 200
+n = 500
 
 
 
@@ -197,7 +197,7 @@ fig.savefig('/home/ulli/Paper_VentureGP/figs/neal_se_2'+no+'.png', dpi=fig.dpi)
 
 # In[23]:
 
-ripl.infer("(mh (quote hyper) one 100)")
+ripl.infer("(mh (quote hyper) one 200)")
 
 
 # Out[23]:
