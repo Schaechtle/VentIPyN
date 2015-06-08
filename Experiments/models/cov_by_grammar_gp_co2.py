@@ -4,13 +4,16 @@ from venture_gp_model import Venture_GP_model
 from venture.lite.function import VentureFunction
 from venture.lite.types import VentureSimplex
 import venture.lite.types as t
-from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise,makeRQ
+from covFunctions import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise,makeRQ,makeLiftedMult,makeLiftedAdd
 from venture.lite.builtin import typed_nr
 import itertools
 import sys
+import numpy as np
 sys.path.append('../SPs/')
 from grammar5 import Grammar
 from kernel_interpreter import GrammarInterpreter
+from subset import Subset
+
 
 class Grammar_Venture_GP_model_mauna(Venture_GP_model):
     def __init__(self):
@@ -45,15 +48,15 @@ class Grammar_Venture_GP_model_mauna(Venture_GP_model):
 
         ###### for simplicity, I start with the max amount of kernel per type given
 
-        ripl.assume("max_lin","(array  lin1 )")
-        ripl.assume("max_per","(array  per1 )")
-        ripl.assume("max_se","(array  se1 se2)")
-        ripl.assume("max_rq","(array  rq)")
+        ripl.assume("func_times", makeLiftedMult(lambda x1, x2: np.multiply(x1,x2)))
+        ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
 
 
+        ripl.assume('cov_list','(list lin1 per1 se1 se2 rq)')
+        ripl.bind_foreign_sp("subset",typed_nr(Subset(), [t.ListType(),t.SimplexType()], t.ListType()))
 
         number = 5
-        simplex = "( simplex  "
+
         total_perms =0
         perms = []
         for i in range(number):
@@ -66,13 +69,22 @@ class Grammar_Venture_GP_model_mauna(Venture_GP_model):
             simplex+=str(float(perms[i])/total_perms) + " "
 
         simplex+=" )"
+        ripl.assume('s','(tag (quote grammar) 1 (subset cov_list '+simplex + ' ))')
+        ripl.assume('cov_compo',"""
+         (tag (quote grammar) 0
+             (lambda (l )
+                (if (lte ( size l) 1)
+                     (first l)
+                         (if (flip)
+                             (apply_function func_plus (first l) (cov_compo (rest l)))
+                             (apply_function func_times (first l) (cov_compo (rest l)))
+                    )
+        )))
+        """)
 
-        ripl.bind_foreign_sp("gp_grammar", typed_nr(Grammar(), [t.HomogeneousArrayType(t.HomogeneousArrayType(t.AnyType())),t.AnyType()], covfunctionType, min_req_args=0))
-
-        ripl.assume("cov_structure","(tag (quote grammar) 0 (gp_grammar (array max_lin max_rq max_per max_se) "+simplex+" ))")
         #ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
         #ripl.assume("interp","(covfunc_interpreter grammar)")
-
+        ripl.assume('cov_structure','(cov_compo s)')
         ripl.assume('gp','(tag (quote model) 0 (make_gp_part_der zero cov_structure))')
 
         ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))

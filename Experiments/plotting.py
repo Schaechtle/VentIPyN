@@ -12,7 +12,7 @@ def average_frames(repeated_experiments):
 
     for i in range(1,repeated):
         df['logscore']+=repeated_experiments[i]['logscore']
-        df['residuals']+=np.abs(repeated_experiments[i]['residuals'])
+        df['residuals']+=np.power(repeated_experiments[i]['residuals'],2)
         #df['inter-residuals']+=np.abs(repeated_experiments[i]['inter-residuals'])
         #df['base-line']+=np.abs(repeated_experiments[i]['base-line'])
     averaged_log_scores = []

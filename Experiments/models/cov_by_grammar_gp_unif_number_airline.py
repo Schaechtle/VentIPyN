@@ -32,14 +32,11 @@ class Grammar_Venture_GP_model_unif_airline(Venture_GP_model):
         ripl.assume('l2','(mem (lambda (i) (tag (quote parameter) i (log (uniform_continuous 1 8)))))')
         
         ripl.assume('lin1', "(apply_function make_linear ( a 0)  )")
-        ripl.assume('lin2', "(apply_function make_linear ( a 1)  )")
-        ripl.assume('lin3', "(apply_function make_linear ( a 2)  )")
+
         ripl.assume('per1', "(apply_function make_periodic ( l 3) ( p 4) ( sf 5) )")
         ripl.assume('se1', "(apply_function make_se ( sf2 6) ( l2 7))")
         ripl.assume('se2', "(apply_function make_se ( sf2 8) ( l2 9))")
 
-
-        ripl.assume('wn', "(apply_function make_noise sn)")
 
          #### GP Structure Prior
 

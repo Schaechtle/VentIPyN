@@ -12,4 +12,4 @@ class LIN_Venture_GP_Model(Venture_GP_model):
         ripl.assume('make_lin',VentureFunction(makeLinear,[t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('gp',"""(tag (quote parameter) 0
                             (make_gp_part_der zero
-                            (apply_function make_lin (uniform_continuous 0 8 ) )))""")
+                            (apply_function make_lin (log (uniform_continuous 0 8 )) )))""")
