@@ -22,8 +22,8 @@ import random
 import matplotlib.pyplot as plt
 figlength = 10
 figheigth = 10
-
-
+import matplotlib
+matplotlib.use('Agg')
 
 sns.set(font_scale=2)
 
