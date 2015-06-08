@@ -15,7 +15,7 @@ sys.path.append('../SPs/')
 import venture.lite.types as t
 from venture.lite.function import VentureFunction
 import gp_der
-
+import scipy.stats
 from models.tools import array
 figlength = 30
 figheigth = 15
@@ -243,9 +243,13 @@ def plot_hyper(n_it):
     #g = sns.FacetGrid(df_all, col="Hyper-Parameter Learning", palette="Greens_d",col_order=['before','after'],size=4, aspect=2, xlim=(0, 5),margin_titles=True)
     #g.map(sns.distplot, "sigma",norm_hist=True);
     #g.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_'+no+str(n_it)+'.png', dpi=200)
+
+    sns.plt.yticks([])
     sns.distplot(df_before['sigma'])
     plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_before_'+no+str(n_it)+'.png', dpi=200)
+    plt.figure(0)
     sns.distplot(df['sigma'])
+    sns.plt.yticks([])
     plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_after_'+no+str(n_it)+'.png', dpi=200)
     #from matplotlib2tikz import save as tikz_save
     #tikz_save('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_before_'+no+str(n_it)+'.tikz', figureheight='8cm', figurewidth='8cm' )
