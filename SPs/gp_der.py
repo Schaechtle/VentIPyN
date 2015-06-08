@@ -5,8 +5,10 @@ from utils import jitchol, solve_chol
 from venture.lite.psp import DeterministicMakerAAAPSP, NullRequestPSP, RandomPSP, TypedPSP
 from venture.lite.sp import SP, VentureSPRecord, SPType,SPAux
 import venture.lite.types as t
+import venture.lite.value as v
 import numpy.linalg as npla
 import copy
+import collections
 # XXX Replace by scipy.stats.multivariate_normal.logpdf when we
 # upgrade to scipy 0.14.
 def multivariate_normal_logpdf(x, mu, sigma):
@@ -22,10 +24,10 @@ def col_vec(xs):
 
 class GP(object):
   """An immutable GP object."""
-  def __init__(self, mean, covariance, samples={}):
+  def __init__(self, mean, covariance, samples=None):
     self.mean = mean
     self.covariance = covariance
-    self.samples = samples
+    self.samples = (collections.OrderedDict() if samples is None else samples)
     self.derivatives=covariance.stuff['derivatives']
   def toJSON(self):
     return self.samples
@@ -199,6 +201,22 @@ class GPSPAux(SPAux):
     self.samples = samples
   def copy(self):
     return GPSPAux(copy.copy(self.samples))
+
+  def asVentureValue(self):
+    """
+    Returns both the (x,y) pair with highest y, and a list of all (x,y) pairs:
+    [(best_x, best_y), ((x,y) ...)]
+    """
+    pairs = self.samples.items()
+    ys = map(lambda p: p[1], pairs)
+    if len(ys) > 0:
+        best_pair = pairs[np.argmax(ys)]
+    else:
+        best_pair = []
+    venturized_items = [v.VentureArray(map(v.VentureNumber, pair)) for pair in pairs]
+    return v.VentureArray([
+        v.VentureArray(map(v.VentureNumber, best_pair)),
+        v.VentureArray(venturized_items)])
 
 
 class GPSP(SP):
