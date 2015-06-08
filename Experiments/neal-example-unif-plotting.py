@@ -165,12 +165,12 @@ def plot_hyper(n_it):
     df['Hyper-Parameter Learning']= pd.Series(['after' for _ in range(len(df.index))], index=df.index)
 
 
-
+    plt.figure(n_it)
     sns.plt.yticks([])
     sns.plt.xlabel(" ")
     sns.distplot(df_before['sigma'])
     plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_before_'+no+str(n_it)+'.png', dpi=200,bbox_inches='tight')
-    plt.figure(0)
+    plt.figure(n_it+100)
     sns.distplot(df['sigma'])
     sns.plt.yticks([])
     sns.plt.xlabel(" ")
