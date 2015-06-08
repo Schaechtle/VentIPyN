@@ -232,11 +232,17 @@ df['Hyper-Parameter Learning']= pd.Series(['after' for _ in range(len(df.index))
 df_all=pd.concat([df_before,df])
 
 print(df_all)
-fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
+#fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
 g = sns.FacetGrid(df_all, col="Hyper-Parameter Learning", palette="Greens_d",col_order=['before','after'],sharex=False,sharey=False,size=4, aspect=2)
 g.map(sns.distplot, "sigma");
 g.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_'+no+'.png', dpi=fig.dpi)
 
-
+sns.distplot(df_before['sigma'].values())
 from matplotlib2tikz import save as tikz_save
-tikz_save( '/home/ulli/Dropbox/gpmemplots/neal_unif_'+no+'.tikz', figureheight='2cm', figurewidth='4cm' )
+tikz_save( '/home/ulli/Dropbox/gpmemplots/neal_unif_after'+no+'.tikz', figureheight='3cm', figurewidth='3cm' )
+
+
+
+sns.distplot(df['sigma'].values())
+from matplotlib2tikz import save as tikz_save
+tikz_save( '/home/ulli/Dropbox/gpmemplots/neal_unif_after'+no+'.tikz', figureheight='3cm', figurewidth='3cm' )
