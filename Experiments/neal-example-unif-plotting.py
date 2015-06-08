@@ -31,7 +31,9 @@ sns.set(font_scale=2)
 
 no = "x"
 
-
+for i in range(1,len(sys.argv)):
+            if str(sys.argv[i])=="-n": # structure posterior
+                no = str(sys.argv[i+1])
 
 n = 200
 
@@ -67,6 +69,10 @@ fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
 pl.scatter(x,y)
 pl.plot(x2plot,f2plot,c='black')
 '''
+
+for i in range(1,len(sys.argv)):
+            if str(sys.argv[i])=="-sp": # structure posterior
+                structure_posterior= True
 
 
 def array(xs):
@@ -232,3 +238,5 @@ g.map(sns.distplot, "sigma");
 g.savefig('/home/ulli/Dropbox/gpmemplots/neal_unif_sigma_'+no+'.png', dpi=fig.dpi)
 
 
+from matplotlib2tikz import save as tikz_save
+tikz_save( '/home/ulli/Dropbox/gpmemplots/neal_unif_'+no+'.tikz', figureheight='2cm', figurewidth='4cm' )
