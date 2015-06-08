@@ -1,7 +1,8 @@
 
-
+import matplotlib
+matplotlib.use('Agg')
 import seaborn as sns
-import pylab as pl
+import matplotlib.pyplot as plt
 #from plotting import load_experiments
 import numpy as np
 import pandas as pd
@@ -22,8 +23,7 @@ import random
 import matplotlib.pyplot as plt
 figlength = 10
 figheigth = 10
-import matplotlib
-matplotlib.use('Agg')
+
 
 sns.set(font_scale=2)
 
