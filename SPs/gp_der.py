@@ -226,7 +226,7 @@ class GPSP(SP):
     output = TypedPSP(GPOutputPSP(mean, covariance), gpType)
     super(GPSP, self).__init__(NullRequestPSP(),output)
 
-  def constructSPAux(self): return GPSPAux({})
+  def constructSPAux(self): return GPSPAux(collections.OrderedDict())
   def show(self,spaux): return GP(self.mean, self.covariance, spaux)
 
 class MakeGPOutputPSP(DeterministicMakerAAAPSP):
