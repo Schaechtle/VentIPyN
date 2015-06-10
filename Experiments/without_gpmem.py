@@ -17,8 +17,8 @@ import gp_der
 import pickle
 
 from models.tools import array
-figlength = 40
-figheigth = 10
+figwidth = 40
+figheight = 10
 
 no = "a"
 
@@ -41,17 +41,10 @@ ripl = shortcuts.make_lite_church_prime_ripl()
 ripl.bind_foreign_sp("make_gp_part_der",gp_der.makeGPSP)
 ripl.assume('make_const_func', VentureFunction(makeConstFunc, [t.NumberType()], constantType))
 ripl.assume('zero', "(apply_function make_const_func 0)")
-
-#ripl.assume('make_periodic', VentureFunction(makePeriodic, [t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
 ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
-#ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType()], t.AnyType("VentureFunction")))
-#ripl.assume('make_rq',VentureFunction(makeRQ, [t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
-
-
 
 ripl.assume('sf1','(tag (quote hyper) 0 (log (uniform_continuous 0 10)))')
 ripl.assume('l1','(tag (quote hyper) 1 (log (uniform_continuous 0 10)))')
-
 
 ripl.assume('se', "(apply_function make_se sf1 l1 )")
 
@@ -109,8 +102,8 @@ print "Best (x,y) pair: (%.2f, %.2f)" % (x, y)
 print "f_true.count = %d" % (f_true.count,)
 
 sns.set(font_scale=3)
-figlength = 30
-figheigth = 10
+figwidth = 30
+figheight = 10
 # Visualize the point samples of some of the GP snapshots
 xpost = np.linspace(-20, 20, 100)
 def scalarify(mean_and_cov):
@@ -118,35 +111,35 @@ def scalarify(mean_and_cov):
     assert mean.size == 1
     assert cov.size == 1
     return (mean[0], cov[0,0])
-#snapshots = (gpt[-25], gpt[-15], gpt[-1])
-#linestyles = ('g-', 'y-', 'r-')
-#labels = ('25th-most recent', '15th-most recent', 'most recent')
-fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
+fig, ax = plt.subplots(1)
+fig.set_dpi(200)
+fig.set_figheight(figheight)
+fig.set_figwidth(figwidth)
 
 for i in range(500):
     sampleString=genSamples(xpost)
     ypost = ripl.sample(sampleString)
     yp = [y_temp for (x,y_temp) in sorted(zip(xpost,ypost))]
-    pl.plot(sorted(xpost),yp,c="red",alpha=0.1,linewidth=2)
+    ax.plot(sorted(xpost),yp,c="red",alpha=0.1,linewidth=2)
 
-plt.plot(xpost, [f_true(x) for x in xpost], 'b-', label='true')  
-pl.scatter(Xseen,Yseen,color='black',marker='x',s=400,edgecolor='black',linewidth='3')
+ax.plot(xpost, [f_true(x) for x in xpost], 'b-', label='true')  
+ax.scatter(Xseen,Yseen,color='black',marker='x',s=400,edgecolor='black',linewidth='3')
 
-plt.legend()
+ax.legend()
 
-sf1 = ripl.sample('sf1')
-l1 = ripl.sample('l1')
-all_pairs = zip(Xseen, Yseen)
-logdata = ((sf1, l1), all_pairs)
-log_fname = 'log_without_gpmem/log.pkl'
-print "Logging to %s" % (log_fname)
-with open(log_fname, 'wb') as f:
-    pickle.dump(logdata, f)
-
-
+#sf1 = ripl.sample('sf1')
+#l1 = ripl.sample('l1')
+#all_pairs = zip(Xseen, Yseen)
+#logdata = ((sf1, l1), all_pairs)
+#log_fname = 'log_without_gpmem/log.pkl'
+#print "Logging to %s" % (log_fname)
+#with open(log_fname, 'wb') as f:
+#    pickle.dump(logdata, f)
 
 
-covariance = squared_exponential(sf1, l1)
+
+
+#covariance = squared_exponential(sf1, l1)
 def getNormal(xs, Xseen, Yseen):
     def cov_matrix(x1s, x2s=None):
         if x2s is None:
@@ -195,13 +188,13 @@ def draw_interval(ax, length, center, bdepth, blength):
     plott(bottom_endpt + bbr, ax, 'g-')
     plott(line, ax, 'g-')
 
-for i in range(len(all_pairs)):
-    (x,y) = all_pairs[i]
-    pairs_omit_one = [all_pairs[j] for j in range(len(all_pairs)) if j != i]
-
-    Xseen_omit_one, Yseen_omit_one = zip(*pairs_omit_one)
-    mu, sigma = getNormal(np.array([x]), Xseen_omit_one, Yseen_omit_one)
-    draw_interval(plt, 2*sigma[0,0], np.array([x, mu[0,0]]), 0.02, 0.5)
+#for i in range(len(all_pairs)):
+#    (x,y) = all_pairs[i]
+#    pairs_omit_one = [all_pairs[j] for j in range(len(all_pairs)) if j != i]
+#
+#    Xseen_omit_one, Yseen_omit_one = zip(*pairs_omit_one)
+#    mu, sigma = getNormal(np.array([x]), Xseen_omit_one, Yseen_omit_one)
+#    draw_interval(plt, 2*sigma[0,0], np.array([x, mu[0,0]]), 0.02, 0.5)
 
 plt.xlim(-20, 20)
 plt.ylim(-1.5, 1.5)
