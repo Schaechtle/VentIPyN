@@ -37,7 +37,8 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
         ripl.assume('alpha','(tag (quote hypers)9 (log (uniform_continuous 0 5)))')
         ripl.assume('sf',' (tag (quote parameter) 10 (log (uniform_continuous  0 5)))')
 
-        ripl.assume('lin1', "(apply_function make_linear a   )")
+        ripl.assume('lin1', "(apply_function make_linear a1   )")
+        ripl.assume('lin2', "(apply_function make_linear a2   )")
         ripl.assume('per1', "(apply_function make_periodic l  p  sf ) ")
         ripl.assume('se1', "(apply_function make_se sf1 l1)")
         ripl.assume('se2', "(apply_function make_se sf2 l2)")
@@ -89,5 +90,8 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
         ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
         ripl.assume("interp","(covfunc_interpreter cov_structure)")
 
-
+    def collect_parameters(self,ripl):
+        return [ripl.sample("(exp a)"),ripl.sample("(exp sf1)"),ripl.sample("(exp sf2)"),ripl.sample("(exp p)"),ripl.sample("(exp l)"),
+                ripl.sample("(exp l1)"),ripl.sample("(exp l2)"),ripl.sample("(exp l_rq)"),ripl.sample("(exp sf_rq)"),ripl.sample("(exp alpha)"),
+                ripl.sample("(exp sf)")]
 
