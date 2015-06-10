@@ -70,7 +70,7 @@ if __name__ == '__main__':
     with open(logfname) as f:
         plot_datas = pickle.load(f)
     # TODO choose the set of plot datas you want to use
-    plot_datas = plot_datas[::3]
+    plot_datas = plot_datas[::1]
     num_plots = len(plot_datas)
 
     ## Set up the main figure
