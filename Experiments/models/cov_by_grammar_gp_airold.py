@@ -90,7 +90,7 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
         ripl.assume("interp","(covfunc_interpreter cov_structure)")
 
     def collect_parameters(self,ripl):
-        return [ripl.sample("(exp a)"),ripl.sample("(exp sf1)"),ripl.sample("(exp sf2)"),ripl.sample("(exp p)"),ripl.sample("(exp l)"),
+        return [ripl.sample("(exp a1)"),ripl.sample("(exp sf1)"),ripl.sample("(exp sf2)"),ripl.sample("(exp p)"),ripl.sample("(exp l)"),
                 ripl.sample("(exp l1)"),ripl.sample("(exp l2)"),ripl.sample("(exp l_rq)"),ripl.sample("(exp sf_rq)"),ripl.sample("(exp alpha)"),
                 ripl.sample("(exp sf)")]
 
