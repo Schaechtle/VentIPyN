@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 figlength = 10
 figheigth = 10
 
-
+from scipy import stats
 
 
 n_it = 2
@@ -90,27 +90,27 @@ def plot_hyper(n_iteration):
     ripl.assume('make_noise',VentureFunction(makeNoise,[t.NumberType()], t.AnyType("VentureFunction")))
 
 
-    ripl.assume('alpha_sf','(tag (quote hyperhyper) 0 (gamma 7 2))')
-    ripl.assume('beta_sf','(tag (quote hyperhyper) 2 (gamma 1 1))')
-    ripl.assume('alpha_l','(tag (quote hyperhyper) 1 (gamma 7 2))')
-    ripl.assume('beta_l','(tag (quote hyperhyper) 3 (gamma 1 1))')
-    ripl.assume('alpha_s','(tag (quote hyperhyper) 4 (gamma 7 2))')
-    ripl.assume('beta_s','(tag (quote hyperhyper) 5 (gamma 1 1))')
+    ripl.assume('alpha_sf','(tag (quote hyperhyper) 0 (gamma 7 1))')
+    ripl.assume('beta_sf','(tag (quote hyperhyper) 2 (gamma 1 0.5))')
+    ripl.assume('alpha_l','(tag (quote hyperhyper) 1 (gamma 7 1))')
+    ripl.assume('beta_l','(tag (quote hyperhyper) 3 (gamma 1 0.5))')
+    ripl.assume('alpha_s','(tag (quote hyperhyper) 4 (gamma 7 1))')
+    ripl.assume('beta_s','(tag (quote hyperhyper) 5 (gamma 1 0.5))')
 
-    ripl.assume('sf','(tag (quote hyper) 0 (gamma alpha_sf beta_sf ))')
-    ripl.assume('l','(tag (quote hyper) 1 (gamma alpha_l beta_l ))')
+    ripl.assume('sf','(tag (quote hyper) 0 (log (gamma alpha_sf beta_sf )))')
+    ripl.assume('l','(tag (quote hyper) 1 (log (gamma alpha_l beta_l )))')
 
     ripl.assume('sigma','(tag (quote hyper) 2 (uniform_continuous 0 2 ))')
+    ripl.assume('l_sigma','(log sigma)')
 
-    ripl.assume('se', "(apply_function make_se (log sf ) (log l ) )")
-    ripl.assume('wn','(apply_function make_noise (log sigma) )')
+    ripl.assume('se', "(apply_function make_se sf l )")
+    ripl.assume('wn','(apply_function make_noise sigma  )')
 
-
-    ds = ripl.infer('(collect l sigma)')
+    ds = ripl.infer('(collect (exp l) (exp sigma) (exp sigma))')
     df = ds.asPandas()
     df['Hyper-Parameter Learning']= pd.Series(['before' for _ in range(len(df.index))], index=df.index)
 
-
+    df = df[(np.abs(stats.zscore(df)) < 3).all(axis=1)]
     df_before =df
 
 
@@ -121,7 +121,6 @@ def plot_hyper(n_iteration):
     ripl.assume('gp',"""(tag (quote model) 0
                             (make_gp_part_der zero (apply_function func_plus se wn  )
                                     )
-
                                  )""")
 
 
@@ -142,8 +141,9 @@ def plot_hyper(n_iteration):
 
 
     #ds = ripl.infer('(collect sf l sigma)')
-    ds = ripl.infer('(collect l sigma)')
+    ds = ripl.infer('(collect (exp l) (exp sigma) (exp sigma))')
     df = ds.asPandas()
+    df = df[(np.abs(stats.zscore(df)) < 3).all(axis=1)]
     df['Hyper-Parameter Learning']= pd.Series(['after' for _ in range(len(df.index))], index=df.index)
 
 
@@ -154,7 +154,7 @@ def plot_hyper(n_iteration):
     #tikz_save('/home/ulli/Dropbox/gpmemplots/neal_contourunif_sigma_before_'+no+str(n_iteration)+'.tikz', figureheight='8cm', figurewidth='8cm' )
 
     fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
-
+    '''
     for i in range(100):
         xpost= np.random.uniform(-3,3,200)
         sampleString=genSamples(xpost)
@@ -168,6 +168,7 @@ def plot_hyper(n_iteration):
     fig.savefig('/home/ulli/Dropbox/gpmemplots/neal_contourcheck_'+no+'_'+str(n_iteration)+'.png', dpi=fig.dpi)
     plt.clf()
 
+    '''
     plot_contours(df_before,'before',n_iteration)
     plot_contours(df,'after',n_iteration)
 
@@ -176,11 +177,11 @@ def plot_hyper(n_iteration):
 def plot_contours(df,name,n_iteration):
 
     joint_grid_plot("l","sigma",df,name,n_iteration)
-    #joint_grid_plot("l","sf",df,name,n_iteration)
-    #joint_grid_plot("sf","sigma",df,name,n_iteration)
+    joint_grid_plot("l","sf",df,name,n_iteration)
+    joint_grid_plot("sf","sigma",df,name,n_iteration)
     joint_grid_plot("l","sigma",df,name,n_iteration,False)
-    #joint_grid_plot("l","sf",df,name,n_iteration,False)
-    #joint_grid_plot("sf","sigma",df,name,n_iteration,False)
+    joint_grid_plot("l","sf",df,name,n_iteration,False)
+    joint_grid_plot("sf","sigma",df,name,n_iteration,False)
 
 
 
