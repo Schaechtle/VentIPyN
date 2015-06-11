@@ -14,7 +14,8 @@ import venture.lite.types as t
 from venture.lite.function import VentureFunction
 from venture.lite.builtin import deterministic_typed
 import gp_der
-import gpmem
+import gpmem2 as gpmem
+import pickle
 
 from models.tools import array
 
@@ -64,7 +65,7 @@ for i in range(15):
     ripl.predict('(f_compute %f)' % xs[np.argmax(ys)])
     # Once the GP copying stuff works, we will be able to replace the above with:
     # ripl.predict('(f_compute (mc_argmax (lambda (x) (f_emu (array x))) (quote LOLNOTHING)))')
-    ripl.infer('(mh (quote hyper) one 2)')
+    ripl.infer('(mh (quote hyper) one 50)')
 
 print "Inferred sigma = %.2f, l = %.2f" % (ripl.sample('sf1'), ripl.sample('l1'))
 stats = ripl.infer('(extract_stats f_emu)')
@@ -79,12 +80,13 @@ figheigth = 10
 fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
 
 xpost = np.linspace(-20, 20, 100)
-for i in range(50):
-    sample_expr = '(array %s)' % (' '.join('(f_emu (array %f))' % (x,) for x in xpost),)
+for i in range(100):
+    sample_expr = '(f_emu (array %s))' % (' '.join(str(x) for x in xpost),)
     ypost = ripl.sample(sample_expr)
     plt.plot(xpost, ypost, c='red', alpha=0.1, linewidth=2)
 
 plt.plot(xpost, [ripl.sample('(f %f)' % (x,)) for x in xpost], 'b-', label='true')  
+plt.xlim(-20,20)
 plt.ylim(-2,2)
 plt.scatter(Xseen,Yseen,color='black',marker='x',s=400,edgecolor='black',linewidth='3')
 
@@ -93,3 +95,18 @@ plt.show()
 
 fig.savefig('BayesOpt_with_gpmem.svg', dpi=fig.dpi,bbox_inches='tight')
 fig.savefig('BayesOpt_with_gpmem.png', dpi=fig.dpi,bbox_inches='tight')
+
+# Now trying to figure out what's up...
+stats = ripl.infer('(extract_stats f_emu)')
+(xbest, ybest) = stats[0]
+all_pairs = stats[1]
+(Xseen, Yseen) = zip(*all_pairs)
+print "After plotting, len(all_pairs) = %s and all_pairs = %s" % (len(all_pairs), all_pairs)
+sf1 = ripl.sample('sf1')
+l1 = ripl.sample('l1')
+logdata = ((sf1, l1), all_pairs)
+log_fname = 'log_with_gpmem/log.pkl'
+print "Logging to %s" % (log_fname)
+with open(log_fname, 'wb') as f:
+    pickle.dump(logdata, f)
+
