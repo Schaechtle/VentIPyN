@@ -15,12 +15,10 @@ from venture.lite.function import VentureFunction
 import gp_der
 
 from models.tools import array
-figlength = 30
-figheigth = 15
 import random
 
-figlength = 10
-figheigth = 10
+figwidth = 10
+figheight = 10
 
 sns.set(font_scale=2)
 no = "s"
@@ -87,14 +85,10 @@ df['Hyper-Parameter Learning']= pd.Series(['before' for _ in range(len(df.index)
 
 df_before =df
 
-ripl.assume('t_dist','(lambda (i) (student_t 4))')
+ripl.assume('composite_covariance', '(apply_function func_plus se wn)')
+ripl.assume('gp', '(make_gp_part_der zero composite_covariance)')
 
-ripl.assume('gp',"""(tag (quote model) 0
-                        (make_gp_part_der zero (apply_function func_plus se wn  ) 
-                                )
-                             )""")
-
-fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
+fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
 #xpost= np.random.uniform(-3,3,200)
 for i in range(100):
     xpost= np.random.uniform(-3,3,200)
@@ -113,7 +107,7 @@ fig.savefig('neal_example_figs/neal_se_1'+no+'.png', dpi=fig.dpi)
 
 makeObservations(x,y)
 
-fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
+fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
 #xpost= np.random.uniform(-3,3,200)
 for i in range(100):
     xpost= np.random.uniform(-3,3,200)
@@ -133,7 +127,7 @@ ripl.infer("(repeat 100 (do (mh (quote hyperhyper) one 2) (mh (quote hyper) one 
 
 
 
-fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
+fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
 #xpost= np.random.uniform(-3,3,200)
 for i in range(500):
     xpost= np.random.uniform(-3,3,200)
