@@ -105,7 +105,8 @@ def plot_hyper(n_iteration):
     ripl.assume('se', "(apply_function make_se (log sf ) (log l ) )")
     ripl.assume('wn','(apply_function make_noise (log sigma) )')
 
-    ds = ripl.infer('(collect sf l sigma)')
+
+    ds = ripl.infer('(collect l sigma)')
     df = ds.asPandas()
     df['Hyper-Parameter Learning']= pd.Series(['before' for _ in range(len(df.index))], index=df.index)
 
