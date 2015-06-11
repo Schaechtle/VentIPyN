@@ -177,7 +177,10 @@ def plot_hyper(n_iteration):
 
 
 def plot_contours(df,name,n_iteration):
-    df = df[(np.abs(stats.zscore(df)) < 3).all(axis=1)]
+    df = df.loc[df['l'] < 10]
+    df = df.loc[df['sf'] < 10]
+    df = df.loc[df['l'] > -10]
+    df = df.loc[df['sf'] > -10]
     joint_grid_plot("l","sigma",df,name,n_iteration)
     joint_grid_plot("l","sf",df,name,n_iteration)
     joint_grid_plot("sf","sigma",df,name,n_iteration)
