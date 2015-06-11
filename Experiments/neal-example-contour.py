@@ -97,20 +97,22 @@ def plot_hyper(n_iteration):
     ripl.assume('alpha_s','(tag (quote hyperhyper) 4 (gamma 7 1))')
     ripl.assume('beta_s','(tag (quote hyperhyper) 5 (gamma 1 0.5))')
 
-    ripl.assume('sf','(tag (quote hyper) 0 (log (gamma alpha_sf beta_sf )))')
-    ripl.assume('l','(tag (quote hyper) 1 (log (gamma alpha_l beta_l )))')
+    ripl.assume('sf','(tag (quote hyper) 0  (gamma alpha_sf beta_sf ))')
+    ripl.assume('l','(tag (quote hyper) 1 (gamma alpha_l beta_l ))')
+
+    ripl.assume('sf_l','(log sf)')
+    ripl.assume('l_l','(log l)')
 
     ripl.assume('sigma','(tag (quote hyper) 2 (uniform_continuous 0 2 ))')
     ripl.assume('l_sigma','(log sigma)')
 
-    ripl.assume('se', "(apply_function make_se sf l )")
-    ripl.assume('wn','(apply_function make_noise sigma  )')
+    ripl.assume('se', "(apply_function make_se sf_l l_l )")
+    ripl.assume('wn','(apply_function make_noise l_sigma  )')
 
-    ds = ripl.infer('(collect (exp l) (exp sigma) (exp sigma))')
+    ds = ripl.infer('(collect sf l sigma)')
     df = ds.asPandas()
     df['Hyper-Parameter Learning']= pd.Series(['before' for _ in range(len(df.index))], index=df.index)
-
-    df = df[(np.abs(stats.zscore(df)) < 3).all(axis=1)]
+    #df_temp = df_temp[(np.abs(stats.zscore(df_temp)) < 3).all(axis=1)]
     df_before =df
 
 
@@ -140,10 +142,10 @@ def plot_hyper(n_iteration):
 
 
 
-    #ds = ripl.infer('(collect sf l sigma)')
-    ds = ripl.infer('(collect (exp l) (exp sigma) (exp sigma))')
+    ds = ripl.infer('(collect sf l sigma)')
+    #ds = ripl.infer('(collect l (exp sigma) (exp sigma))')
     df = ds.asPandas()
-    df = df[(np.abs(stats.zscore(df)) < 3).all(axis=1)]
+    #df = df[(np.abs(stats.zscore(df)) < 3).all(axis=1)]
     df['Hyper-Parameter Learning']= pd.Series(['after' for _ in range(len(df.index))], index=df.index)
 
 
@@ -169,13 +171,13 @@ def plot_hyper(n_iteration):
     plt.clf()
 
     '''
-    plot_contours(df_before,'before',n_iteration)
-    plot_contours(df,'after',n_iteration)
+    plot_contours(df_before[['l','sf','sigma']],'before',n_iteration)
+    plot_contours(df[['l','sf','sigma']],'after',n_iteration)
 
 
 
 def plot_contours(df,name,n_iteration):
-
+    df = df[(np.abs(stats.zscore(df)) < 3).all(axis=1)]
     joint_grid_plot("l","sigma",df,name,n_iteration)
     joint_grid_plot("l","sf",df,name,n_iteration)
     joint_grid_plot("sf","sigma",df,name,n_iteration)
