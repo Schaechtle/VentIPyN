@@ -17,6 +17,7 @@ from venture.lite.function import VentureFunction
 import gp_der
 import pickle
 from without_gpmem import PlotData, f_true
+import argparse
 
 from models.tools import array
 
@@ -64,10 +65,19 @@ def sample_curve_from_gp(plot_data, curve_xs):
     return ys
 
 if __name__ == '__main__':
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument('case', type=str, choices=('with_gpmem', 'without_gpmem'))
+    ns = parser.parse_args()
     ## Load in the data from log
-    logfname = 'log_without_gpmem/plot_datas.pkl'
-    with open(logfname) as f:
+    if ns.case == 'with_gpmem':
+        datafname='log_with_gpmem/plot_datas.pkl'
+        fig_fname_prefix = 'BayesOpt_gpmem_sequence'
+    elif ns.case == 'without_gpmem':
+        datafname='log_without_gpmem/plot_datas.pkl'
+        fig_fname_prefix = 'BayesOpt_nogpmem_sequence'
+    else:
+        raise Exception('How did you get past argparse...')
+    with open(datafname) as f:
         plot_datas = pickle.load(f)
     # TODO choose the set of plot datas you want to use
     plot_datas = plot_datas[::1]
@@ -111,8 +121,8 @@ if __name__ == '__main__':
         print "Yseen = ", plot_data.Yseen
         draw_plot(plot_data, ax)
 
-    fig.savefig('BayesOpt_sequence.svg', dpi=fig.dpi,bbox_inches='tight')
-    fig.savefig('BayesOpt_sequence.png', dpi=fig.dpi,bbox_inches='tight')
+    fig.savefig('%s.svg' % (fig_fname_prefix,), dpi=fig.dpi,bbox_inches='tight')
+    fig.savefig('%s.png' % (fig_fname_prefix,), dpi=fig.dpi,bbox_inches='tight')
 
 
 ## The below is for generating the vertical bars
