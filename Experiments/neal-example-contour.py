@@ -194,7 +194,7 @@ def joint_grid_plot(var1,var2,df,name,n_iteration,marginal=True):
     if marginal:
         g = sns.JointGrid(var1, var2, df, space=0)
         g.plot_marginals(sns.kdeplot, shade=True)
-        name = name+"_marginal_"
+        name = "_marginal_"+name
         g.plot_joint(sns.kdeplot, shade=True, cmap="PuBu", n_levels=40);
         ax = g.ax_joint
         ax.set_xlabel("")
@@ -204,7 +204,7 @@ def joint_grid_plot(var1,var2,df,name,n_iteration,marginal=True):
         sns.plt.xlabel("")
         sns.plt.ylabel("")
     sns.set(font_scale=2)
-    plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_contour_'+var1+'_vs_'+var2+'_'+name+'_'+no+'_'+str(n_iteration)+'.png', dpi=200,bbox_inches='tight')
+    plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_contour_'+var1+'_vs_'+var2+'_'+no+'_'+str(n_iteration)+'_'+name+'.png', dpi=200,bbox_inches='tight')
     plt.clf()
 
 
