@@ -24,7 +24,7 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
         ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
         ripl.assume('make_rq',VentureFunction(makeRQ, [t.NumberType(), t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
 
-        ripl.assume('a','(tag (quote parameter) 0 (log  (uniform_continuous  0 5)))')
+        ripl.assume('a1','(tag (quote parameter) 0 (log  (uniform_continuous  0 5)))')
         ripl.assume('sf1','(tag (quote parameter) 1 (log (uniform_continuous  0 5 )))')
         ripl.assume('sf2',' (tag (quote parameter) 2 (log (uniform_continuous  0 5 )))')
         ripl.assume('p',' (tag (quote parameter) 3 (log (uniform_continuous  0.01 5)))')
@@ -37,7 +37,7 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
         ripl.assume('alpha','(tag (quote hypers)9 (log (uniform_continuous 0 5)))')
         ripl.assume('sf',' (tag (quote parameter) 10 (log (uniform_continuous  0 5)))')
 
-        ripl.assume('lin1', "(apply_function make_linear a   )")
+        ripl.assume('lin1', "(apply_function make_linear a1   )")
         ripl.assume('per1', "(apply_function make_periodic l  p  sf ) ")
         ripl.assume('se1', "(apply_function make_se sf1 l1)")
         ripl.assume('se2', "(apply_function make_se sf2 l2)")
@@ -89,5 +89,8 @@ class Grammar_Venture_GP_model_airold(Venture_GP_model):
         ripl.bind_foreign_sp("covfunc_interpreter",typed_nr(GrammarInterpreter(), [t.AnyType()], t.AnyType()))
         ripl.assume("interp","(covfunc_interpreter cov_structure)")
 
-
+    def collect_parameters(self,ripl):
+        return [ripl.sample("(exp a1)"),ripl.sample("(exp sf1)"),ripl.sample("(exp sf2)"),ripl.sample("(exp p)"),ripl.sample("(exp l)"),
+                ripl.sample("(exp l1)"),ripl.sample("(exp l2)"),ripl.sample("(exp l_rq)"),ripl.sample("(exp sf_rq)"),ripl.sample("(exp alpha)"),
+                ripl.sample("(exp sf)")]
 
