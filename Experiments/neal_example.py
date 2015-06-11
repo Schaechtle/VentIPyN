@@ -40,12 +40,17 @@ for i in range(n):
         ys[i] = f(xs[i]) + np.random.normal(0,0.1,1)
     else:
         ys[i] = f(xs[i]) + np.random.normal(0,1,1)
+
+#xs = np.load('syndata/x_ipythons.npy')
+#ys = np.load('syndata/y_ipythons.npy')
         
 def f_restr(x):
-    matches = np.argwhere(xs - x < 1e-6)
+    matches = np.argwhere(np.abs(xs - x) < 1e-6)
     if matches.size == 0:
         raise Exception('Illegal query')
     else:
+        if matches.size != 1:
+            raise Exception("the is", matches)
         i = matches[0,0]
         return ys[i]
 
@@ -63,7 +68,7 @@ def observe_true_values(xs_to_observe):
         ripl.predict('(f_compute %f)' % (x,))
 
 def genSamples(xs):
-    return '(f_emu (array %s))' % ' '.join(str(x) for x in xs)
+    return '((second package) (array %s))' % ' '.join(str(x) for x in xs)
 
 ripl = shortcuts.make_lite_church_prime_ripl()
 ripl.bind_foreign_sp("make_gp_part_der",gp_der.makeGPSP)
@@ -106,40 +111,42 @@ ripl.assume('package', '(gpmem f_restr composite_covariance)')
 ripl.assume('f_compute', '(first package)')
 ripl.assume('f_emu', '(second package)')
 
-fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
-#xpost= np.random.uniform(-3,3,200)
-for i in range(100):
-    xpost= np.random.uniform(-3,3,200)
-    sampleString=genSamples(xpost)
-    ypost = ripl.sample(sampleString)
-    yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
-    pl.plot(sorted(xpost),yp,c="red",alpha=0.008,linewidth=2)
+while False:
+    fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
+    #xpost= np.random.uniform(-3,3,200)
+    for i in range(500):
+        xpost= np.random.uniform(-3,3,200)
+        sampleString=genSamples(xpost)
+        ypost = ripl.sample(sampleString)
+        yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
+        pl.plot(sorted(xpost),yp,c="red",alpha=0.008,linewidth=2)
 
-plt.axis((-2,2,-1,3))
-pl.plot(x2plot,f2plot,color='blue')
-pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
-    
-fig.savefig('neal_example_figs/neal_se_1'+no+'.svg', dpi=fig.dpi)
-fig.savefig('neal_example_figs/neal_se_1'+no+'.png', dpi=fig.dpi)
+    plt.axis((-2,2,-1,3))
+    pl.plot(x2plot,f2plot,color='blue')
+    pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
+        
+    fig.savefig('neal_example_figs/neal_se_1'+no+'.svg', dpi=fig.dpi)
+    fig.savefig('neal_example_figs/neal_se_1'+no+'.png', dpi=fig.dpi)
 
 
 observe_true_values(xs)
 
-fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
-#xpost= np.random.uniform(-3,3,200)
-for i in range(100):
-    xpost= np.random.uniform(-3,3,200)
-    sampleString=genSamples(xpost)
-    ypost = ripl.sample(sampleString)
-    yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
-    pl.plot(sorted(xpost),yp,c="red",alpha=0.008,linewidth=2)
+while False:
+    fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
+    #xpost= np.random.uniform(-3,3,200)
+    for i in range(100):
+        xpost= np.random.uniform(-3,3,200)
+        sampleString=genSamples(xpost)
+        ypost = ripl.sample(sampleString)
+        yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
+        pl.plot(sorted(xpost),yp,c="red",alpha=0.008,linewidth=2)
 
-plt.axis((-2,2,-1,3))
-pl.plot(x2plot,f2plot,color='blue')
-pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
-    
-fig.savefig('neal_example_figs/neal_se_2'+no+'.svg', dpi=fig.dpi)
-fig.savefig('neal_example_figs/neal_se_2'+no+'.png', dpi=fig.dpi)
+    plt.axis((-2,2,-1,3))
+    pl.plot(x2plot,f2plot,color='blue')
+    pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
+        
+    fig.savefig('neal_example_figs/neal_se_2'+no+'.svg', dpi=fig.dpi)
+    fig.savefig('neal_example_figs/neal_se_2'+no+'.png', dpi=fig.dpi)
 
 ripl.infer("(repeat 100 (do (mh (quote hyperhyper) one 2) (mh (quote hyper) one 1)))")
 
@@ -147,6 +154,13 @@ ripl.infer("(repeat 100 (do (mh (quote hyperhyper) one 2) (mh (quote hyper) one 
 
 fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
 #xpost= np.random.uniform(-3,3,200)
+
+#ripl.assume('gp', '(make_gp_part_der zero (apply_function func_plus (apply_function make_se sf l) (apply_function make_noise sigma)))')
+#ripl.observe('(gp (array %s))' % ' '.join(str(x) for x in xs), array(ys))
+#ripl.infer('(incorporate)')
+#print "Observations were successful"
+print "sf = %s, l = %s, sigma = %s" % (ripl.sample('sf'), ripl.sample('l'), ripl.sample('sigma'))
+
 for i in range(500):
     xpost= np.random.uniform(-3,3,200)
     sampleString=genSamples(xpost)
@@ -158,5 +172,5 @@ plt.axis((-2,2,-1,3))
 pl.plot(x2plot,f2plot,color='blue')
 pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')
 
-fig.savefig('neal_example_figs/neal_se_3'+no+'.svg', dpi=fig.dpi)
-fig.savefig('neal_example_figs/neal_se_3'+no+'.png', dpi=fig.dpi)
+fig.savefig('neal_example_figs/neal_se_3'+no+'_nonotebook.svg', dpi=fig.dpi)
+fig.savefig('neal_example_figs/neal_se_3'+no+'_nonotebook.png', dpi=fig.dpi)

@@ -70,7 +70,7 @@ if __name__ == '__main__':
     ns = parser.parse_args()
     ## Load in the data from log
     if ns.case == 'with_gpmem':
-        datafname='log_with_gpmem/plot_datas.pkl'
+        datafname='log_with_gpmem/plot_data.pkl'
         fig_fname_prefix = 'BayesOpt_gpmem_sequence'
     elif ns.case == 'without_gpmem':
         datafname='log_without_gpmem/plot_datas.pkl'
