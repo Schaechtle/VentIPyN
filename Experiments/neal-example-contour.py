@@ -43,15 +43,6 @@ for i in range(1,len(sys.argv)):
                 particles = str(sys.argv[i+1])
 
 
-
-
-
-
-
-
-
-
-
 '''
 fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
 pl.scatter(x,y)
@@ -61,7 +52,6 @@ pl.plot(x2plot,f2plot,c='black')
 for i in range(1,len(sys.argv)):
             if str(sys.argv[i])=="-sp": # structure posterior
                 structure_posterior= True
-
 
 def array(xs):
   return t.VentureArrayUnboxed(np.array(xs),  t.NumberType())
@@ -100,12 +90,12 @@ def plot_hyper(n_iteration):
     ripl.assume('make_noise',VentureFunction(makeNoise,[t.NumberType()], t.AnyType("VentureFunction")))
 
 
-    ripl.assume('alpha_sf','(tag (quote hyperhyper) 0 (gamma 7 1))')
-    ripl.assume('beta_sf','(tag (quote hyperhyper) 2 (gamma 1 0.5))')
-    ripl.assume('alpha_l','(tag (quote hyperhyper) 1 (gamma 7 1))')
-    ripl.assume('beta_l','(tag (quote hyperhyper) 3 (gamma 1 0.5))')
-    ripl.assume('alpha_s','(tag (quote hyperhyper) 4 (gamma 7 1))')
-    ripl.assume('beta_s','(tag (quote hyperhyper) 5 (gamma 1 0.5))')
+    ripl.assume('alpha_sf','(tag (quote hyperhyper) 0 (gamma 7 2))')
+    ripl.assume('beta_sf','(tag (quote hyperhyper) 2 (gamma 1 1))')
+    ripl.assume('alpha_l','(tag (quote hyperhyper) 1 (gamma 7 2))')
+    ripl.assume('beta_l','(tag (quote hyperhyper) 3 (gamma 1 1))')
+    ripl.assume('alpha_s','(tag (quote hyperhyper) 4 (gamma 7 2))')
+    ripl.assume('beta_s','(tag (quote hyperhyper) 5 (gamma 1 1))')
 
     ripl.assume('sf','(tag (quote hyper) 0 (gamma alpha_sf beta_sf ))')
     ripl.assume('l','(tag (quote hyper) 1 (gamma alpha_l beta_l ))')
@@ -162,7 +152,7 @@ def plot_hyper(n_iteration):
     #tikz_save('/home/ulli/Dropbox/gpmemplots/neal_contourunif_sigma_before_'+no+str(n_iteration)+'.tikz', figureheight='8cm', figurewidth='8cm' )
 
     fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
-    '''
+
     for i in range(100):
         xpost= np.random.uniform(-3,3,200)
         sampleString=genSamples(xpost)
@@ -175,7 +165,7 @@ def plot_hyper(n_iteration):
     plt.scatter(x,y,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')
     fig.savefig('/home/ulli/Dropbox/gpmemplots/neal_contourcheck_'+no+'_'+str(n_iteration)+'.png', dpi=fig.dpi)
     plt.clf()
-    '''
+
     plot_contours(df_before,'before',n_iteration)
     plot_contours(df,'after',n_iteration)
 
