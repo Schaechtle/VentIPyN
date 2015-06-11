@@ -162,7 +162,7 @@ def plot_hyper(n_iteration):
     #tikz_save('/home/ulli/Dropbox/gpmemplots/neal_contourunif_sigma_before_'+no+str(n_iteration)+'.tikz', figureheight='8cm', figurewidth='8cm' )
 
     fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
-
+    '''
     for i in range(100):
         xpost= np.random.uniform(-3,3,200)
         sampleString=genSamples(xpost)
@@ -175,6 +175,7 @@ def plot_hyper(n_iteration):
     plt.scatter(x,y,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')
     fig.savefig('/home/ulli/Dropbox/gpmemplots/neal_contourcheck_'+no+'_'+str(n_iteration)+'.png', dpi=fig.dpi)
     plt.clf()
+    '''
     plot_contours(df_before,'before',n_iteration)
     plot_contours(df,'after',n_iteration)
 
