@@ -140,7 +140,8 @@ def plot_hyper(n_iteration):
 
 
 
-    ds = ripl.infer('(collect sf l sigma)')
+    #ds = ripl.infer('(collect sf l sigma)')
+    ds = ripl.infer('(collect l sigma)')
     df = ds.asPandas()
     df['Hyper-Parameter Learning']= pd.Series(['after' for _ in range(len(df.index))], index=df.index)
 
@@ -174,11 +175,11 @@ def plot_hyper(n_iteration):
 def plot_contours(df,name,n_iteration):
 
     joint_grid_plot("l","sigma",df,name,n_iteration)
-    #joint_grid_plot("l","sf",df,name,n_iteration)
-    #joint_grid_plot("sf","sigma",df,name,n_iteration)
+    joint_grid_plot("l","sf",df,name,n_iteration)
+    joint_grid_plot("sf","sigma",df,name,n_iteration)
     joint_grid_plot("l","sigma",df,name,n_iteration,False)
-    #joint_grid_plot("l","sf",df,name,n_iteration,False)
-    #joint_grid_plot("sf","sigma",df,name,n_iteration,False)
+    joint_grid_plot("l","sf",df,name,n_iteration,False)
+    joint_grid_plot("sf","sigma",df,name,n_iteration,False)
 
 
 
