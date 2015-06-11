@@ -13,9 +13,11 @@ sys.path.append('../SPs/')
 import venture.lite.types as t
 from venture.lite.function import VentureFunction
 import gp_der
+import gpmem2 as gpmem
 
 from models.tools import array
 import random
+from venture.lite.builtin import deterministic_typed
 
 figwidth = 10
 figheight = 10
@@ -30,27 +32,38 @@ def f(x):
 x2plot = np.linspace(-3,3,1000)
 f2plot = f(x2plot)
 
-x = np.random.normal(0,1,n)
-y=np.zeros(x.shape)
+xs = np.random.normal(0,1,n)
+ys = np.zeros(xs.shape)
 
 for i in range(n):
     if random.random()>0.10:
-        y[i] = f(x[i]) + np.random.normal(0,0.1,1)
+        ys[i] = f(xs[i]) + np.random.normal(0,0.1,1)
     else:
-        y[i] = f(x[i]) + np.random.normal(0,1,1)
+        ys[i] = f(xs[i]) + np.random.normal(0,1,1)
         
-np.save('syndata/x_'+no+'.npy', x)
-np.save('syndata/y_'+no+'.npy', y)
+def f_restr(x):
+    matches = np.argwhere(xs - x < 1e-6)
+    if matches.size == 0:
+        raise Exception('Illegal query')
+    else:
+        i = matches[0,0]
+        return ys[i]
+
+f_restr_sp = deterministic_typed(f_restr, [t.NumberType()], t.NumberType())
+
+np.save('syndata/x_'+no+'.npy', xs)
+np.save('syndata/y_'+no+'.npy', ys)
+
 
 def array(xs):
-  return t.VentureArrayUnboxed(np.array(xs),  t.NumberType())
+    return t.VentureArrayUnboxed(np.array(xs),  t.NumberType())
 
-def makeObservations(x,y):
-    xString = genSamples(x)
-    ripl.observe(xString, array(y))
+def observe_true_values(xs_to_observe):
+    for x in xs_to_observe:
+        ripl.predict('(f_compute %f)' % (x,))
 
 def genSamples(xs):
-    return '(gp (array %s))' % ' '.join(str(x) for x in xs)
+    return '(f_emu (array %s))' % ' '.join(str(x) for x in xs)
 
 ripl = shortcuts.make_lite_church_prime_ripl()
 ripl.bind_foreign_sp("make_gp_part_der",gp_der.makeGPSP)
@@ -86,7 +99,12 @@ df['Hyper-Parameter Learning']= pd.Series(['before' for _ in range(len(df.index)
 df_before =df
 
 ripl.assume('composite_covariance', '(apply_function func_plus se wn)')
-ripl.assume('gp', '(make_gp_part_der zero composite_covariance)')
+
+ripl.bind_foreign_sp('gpmem', gpmem.gpmemSP)
+ripl.bind_foreign_sp('f_restr', f_restr_sp)
+ripl.assume('package', '(gpmem f_restr composite_covariance)')
+ripl.assume('f_compute', '(first package)')
+ripl.assume('f_emu', '(second package)')
 
 fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
 #xpost= np.random.uniform(-3,3,200)
@@ -99,13 +117,13 @@ for i in range(100):
 
 plt.axis((-2,2,-1,3))
 pl.plot(x2plot,f2plot,color='blue')
-pl.scatter(x,y,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
+pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
     
 fig.savefig('neal_example_figs/neal_se_1'+no+'.svg', dpi=fig.dpi)
 fig.savefig('neal_example_figs/neal_se_1'+no+'.png', dpi=fig.dpi)
 
 
-makeObservations(x,y)
+observe_true_values(xs)
 
 fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
 #xpost= np.random.uniform(-3,3,200)
@@ -118,7 +136,7 @@ for i in range(100):
 
 plt.axis((-2,2,-1,3))
 pl.plot(x2plot,f2plot,color='blue')
-pl.scatter(x,y,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
+pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
     
 fig.savefig('neal_example_figs/neal_se_2'+no+'.svg', dpi=fig.dpi)
 fig.savefig('neal_example_figs/neal_se_2'+no+'.png', dpi=fig.dpi)
@@ -138,7 +156,7 @@ for i in range(500):
 
 plt.axis((-2,2,-1,3))
 pl.plot(x2plot,f2plot,color='blue')
-pl.scatter(x,y,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')
+pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')
 
 fig.savefig('neal_example_figs/neal_se_3'+no+'.svg', dpi=fig.dpi)
 fig.savefig('neal_example_figs/neal_se_3'+no+'.png', dpi=fig.dpi)
