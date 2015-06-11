@@ -15,7 +15,7 @@ def multivariate_normal_logpdf(x, mu, sigma):
   dev = x - mu
   ans = 0
   ans += (-.5*(x-mu).transpose() * la.inv(sigma) * (x-mu))[0, 0]
-  ans += -.5*len(sigma)*np.log(2 * np.pi)
+  ans += -.5*len(x)*np.log(2 * np.pi)
   ans += -.5*np.log(la.det(sigma))
   return ans
 
@@ -75,7 +75,6 @@ class GP(object):
         mu = mu1 +np.dot(sigma12,(np.dot(inv22, (a2 - mu2))))
         sigma = sigma11 - np.dot(sigma12,np.dot(inv22,sigma21))
 
-
     return mu, sigma
 
   def sample(self, *xs):
@@ -107,13 +106,13 @@ class GP(object):
         return -float('Inf')
     return lD
 
-  def logDensityOfCounts(self):
+  def logDensityOfCounts(self, samples):
     """Log density of the current samples."""
     #print("in logDensity of Counts")
-    if len(self.samples) == 0:
+    if len(samples) == 0:
       return 0
-    xs = self.samples.keys()
-    os = self.samples.values()
+    xs = samples.keys()
+    os = samples.values()
     n = len(xs)
     K = self.cov_matrix(xs,xs)            # evaluate covariance matrix
     m = self.mean_array(xs)
@@ -122,6 +121,7 @@ class GP(object):
     sn2   = 0.1                       # noise variance of likGauss
     #L     = np.linalg.cholesky(K/sn2+np.eye(n)).T         # Cholesky factor of covariance with noise
     try:
+        raise Exception("For testing purposes, let's use the naive way for now")
         L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
     except:
         #print("numerical issues with K, trying the naive way")
@@ -173,7 +173,7 @@ class GPOutputPSP(RandomPSP):
 
   def logDensityOfCounts(self,args):
     samples = args.samples
-    return self.makeGP(samples).logDensityOfCounts()
+    return self.makeGP(collections.OrderedDict()).logDensityOfCounts(samples)
 
   def incorporate(self,os,args):
     samples = args.spaux.samples
