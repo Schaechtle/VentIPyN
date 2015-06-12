@@ -73,10 +73,10 @@ def get_plot_data(ripl):
 plot_datas = []
 for i in range(15):
     xs = [ripl.sample('(uniform_continuous -20 20)') for dummy in range(15)]
-    ys = [ripl.sample('(lookup (f_emu (array %f)) 0)' % x) for x in xs]
+    ys = [ripl.sample('(lookup ((second package) (array %f)) 0)' % x) for x in xs]
     ripl.predict('(f_compute %f)' % xs[np.argmax(ys)])
     # Once the GP copying stuff works, we will be able to replace the above with:
-    # ripl.predict('(f_compute (mc_argmax (lambda (x) (f_emu (array x))) (quote LOLNOTHING)))')
+    # ripl.predict('(f_compute (mc_argmax (lambda (x) ((second package) (array x))) (quote LOLNOTHING)))')
     ripl.infer('(mh (quote hyper) one 50)')
     plot_datas.append(get_plot_data(ripl))
 
@@ -94,7 +94,7 @@ print "Best (x,y) pair: (%.2f, %.2f)" % (xbest, ybest)
 #
 #xpost = np.linspace(-20, 20, 100)
 #for i in range(100):
-#    sample_expr = '(f_emu (array %s))' % (' '.join(str(x) for x in xpost),)
+#    sample_expr = '((second package) (array %s))' % (' '.join(str(x) for x in xpost),)
 #    ypost = ripl.sample(sample_expr)
 #    plt.plot(xpost, ypost, c='red', alpha=0.1, linewidth=2)
 #
