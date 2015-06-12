@@ -16,161 +16,123 @@ import gp_der
 import gpmem2 as gpmem
 
 from models.tools import array
-import random
+from random import random as rand
 from venture.lite.builtin import deterministic_typed
 
-figwidth = 10
-figheight = 10
+## UNINTERESTING PREPARATION
 
+# Plotting stuff
 sns.set(font_scale=2)
-no = "s"
-n = 100
 
-def f(x):
-    return 0.3 + 0.4*x + 0.5*np.sin(2.7*x) + (1.1/(1+x**2))
+def plot_current(fname_prefix):
+    figwidth = 10
+    figheight = 10
+    fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
+    for i in range(100):
+        xs = np.random.uniform(-3,3,200)
+        ys = ripl.sample(get_emu_expr(xs))
+        pl.plot(xs, ys, c="red", alpha=0.008, linewidth=2)
+    plt.axis((-2,2,-1,3))
+    x2plot = np.linspace(-3,3,1000)
+    f2plot = f_noiseless(x2plot)
+    plt.plot(x2plot,f2plot,color='blue')
+    plt.scatter(data_xs, data_ys, color='black', marker='x', s=50, edgecolor='black', linewidth='1.5')   
 
-x2plot = np.linspace(-3,3,1000)
-f2plot = f(x2plot)
+    fig.savefig(fname_prefix + '.svg', dpi=fig.dpi)
+    fig.savefig(fname_prefix + '.png', dpi=fig.dpi)
+    return fig
 
-xs = np.random.normal(0,1,n)
-ys = np.zeros(xs.shape)
-
-for i in range(n):
-    if random.random()>0.10:
-        ys[i] = f(xs[i]) + np.random.normal(0,0.1,1)
-    else:
-        ys[i] = f(xs[i]) + np.random.normal(0,1,1)
-
-#xs = np.load('syndata/x_ipythons.npy')
-#ys = np.load('syndata/y_ipythons.npy')
-        
-def f_restr(x):
-    matches = np.argwhere(np.abs(xs - x) < 1e-6)
-    if matches.size == 0:
-        raise Exception('Illegal query')
-    else:
-        if matches.size != 1:
-            raise Exception("the is", matches)
-        i = matches[0,0]
-        return ys[i]
-
-f_restr_sp = deterministic_typed(f_restr, [t.NumberType()], t.NumberType())
-
-np.save('syndata/x_'+no+'.npy', xs)
-np.save('syndata/y_'+no+'.npy', ys)
-
-
+# Other miscellaneous utilities
 def array(xs):
     return t.VentureArrayUnboxed(np.array(xs),  t.NumberType())
 
-def observe_true_values(xs_to_observe):
-    for x in xs_to_observe:
-        ripl.predict('(f_compute %f)' % (x,))
+def make_ripl():
+    ripl = shortcuts.make_lite_church_prime_ripl()
+    ripl.bind_foreign_sp("make_gp_part_der",gp_der.makeGPSP)
+    ripl.bind_foreign_sp('gpmem', gpmem.gpmemSP)
+    ripl.assume('make_const_func', VentureFunction(makeConstFunc, [t.NumberType()], constantType))
+    ripl.assume('zero', "(apply_function make_const_func 0)")
+    ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
+    ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
+    ripl.assume('make_noise',VentureFunction(makeNoise,[t.NumberType()], t.AnyType("VentureFunction")))
+    return ripl
 
-def genSamples(xs):
-    return '((second package) (array %s))' % ' '.join(str(x) for x in xs)
 
-ripl = shortcuts.make_lite_church_prime_ripl()
-ripl.bind_foreign_sp("make_gp_part_der",gp_der.makeGPSP)
-ripl.assume('make_const_func', VentureFunction(makeConstFunc, [t.NumberType()], constantType))
-ripl.assume('zero', "(apply_function make_const_func 0)")
+## GENERATING THE DATA
 
-#ripl.assume("func_times", makeLiftedMult(lambda x1, x2: np.multiply(x1,x2)))
-ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
+# The true regression function and noise model
+def f_noiseless(x):
+    return 0.3 + 0.4*x + 0.5*np.sin(2.7*x) + (1.1/(1+x**2))
+@np.vectorize
+def f_noisy(x):
+    p_outlier = 0.1
+    stdev = (1.0 if rand() < p_outlier else 0.1)
+    return np.random.normal(f_noiseless(x), stdev)
 
-ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType()], t.AnyType("VentureFunction")))
-ripl.assume('make_noise',VentureFunction(makeNoise,[t.NumberType()], t.AnyType("VentureFunction")))
+# Generate and save a data set
+n = 100
+data_xs = np.random.normal(0,1,n)
+data_ys = f_noisy(data_xs)
 
-ripl.assume('alpha_sf','(tag (quote hyperhyper) 0 (gamma 7 1))')
-ripl.assume('beta_sf','(tag (quote hyperhyper) 2 (gamma 1 0.5))')
-ripl.assume('alpha_l','(tag (quote hyperhyper) 1 (gamma 7 1))')
-ripl.assume('beta_l','(tag (quote hyperhyper) 3 (gamma 1 0.5))')
-ripl.assume('alpha_s','(tag (quote hyperhyper) 4 (gamma 7 1))')
-ripl.assume('beta_s','(tag (quote hyperhyper) 5 (gamma 1 0.5))')
+experiment_id = 's'
+np.save('syndata/x_%s.npy' % (experiment_id,), data_xs)
+np.save('syndata/y_%s.npy' % (experiment_id,), data_ys)
 
-ripl.assume('sf','(tag (quote hyper) 0 (log (gamma alpha_sf beta_sf )))')
-ripl.assume('l','(tag (quote hyper) 1 (log (gamma alpha_l beta_l )))')
 
-ripl.assume('sigma','(tag (quote hyper) 2 (uniform_continuous 0 2 ))')
-ripl.assume('l_sigma','(log sigma)')
-
-ripl.assume('se', "(apply_function make_se sf l )")
-ripl.assume('wn','(apply_function make_noise sigma  )')
-
-ds = ripl.infer('(collect sf l sigma)')
-df = ds.asPandas()
-df['Hyper-Parameter Learning']= pd.Series(['before' for _ in range(len(df.index))], index=df.index)
-
-df_before =df
-
+## SETTING UP THE MODEL
+ripl = make_ripl()
+# Hyperparameters
+ripl.assume('alpha_sf', "(tag 'hyperhyper 0 (gamma 7 1))")
+ripl.assume('beta_sf', "(tag 'hyperhyper 2 (gamma 1 0.5))")
+ripl.assume('alpha_l', "(tag 'hyperhyper 1 (gamma 7 1))")
+ripl.assume('beta_l', "(tag 'hyperhyper 3 (gamma 1 0.5))")
+ripl.assume('alpha_s', "(tag 'hyperhyper 4 (gamma 7 1))")
+ripl.assume('beta_s', "(tag 'hyperhyper 5 (gamma 1 0.5))")
+# Parameters of the covariance function
+ripl.assume('sf',"(tag 'hyper 0 (log (gamma alpha_sf beta_sf )))")
+ripl.assume('l',"(tag 'hyper 1 (log (gamma alpha_l beta_l )))")
+ripl.assume('sigma',"(tag 'hyper 2 (uniform_continuous 0 2 ))")
+# The covariance function
+ripl.assume('se', '(apply_function make_se sf l)')
+ripl.assume('wn','(apply_function make_noise sigma)')
 ripl.assume('composite_covariance', '(apply_function func_plus se wn)')
 
-ripl.bind_foreign_sp('gpmem', gpmem.gpmemSP)
+# Set up the gpmem
+def f_restr(x):
+    matches = np.argwhere(np.abs(data_xs - x) < 1e-6)
+    if matches.size == 0:
+        raise Exception('Illegal query')
+    else:
+        assert matches.size == 1
+        i = matches[0,0]
+        return data_ys[i]
+f_restr_sp = deterministic_typed(f_restr, [t.NumberType()], t.NumberType())
 ripl.bind_foreign_sp('f_restr', f_restr_sp)
-ripl.assume('package', '(gpmem f_restr composite_covariance)')
-ripl.assume('f_compute', '(first package)')
-ripl.assume('f_emu', '(second package)')
+ripl.assume('compute_and_emu', '(gpmem f_restr composite_covariance)')
 
-while False:
-    fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
-    #xpost= np.random.uniform(-3,3,200)
-    for i in range(500):
-        xpost= np.random.uniform(-3,3,200)
-        sampleString=genSamples(xpost)
-        ypost = ripl.sample(sampleString)
-        yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
-        pl.plot(sorted(xpost),yp,c="red",alpha=0.008,linewidth=2)
-
-    plt.axis((-2,2,-1,3))
-    pl.plot(x2plot,f2plot,color='blue')
-    pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
-        
-    fig.savefig('neal_example_figs/neal_se_1'+no+'.svg', dpi=fig.dpi)
-    fig.savefig('neal_example_figs/neal_se_1'+no+'.png', dpi=fig.dpi)
+# Shortcut for creating the Venture expression to sample f_emu on a list of x values
+def get_emu_expr(xs):
+    return '((second compute_and_emu) (array %s))' % ' '.join(str(x) for x in xs)
 
 
-observe_true_values(xs)
+## RUNNING THE EXPERIMENTS
 
-while False:
-    fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
-    #xpost= np.random.uniform(-3,3,200)
-    for i in range(100):
-        xpost= np.random.uniform(-3,3,200)
-        sampleString=genSamples(xpost)
-        ypost = ripl.sample(sampleString)
-        yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
-        pl.plot(sorted(xpost),yp,c="red",alpha=0.008,linewidth=2)
+# Plot the prior, before any observations
+plot_current('neal_example_figs/neal_se_1%s' % (experiment_id,))
 
-    plt.axis((-2,2,-1,3))
-    pl.plot(x2plot,f2plot,color='blue')
-    pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')   
-        
-    fig.savefig('neal_example_figs/neal_se_2'+no+'.svg', dpi=fig.dpi)
-    fig.savefig('neal_example_figs/neal_se_2'+no+'.png', dpi=fig.dpi)
+# Observe the data points (i.e., compute some values of f_restr).
+for x in data_xs:
+    ripl.predict('((first compute_and_emu) %f)' % (x,))
+ripl.infer('(incorporate)')
 
+# Plot the posterior after observations, but before inference on the hyperparameters.
+plot_current('neal_example_figs/neal_se_2%s' % (experiment_id,))
+
+# Infer the hyperparameters
 ripl.infer("(repeat 100 (do (mh (quote hyperhyper) one 2) (mh (quote hyper) one 1)))")
-
-
-
-fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
-#xpost= np.random.uniform(-3,3,200)
-
-#ripl.assume('gp', '(make_gp_part_der zero (apply_function func_plus (apply_function make_se sf l) (apply_function make_noise sigma)))')
-#ripl.observe('(gp (array %s))' % ' '.join(str(x) for x in xs), array(ys))
-#ripl.infer('(incorporate)')
-#print "Observations were successful"
+# Debug message
 print "sf = %s, l = %s, sigma = %s" % (ripl.sample('sf'), ripl.sample('l'), ripl.sample('sigma'))
 
-for i in range(500):
-    xpost= np.random.uniform(-3,3,200)
-    sampleString=genSamples(xpost)
-    ypost = ripl.sample(sampleString)
-    yp = [y_temp for (x_temp,y_temp) in sorted(zip(xpost,ypost))]
-    pl.plot(sorted(xpost),yp,c="red",alpha=0.008,linewidth=2)
+# Plot the posterior after inference on the hyperparameters
+plot_current('neal_example_figs/neal_se_3%s' % (experiment_id,))
 
-plt.axis((-2,2,-1,3))
-pl.plot(x2plot,f2plot,color='blue')
-pl.scatter(xs,ys,color='black',marker='x',s=50,edgecolor='black',linewidth='1.5')
-
-fig.savefig('neal_example_figs/neal_se_3'+no+'_nonotebook.svg', dpi=fig.dpi)
-fig.savefig('neal_example_figs/neal_se_3'+no+'_nonotebook.png', dpi=fig.dpi)
