@@ -14,7 +14,9 @@ import venture.lite.types as t
 from venture.lite.function import VentureFunction
 from venture.lite.builtin import deterministic_typed
 import gp_der
-import gpmem
+import gpmem2 as gpmem
+import pickle
+from without_gpmem import PlotData
 
 from models.tools import array
 
@@ -58,13 +60,25 @@ ripl.assume('mc_argmax', '''
             (linspace 0 0 15))))
     ''')
 
+def get_plot_data(ripl):
+    sf1 = ripl.sample('sf1')
+    l1 = ripl.sample('l1')
+    stats = ripl.infer('(extract_stats f_emu)')
+    assert len(stats[1]) > 0
+    (xbest, ybest) = stats[0]
+    all_pairs = stats[1]
+    (Xseen, Yseen) = zip(*all_pairs)
+    return PlotData(sf1, l1, Xseen, Yseen)
+
+plot_datas = []
 for i in range(15):
     xs = [ripl.sample('(uniform_continuous -20 20)') for dummy in range(15)]
     ys = [ripl.sample('(lookup (f_emu (array %f)) 0)' % x) for x in xs]
     ripl.predict('(f_compute %f)' % xs[np.argmax(ys)])
     # Once the GP copying stuff works, we will be able to replace the above with:
     # ripl.predict('(f_compute (mc_argmax (lambda (x) (f_emu (array x))) (quote LOLNOTHING)))')
-    ripl.infer('(mh (quote hyper) one 2)')
+    ripl.infer('(mh (quote hyper) one 50)')
+    plot_datas.append(get_plot_data(ripl))
 
 print "Inferred sigma = %.2f, l = %.2f" % (ripl.sample('sf1'), ripl.sample('l1'))
 stats = ripl.infer('(extract_stats f_emu)')
@@ -73,23 +87,31 @@ all_pairs = stats[1]
 (Xseen, Yseen) = zip(*all_pairs)
 print "Best (x,y) pair: (%.2f, %.2f)" % (xbest, ybest)
 
-sns.set(font_scale=3)
-figlength = 30
-figheigth = 10
-fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
+#sns.set(font_scale=3)
+#figlength = 30
+#figheigth = 10
+#fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
+#
+#xpost = np.linspace(-20, 20, 100)
+#for i in range(100):
+#    sample_expr = '(f_emu (array %s))' % (' '.join(str(x) for x in xpost),)
+#    ypost = ripl.sample(sample_expr)
+#    plt.plot(xpost, ypost, c='red', alpha=0.1, linewidth=2)
+#
+#plt.plot(xpost, [ripl.sample('(f %f)' % (x,)) for x in xpost], 'b-', label='true')  
+#plt.xlim(-20,20)
+#plt.ylim(-2,2)
+#plt.scatter(Xseen,Yseen,color='black',marker='x',s=400,edgecolor='black',linewidth='3')
+#
+#plt.legend()
+#plt.show()
+#
+#fig.savefig('BayesOpt_with_gpmem.svg', dpi=fig.dpi,bbox_inches='tight')
+#fig.savefig('BayesOpt_with_gpmem.png', dpi=fig.dpi,bbox_inches='tight')
 
-xpost = np.linspace(-20, 20, 100)
-for i in range(50):
-    sample_expr = '(array %s)' % (' '.join('(f_emu (array %f))' % (x,) for x in xpost),)
-    ypost = ripl.sample(sample_expr)
-    plt.plot(xpost, ypost, c='red', alpha=0.1, linewidth=2)
+# Log the data for later plots
+log_fname = 'log_with_gpmem/plot_data.pkl'
+print "Logging to %s" % (log_fname)
+with open(log_fname, 'wb') as f:
+    pickle.dump(plot_datas, f)
 
-plt.plot(xpost, [ripl.sample('(f %f)' % (x,)) for x in xpost], 'b-', label='true')  
-plt.ylim(-2,2)
-plt.scatter(Xseen,Yseen,color='black',marker='x',s=400,edgecolor='black',linewidth='3')
-
-plt.legend()
-plt.show()
-
-fig.savefig('BayesOpt_with_gpmem.svg', dpi=fig.dpi,bbox_inches='tight')
-fig.savefig('BayesOpt_with_gpmem.png', dpi=fig.dpi,bbox_inches='tight')
