@@ -29,7 +29,7 @@ def plot_current(fname_prefix):
     figheight = 10
     fig = plt.figure(figsize=(figwidth,figheight), dpi=200)
     for i in range(100):
-        xs = np.random.uniform(-3,3,200)
+        xs = np.sort(np.random.uniform(-3,3,200))
         ys = ripl.sample(get_emu_expr(xs))
         pl.plot(xs, ys, c="red", alpha=0.008, linewidth=2)
     plt.axis((-2,2,-1,3))
@@ -129,7 +129,7 @@ ripl.infer('(incorporate)')
 plot_current('neal_example_figs/neal_se_2%s' % (experiment_id,))
 
 # Infer the hyperparameters
-ripl.infer("(repeat 100 (do (mh (quote hyperhyper) one 2) (mh (quote hyper) one 1)))")
+ripl.infer("(repeat 100 (do (mh 'hyperhyper one 2) (mh 'hyper one 1)))")
 # Debug message
 print "sf = %s, l = %s, sigma = %s" % (ripl.sample('sf'), ripl.sample('l'), ripl.sample('sigma'))
 
