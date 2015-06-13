@@ -123,7 +123,6 @@ plot_current('neal_example_figs/neal_se_1%s' % (experiment_id,))
 # Observe the data points (i.e., compute some values of f_restr).
 for x in data_xs:
     ripl.predict('((first compute_and_emu) %f)' % (x,))
-ripl.infer('(incorporate)')
 
 # Plot the posterior after observations, but before inference on the hyperparameters.
 plot_current('neal_example_figs/neal_se_2%s' % (experiment_id,))
