@@ -5,7 +5,7 @@ import pylab as pl
 import numpy as np
 import numpy.linalg as la
 import pandas as pd
-import matplotlib.pyplot as plt
+from matplotlib import patches, pyplot as plt
 import scipy.io as scio
 from models.covFunctions import *
 
@@ -67,6 +67,8 @@ def sample_curve_from_gp(plot_data, curve_xs):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('case', type=str, choices=('with_gpmem', 'without_gpmem'))
+    parser.add_argument('--max-stages', type=int,
+            help='Only plot the first at most MAX_STAGES stages in the data set')
     ns = parser.parse_args()
     ## Load in the data from log
     if ns.case == 'with_gpmem':
@@ -80,6 +82,9 @@ if __name__ == '__main__':
 
     with open(datafname) as f:
         plot_datas_list = pickle.load(f)
+    if ns.max_stages is not None:
+        assert ns.max_stages > 1
+        plot_datas_list = plot_datas_list[:ns.max_stages]
     num_stages = len(plot_datas_list)
     plots_per_stage = len(plot_datas_list[0])
     plot_datas = np.zeros((num_stages, plots_per_stage), dtype=object)
@@ -91,7 +96,7 @@ if __name__ == '__main__':
     plotheight = 10
 
     fig, axs = plt.subplots(*plot_datas.shape)
-    fig.set_dpi(200)
+    fig.set_dpi(30)
     fig.set_figheight(plot_datas.shape[0] * plotheight)
     fig.set_figwidth(plot_datas.shape[1] * plotwidth)
 
@@ -99,7 +104,7 @@ if __name__ == '__main__':
 
     xpost = np.linspace(-20, 20, 100)
 
-    def draw_plot(plot_data, ax):
+    def draw_plot(plot_data, ax, circle_at=None):
         for i in range(500):
             #ripl = make_ripl_with_g(plot_data)
             #sampleString = '(g (array %s))' % (' '.join(str(x) for x in xpost),)
@@ -108,9 +113,12 @@ if __name__ == '__main__':
             yp = sample_curve_from_gp(plot_data, xpost)
             ax.plot(xpost, yp, c="red", alpha=0.1, linewidth=2)
 
-        ax.plot(xpost, [f_true(x) for x in xpost], 'b-', label='true')  
+        ax.plot(xpost, [f_true(x) for x in xpost], 'b-', label='true')
         ax.scatter(plot_data.Xseen, plot_data.Yseen,
                 color='black', marker='x', s=400, edgecolor='black', linewidth='3')
+        if circle_at is not None:
+            ax.add_artist(patches.Ellipse(
+                circle_at, 1.5, 0.3, color='green', linewidth=15, fill=False))
 
         ax.set_xlim(-20, 20)
         ax.set_ylim(-1.5, 1.5)
@@ -121,7 +129,13 @@ if __name__ == '__main__':
         print "sf1=%f, l1=%f" % (plot_data.sf1, plot_data.l1)
         print "Xseen = ", plot_data.Xseen
         print "Yseen = ", plot_data.Yseen
-        draw_plot(plot_data, axs[index])
+        (row, col) = index
+        if col == 1 and row < plot_datas.shape[0] - 1:
+            next_pd = plot_datas[row+1,0]
+            draw_plot(plot_data, axs[index],
+                    circle_at=(next_pd.Xseen[-1], next_pd.Yseen[-1]))
+        else:
+            draw_plot(plot_data, axs[index])
 
     fig.savefig('%s.svg' % (fig_fname_prefix,), dpi=fig.dpi,bbox_inches='tight')
     fig.savefig('%s.png' % (fig_fname_prefix,), dpi=fig.dpi,bbox_inches='tight')
