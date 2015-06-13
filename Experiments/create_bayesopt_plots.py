@@ -77,21 +77,23 @@ if __name__ == '__main__':
         fig_fname_prefix = 'BayesOpt_nogpmem_sequence'
     else:
         raise Exception('How did you get past argparse...')
+
     with open(datafname) as f:
-        plot_datas = pickle.load(f)
-    # TODO choose the set of plot datas you want to use
-    plot_datas = plot_datas[::1]
-    num_plots = len(plot_datas)
+        plot_datas_list = pickle.load(f)
+    num_stages = len(plot_datas_list)
+    plots_per_stage = len(plot_datas_list[0])
+    plot_datas = np.zeros((num_stages, plots_per_stage), dtype=object)
+    plot_datas[:,:] = plot_datas_list
 
     ## Set up the main figure
     sns.set(font_scale=3)
     plotwidth = 30
     plotheight = 10
 
-    fig, axs = plt.subplots(num_plots, 1)
+    fig, axs = plt.subplots(*plot_datas.shape)
     fig.set_dpi(200)
-    fig.set_figheight(num_plots * plotheight)
-    fig.set_figwidth(plotwidth)
+    fig.set_figheight(plot_datas.shape[0] * plotheight)
+    fig.set_figwidth(plot_datas.shape[1] * plotwidth)
 
     ## Make one subplot for each plot_data
 
@@ -114,12 +116,12 @@ if __name__ == '__main__':
         ax.set_ylim(-1.5, 1.5)
         ax.legend()
 
-    for (plot_data, ax) in zip(plot_datas, axs):
-        print "Plotting new panel:"
+    for (index, plot_data) in np.ndenumerate(plot_datas):
+        print "Plotting new panel at index %s:" % (index,)
         print "sf1=%f, l1=%f" % (plot_data.sf1, plot_data.l1)
         print "Xseen = ", plot_data.Xseen
         print "Yseen = ", plot_data.Yseen
-        draw_plot(plot_data, ax)
+        draw_plot(plot_data, axs[index])
 
     fig.savefig('%s.svg' % (fig_fname_prefix,), dpi=fig.dpi,bbox_inches='tight')
     fig.savefig('%s.png' % (fig_fname_prefix,), dpi=fig.dpi,bbox_inches='tight')
