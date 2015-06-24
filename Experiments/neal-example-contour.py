@@ -29,7 +29,7 @@ from scipy import stats
 
 n_it = 2
 
-particles = '3'
+particles = '10'
 no = "cont_0_"
 outlier_sigma=1
 for i in range(1,len(sys.argv)):
@@ -68,12 +68,23 @@ def genSamples(x):
     #print(sampleString)
     return sampleString
 
+def f(x):
+    return 0.3 + 0.4*x + 0.5*np.sin(2.7*x) + (1.1/(1+x**2))
+
 def plot_hyper(n_iteration):
 
+    n = 30
+    x = np.random.normal(0,1,n)
+    y = np.zeros(x.shape)
 
 
-    x = np.load('/home/ulli/Dropbox/gpmemplots/x_s.npy')
-    y = np.load('/home/ulli/Dropbox/gpmemplots/y_s.npy')
+    for i in range(n):
+        if random.random()>0.10:
+            y[i] = f(x[i]) + np.random.normal(0,0.1,1)
+        else:
+            y[i] = f(x[i]) + np.random.normal(0,1,1)
+
+
 
 
     ripl = shortcuts.make_lite_church_prime_ripl()
@@ -94,8 +105,7 @@ def plot_hyper(n_iteration):
     ripl.assume('beta_sf','(tag (quote hyperhyper) 2 (gamma 1 0.5))')
     ripl.assume('alpha_l','(tag (quote hyperhyper) 1 (gamma 7 1))')
     ripl.assume('beta_l','(tag (quote hyperhyper) 3 (gamma 1 0.5))')
-    ripl.assume('alpha_s','(tag (quote hyperhyper) 4 (gamma 7 1))')
-    ripl.assume('beta_s','(tag (quote hyperhyper) 5 (gamma 1 0.5))')
+
 
     ripl.assume('sf','(tag (quote hyper) 0  (gamma alpha_sf beta_sf ))')
     ripl.assume('l','(tag (quote hyper) 1 (gamma alpha_l beta_l ))')
@@ -116,7 +126,6 @@ def plot_hyper(n_iteration):
     df_before =df
 
 
-    ripl.assume('t_dist','(lambda (i) (student_t 4))')
 
 
 
@@ -135,7 +144,7 @@ def plot_hyper(n_iteration):
 
 
 
-    ripl.infer("(repeat 100 (do (mh (quote hyperhyper) one 2) (mh (quote hyper) one 1)))")
+    ripl.infer("(repeat 200 (do (mh (quote hyperhyper) one 1) (mh (quote hyper) one 2)))")
 
 
 
