@@ -77,9 +77,7 @@ def f(x):
 
 
 def plot_hyper(n_iteration,dir_name):
-    assert(os.path.exists("syndata/"+dir_name))
-    if not os.path.exists("syndata/"+dir_name):
-        os.makedirs("syndata/"+dir_name)
+    assert(os.path.exists("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name))
     if not os.path.exists("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name):
         os.makedirs("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name)
     if not os.path.isfile("syndata/"+dir_name+"/after_parameters_"+str(n_iteration)):
