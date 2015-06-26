@@ -76,8 +76,8 @@ def f(x):
     return 0.3 + 0.4 * x + 0.5 * np.sin(2.7 * x) + (1.1 / (1 + x ** 2))
 
 
-def plot_hyper(n_iteration,dir_name,syn_data_name):
-    assert(os.path.exists("syndata/"+syn_data_name))
+def plot_hyper(n_iteration,dir_name):
+    assert(os.path.exists("syndata/"+dir_name))
     if not os.path.exists("syndata/"+dir_name):
         os.makedirs("syndata/"+dir_name)
     if not os.path.exists("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name):
@@ -179,4 +179,4 @@ def joint_grid_plot(var1, var2, df, name, n_iteration, marginal=True):
 
 for i in range(n_it):
     print(i)
-    plot_hyper(i,dir_name,dir_name)
+    plot_hyper(i,dir_name)
