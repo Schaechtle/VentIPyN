@@ -36,8 +36,7 @@ n_it = 100
 particles = '100'
 no = "cont_0_"
 outlier_sigma = 1
-dir_name= "temp"
-syn_data_name="temp"
+dir_name="temp"
 for i in range(1, len(sys.argv)):
     if str(sys.argv[i]) == "--no":  # structure posterior
         no = str(sys.argv[i + 1])
@@ -180,4 +179,4 @@ def joint_grid_plot(var1, var2, df, name, n_iteration, marginal=True):
 
 for i in range(n_it):
     print(i)
-    plot_hyper(i,dir_name,syn_data_name)
+    plot_hyper(i,dir_name,dir_name)
