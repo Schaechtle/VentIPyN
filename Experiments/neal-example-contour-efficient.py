@@ -109,7 +109,7 @@ def plot_hyper(n_iteration,dir_name):
         ripl.assume('sf_l', '(log sf)')
         ripl.assume('l_l', '(log l)')
 
-        ripl.assume('sigma', '(tag (quote hyper) 2 (uniform_continuous 0 2 ))')
+        ripl.assume('sigma', '(tag (quote hyper) 2 (uniform_continuous 0 5 ))')
         ripl.assume('l_sigma', '(log sigma)')
 
         ripl.assume('se', "(apply_function make_se sf_l l_l )")
