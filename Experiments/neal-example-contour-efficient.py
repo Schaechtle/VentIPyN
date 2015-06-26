@@ -127,7 +127,7 @@ def plot_hyper(n_iteration,dir_name):
 
         rd = ripl.infer("(collect sf l sigma alpha_l beta_l alpha_sf beta_sf)")
         df_parameter_before = rd.asPandas()
-        df_parameter_before.to_pickle("syndata/"+dir_name+"/before_parameters_"+str(n_iteration))
+        df_parameter_before.to_pickle("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+"/before_parameters_"+str(n_iteration))
 
         ripl.infer("(repeat 200 (do (mh (quote hyperhyper) one 2) (mh (quote hyper) one 1)))")
         # ripl.infer("(mh (quote hyper) one 100)")
@@ -139,7 +139,7 @@ def plot_hyper(n_iteration,dir_name):
 
         rd = ripl.infer("(collect sf l sigma alpha_l beta_l alpha_sf beta_sf)")
         df_parameter_after = rd.asPandas()
-        df_parameter_after.to_pickle("syndata/"+dir_name+"/after_parameters_"+str(n_iteration))
+        df_parameter_after.to_pickle("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+"/after_parameters_"+str(n_iteration))
 
 
 def plot_contours(df, name, n_iteration):
@@ -169,8 +169,7 @@ def joint_grid_plot(var1, var2, df, name, n_iteration, marginal=True):
         sns.plt.xlabel("")
         sns.plt.ylabel("")
     sns.set(font_scale=2)
-    plt.savefig('/home/ulli/Dropbox/gpmemplots/neal_contour_' + var1 + '_vs_' + var2 + '_' + no + '_' + str(
-        n_iteration) + '_' + name + '.png', dpi=200, bbox_inches='tight')
+    plt.savefig("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+'/neal_contour_' + var1 + '_vs_' + var2 + '_' + no + '_' + str(n_iteration) + '_' + name + '.png', dpi=200, bbox_inches='tight')
     plt.clf()
 
 
