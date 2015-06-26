@@ -84,8 +84,8 @@ def plot_hyper(n_iteration,dir_name,syn_data_name):
     if not os.path.exists("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name):
         os.makedirs("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name)
     if not os.path.isfile("syndata/"+dir_name+"/after_parameters_"+str(n_iteration)):
-        x = np.load("syndata/"+syn_data_name+"/x_s.npy")
-        y = np.load("syndata/"+syn_data_name+"/y_s.npy")
+        x = np.load("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+"/data/x_s.npy")
+        y = np.load("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+"/data/y_s.npy")
 
         ripl = shortcuts.make_lite_church_prime_ripl()
         ripl.bind_foreign_sp("make_gp_part_der", gp_der.makeGPSP)
