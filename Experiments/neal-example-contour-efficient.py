@@ -129,7 +129,7 @@ def plot_hyper(n_iteration,dir_name):
         df_parameter_before = rd.asPandas()
         df_parameter_before.to_pickle("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+"/before_parameters_"+str(n_iteration))
 
-        ripl.infer("(repeat 200 (do (mh (quote hyperhyper) one 2) (mh (quote hyper) one 1)))")
+        ripl.infer("(repeat 500 (do (mh (quote hyperhyper) one 2) (mh (quote hyper) one 1)))")
         # ripl.infer("(mh (quote hyper) one 100)")
 
 
