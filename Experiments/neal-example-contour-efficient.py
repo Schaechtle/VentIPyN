@@ -80,7 +80,7 @@ def plot_hyper(n_iteration,dir_name):
     assert(os.path.exists("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name))
     if not os.path.exists("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name):
         os.makedirs("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name)
-    if not os.path.isfile("syndata/"+dir_name+"/after_parameters_"+str(n_iteration)):
+    if not os.path.isfile("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+"/after_parameters_"+str(n_iteration)):
         x = np.load("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+"/data/x_s.npy")
         y = np.load("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+"/data/y_s.npy")
 
