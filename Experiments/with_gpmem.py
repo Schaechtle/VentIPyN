@@ -61,10 +61,9 @@ ripl.assume('mc_argmax', '''
     (lambda (emulator prev_xs)
       ((lambda (candidate_xs)
          (lookup  candidate_xs
-                  (argmax_of_array (mapv (lambda (i) (get_uniform_candidate prev_xs))
-                        (linspace 0 0 15)))))
+                  (argmax_of_array (mapv emulator candidate_xs))))
        (mapv (lambda (i) (get_uniform_candidate prev_xs))
-            (linspace 0 0 15))))
+            (linspace 0 15 14))))
     ''')
 
 def get_plot_data(ripl):
@@ -79,11 +78,11 @@ def get_plot_data(ripl):
 
 plot_datas = []
 for i in range(15):
-    xs = [ripl.sample('(uniform_continuous -20 20)') for dummy in range(15)]
+    xs = [ripl.sample('(uniform_continuous -20 20)') for _ in range(15)]
     ys = [ripl.sample('(lookup ((second compute_and_emu) (array %f)) 0)' % x) for x in xs]
     ripl.predict('((first compute_and_emu) %f)' % xs[np.argmax(ys)])
     # Once the GP copying stuff works, we will be able to replace the above with:
-    # ripl.predict('((first compute_and_emu) (mc_argmax (lambda (x) ((second compute_and_emu) (array x))) (quote LOLNOTHING)))')
+    # ripl.predict('((first compute_and_emu) (mc_argmax (lambda (x) (lookup ((second compute_and_emu) (array x)) 0)) (quote _)))')
     
     # For convenience in plotting, we want to have the info before and after
     # hyper inference
