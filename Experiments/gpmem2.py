@@ -62,7 +62,7 @@ class GPMDeterministicMakerAAALKernel(SimulationAAALKernel):
 
         (f_compute, f_emu) = newValue.asPythonList()
         answer = f_emu.sp.outputPSP.logDensityOfCounts(self.makerPSP.shared_aux)
-        # print "gpmem LKernel weight = %s" % answer
+        print "gpmem LKernel weight = %s" % answer
         return answer
 
 gpmemSP = no_request(MakeGPMSPOutputPSP())
