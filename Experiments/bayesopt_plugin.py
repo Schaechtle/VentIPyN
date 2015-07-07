@@ -44,7 +44,7 @@ def __venture_start__(ripl, *args):
         return (0.2 + np.exp(-0.1*abs(x-2))) * np.cos(0.4*x)
     f.count = 0
     f_sp = deterministic_typed(f, [t.NumberType()], t.NumberType())
-    ripl.bind_foreign_sp('secret_f', f_sp)
+    ripl.bind_foreign_sp('blackbox_f', f_sp)
 
     PLOT_DATAS = []
     class CollectPlotDataCallback(object):

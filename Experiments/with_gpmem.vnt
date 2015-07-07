@@ -3,16 +3,16 @@
 [ASSUME sf1 (tag 'hyper 0 (log (uniform_continuous 0 10)))]
 [ASSUME l1 (tag 'hyper 1 (log (uniform_continuous 0 10)))]
 [ASSUME se (make_se sf1 l1)]
-[ASSUME compute_and_emu (gpmem secret_f se)]
+[ASSUME compute_and_emu (gpmem blackbox_f se)]
 
 [DEFINE get_uniform_candidate (lambda (prev_xs) (uniform_continuous -20 20))]
 [DEFINE mc_argmax
         (lambda (emulator prev_xs)
              ((lambda (candidate_xs)
-                (lookup  candidate_xs
-                         (argmax_of_array (mapv emulator candidate_xs))))
+                (lookup candidate_xs
+                        (argmax_of_array (mapv emulator candidate_xs))))
               (mapv (lambda (i) (get_uniform_candidate prev_xs))
-                   (linspace 0 20 19))))]
+                   (linspace 0 19 20))))]
 [DEFINE emulator_point_sample
         (lambda (x)
           (run (sample
@@ -26,8 +26,8 @@
       (print 'HELLO_THERE)
 
       ;; Call f_compute on the next point
-      (best_x <- (return (mc_argmax emulator_point_sample '_)))
-      (predict ((first compute_and_emu) ,best_x))
+      (predict ((first compute_and_emu)
+                ,(mc_argmax emulator_point_sample '_)))
 
       ;; Stats collection
       (stats_before <- (extract_stats (second compute_and_emu)))
