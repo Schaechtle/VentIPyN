@@ -1,0 +1,44 @@
+[INFER (load_plugin (quote symbol<"bayesopt_plugin.py">))]
+
+[ASSUME sf1 (tag 'hyper 0 (log (uniform_continuous 0 10)))]
+[ASSUME l1 (tag 'hyper 1 (log (uniform_continuous 0 10)))]
+[ASSUME se (make_se sf1 l1)]
+[ASSUME compute_and_emu (gpmem secret_f se)]
+
+[DEFINE get_uniform_candidate (lambda (prev_xs) (uniform_continuous -20 20))]
+[DEFINE mc_argmax
+        (lambda (emulator prev_xs)
+             ((lambda (candidate_xs)
+                (lookup  candidate_xs
+                         (argmax_of_array (mapv emulator candidate_xs))))
+              (mapv (lambda (i) (get_uniform_candidate prev_xs))
+                   (linspace 0 20 19))))]
+[DEFINE emulator_point_sample
+        (lambda (x)
+          (run (sample
+            (lookup ((second compute_and_emu) (array ,x))
+                    0))))]
+
+[INFER
+    (repeat 15 (do
+
+      ;; Hello! (Due to a bug in do, this line is needed)
+      (print 'HELLO_THERE)
+
+      ;; Call f_compute on the next point
+      (best_x <- (return (mc_argmax emulator_point_sample '_)))
+      (predict ((first compute_and_emu) ,best_x))
+
+      ;; Stats collection
+      (stats_before <- (extract_stats (second compute_and_emu)))
+      (call_back collect_plot_data sf1 l1 ',stats_before)
+
+      ;; Hyperparameter inference
+      (mh 'hyper one 50)
+
+      ;; More stats collection
+      (stats_after <- (extract_stats (second compute_and_emu)))
+      (call_back collect_plot_data sf1 l1 ',stats_after)))]
+
+[INFER (call_back dump_plot_data)]
+
