@@ -105,7 +105,7 @@ if __name__ == '__main__':
     xpost = np.linspace(-20, 20, 100)
 
     def draw_plot(plot_data, ax, circle_at=None):
-        for i in range(500):
+        for i in range(100):
             #ripl = make_ripl_with_g(plot_data)
             #sampleString = '(g (array %s))' % (' '.join(str(x) for x in xpost),)
             #ypost = ripl.sample(sampleString)
