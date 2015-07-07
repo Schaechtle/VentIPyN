@@ -20,10 +20,7 @@
                     0))))]
 
 [INFER
-    (repeat 15 (do
-
-      ;; Hello! (Due to a bug in do, this line is needed)
-      (print 'HELLO_THERE)
+    (repeat 15 (do pass
 
       ;; Call f_compute on the next point
       (predict ((first compute_and_emu)
