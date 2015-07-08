@@ -68,17 +68,12 @@ def f_true(x):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('case', type=str, choices=('with_gpmem',))
     parser.add_argument('--max-stages', type=int,
             help='Only plot the first at most MAX_STAGES stages in the data set')
     ns = parser.parse_args()
-    ## Load in the data from log
-    if ns.case == 'with_gpmem':
-        datafname='bayesopt_output/plot_data.pkl'
-        fig_fname_prefix = 'bayesopt_output/BayesOpt_gpmem_sequence'
-    else:
-        raise Exception('How did you get past argparse...')
 
+    datafname='bayesopt_output/plot_data.pkl'
+    fig_fname_prefix = 'bayesopt_output/BayesOpt_gpmem_sequence'
     with open(datafname) as f:
         plot_datas_list = pickle.load(f)
     if ns.max_stages is not None:
@@ -136,38 +131,8 @@ if __name__ == '__main__':
         else:
             draw_plot(plot_data, axs[index])
 
+    print "Saving figures %s.{svg,png}" % (fig_fname_prefix,)
     fig.savefig('%s.svg' % (fig_fname_prefix,), dpi=fig.dpi,bbox_inches='tight')
     fig.savefig('%s.png' % (fig_fname_prefix,), dpi=fig.dpi,bbox_inches='tight')
 
 
-## The below is for generating the vertical bars
-#
-#def plott(points, ax, *args):
-#    return ax.plot(points[:,0], points[:,1], *args)
-#
-#def draw_interval(ax, length, center, bdepth, blength):
-#    top_endpt = center - np.array([0, 0.5*length])
-#    bottom_endpt = center + np.array([0, 0.5*length])
-#    tbr = np.array([
-#        [0.5*blength, bdepth],
-#        [0.5*blength, 0],
-#        [-0.5*blength, 0],
-#        [-0.5*blength, bdepth],
-#        ])
-#    bbr = -tbr
-#
-#    line = np.array([top_endpt, bottom_endpt])
-#
-#    plott(top_endpt + tbr, ax, 'g-')
-#    plott(bottom_endpt + bbr, ax, 'g-')
-#    plott(line, ax, 'g-')
-#
-#    for i in range(len(all_pairs)):
-#        (x,y) = all_pairs[i]
-#        pairs_omit_one = [all_pairs[j] for j in range(len(all_pairs)) if j != i]
-#    
-#        Xseen_omit_one, Yseen_omit_one = zip(*pairs_omit_one)
-#        mu, sigma = getNormal(np.array([x]), Xseen_omit_one, Yseen_omit_one)
-#        draw_interval(plt, 2*sigma[0,0], np.array([x, mu[0,0]]), 0.02, 0.5)
-    
-    

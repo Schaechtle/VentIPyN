@@ -1,0 +1,10 @@
+Neal example:
+$ venture lite -f neal_example.vnt
+$ python create_neal_plots.py
+
+Bayesian optimization example:
+$ venture lite -f bayesopt.vnt
+$ python create_bayesopt_plots.py
+
+Careful, as creating Bayesian optimization plots is somewhat resource-intensive.
+
