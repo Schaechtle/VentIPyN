@@ -1,4 +1,4 @@
-[INFER (load_plugin (quote symbol<"bayesopt_plugin.py">) 'neal)]
+[INFER (load_plugin (quote symbol<"gppaper_plugin.py">) 'neal)]
 
 ;;; SETTING UP THE MODEL
 [ASSUME alpha_sf (tag 'hyperhyper 0 (gamma 7 1))]
