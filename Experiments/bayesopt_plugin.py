@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.io as scio
 from models.covFunctions import *
+from models.tools import array
 
 from venture import shortcuts
 import venture.lite.types as t
@@ -19,12 +20,13 @@ from venture.lite.builtin import deterministic_typed
 import gp_der
 import gpmem2 as gpmem
 import pickle
-from without_gpmem import PlotData
+import collections
 
-from models.tools import array
-
+PlotData = collections.namedtuple('PlotData', ['sf1', 'l1', 'Xseen', 'Yseen'])
 
 def __venture_start__(ripl, *args):
+
+    print "Args:", args
 
     argmaxSP = deterministic_typed(np.argmax, [t.HomogeneousArrayType(t.NumberType())], t.NumberType())
     absSP = deterministic_typed(abs, [t.NumberType()], t.NumberType())
