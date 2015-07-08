@@ -1,0 +1,27 @@
+[INFER (load_plugin (quote symbol<"bayesopt_plugin.py">) 'neal)]
+
+;;; SETTING UP THE MODEL
+[ASSUME alpha_sf (tag 'hyperhyper 0 (gamma 7 1))]
+[ASSUME beta_sf (tag 'hyperhyper 2 (gamma 1 0.5))]
+[ASSUME alpha_l (tag 'hyperhyper 1 (gamma 7 1))]
+[ASSUME beta_l (tag 'hyperhyper 3 (gamma 1 0.5))]
+[ASSUME alpha_s (tag 'hyperhyper 4 (gamma 7 1))]
+[ASSUME beta_s (tag 'hyperhyper 5 (gamma 1 0.5))]
+;; Parameters of the covariance function
+[ASSUME sf (tag 'hyper 0 (log (gamma alpha_sf beta_sf )))]
+[ASSUME l (tag 'hyper 1 (log (gamma alpha_l beta_l )))]
+[ASSUME sigma (tag 'hyper 2 (uniform_continuous 0 2 ))]
+;;  The covariance function
+[ASSUME se (make_se sf l)]
+[ASSUME wn (make_whitenoise sigma)]
+[ASSUME composite_covariance (add_funcs se wn)]
+
+
+;; Create a prober and emulator using gpmem
+[ASSUME compute_and_emu (gpmem f_restr composite_covariance)]
+;; Probe all data points
+[PREDICT (mapv (first compute_and_emu) (get_neal_data_xs))]
+;; Infer hypers and hyperhypers
+[INFER (repeat 100 (do
+    (mh 'hyperhyper one 2)
+    (mh 'hyper one 1)))]

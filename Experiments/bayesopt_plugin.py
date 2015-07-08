@@ -21,6 +21,7 @@ import gp_der
 import gpmem2 as gpmem
 import pickle
 import collections
+from numpy.random import random as rand
 
 PlotData = collections.namedtuple('PlotData', ['sf1', 'l1', 'Xseen', 'Yseen'])
 
@@ -76,3 +77,51 @@ def __venture_start__(ripl, *args):
 
     dump_plot_data_callback = DumpPlotDataCallback()
     ripl.bind_callback("dump_plot_data", dump_plot_data_callback)
+
+    if args[0] == 'neal':
+        ## GENERATING THE DATA
+        # The true regression function and noise model
+        def f_noiseless(x):
+            return 0.3 + 0.4*x + 0.5*np.sin(2.7*x) + (1.1/(1+x**2))
+        @np.vectorize
+        def f_noisy(x):
+            p_outlier = 0.1
+            stdev = (1.0 if rand() < p_outlier else 0.1)
+            return np.random.normal(f_noiseless(x), stdev)
+
+        # Generate and save a data set
+        print "Generating Neal example data set"
+        n = 100
+        data_xs = np.random.normal(0,1,n)
+        data_ys = f_noisy(data_xs)
+
+        experiment_id = 's'
+        np.save('syndata/x_%s.npy' % (experiment_id,), data_xs)
+        np.save('syndata/y_%s.npy' % (experiment_id,), data_ys)
+
+        ## THE PROBE FUNCTION
+        def f_restr(x):
+            matches = np.argwhere(np.abs(data_xs - x) < 1e-6)
+            if matches.size == 0:
+                raise Exception('Illegal query')
+            else:
+                assert matches.size == 1
+                i = matches[0,0]
+                return data_ys[i]
+        f_restr_sp = deterministic_typed(f_restr, [t.NumberType()], t.NumberType())
+
+        ripl.bind_foreign_sp('f_restr', f_restr_sp)
+
+        make_whitenoise_SP = deterministic_typed(lambda s:
+                VentureFunction(noise(s), sp_type=covfunctionType,derivatives={0:noise_der(s)},name="WN",parameter=[s]),
+            [t.NumberType()], t.AnyType("VentureFunction"))
+        ripl.bind_foreign_sp('make_whitenoise', make_whitenoise_SP)
+
+        add_funcs_SP = deterministic_typed(makeLiftedAdd(lambda x1, x2: x1 + x2),
+            [t.AnyType("VentureFunction"), t.AnyType("VentureFunction")],
+            t.AnyType("VentureFunction"))
+        ripl.bind_foreign_sp('add_funcs', add_funcs_SP)
+
+        get_data_xs_SP = deterministic_typed(lambda: data_xs, [], t.HomogeneousArrayType(t.NumberType()))
+        ripl.bind_foreign_sp('get_neal_data_xs', get_data_xs_SP)
+        
