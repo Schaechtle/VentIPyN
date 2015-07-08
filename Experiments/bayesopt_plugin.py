@@ -67,8 +67,9 @@ def __venture_start__(ripl, *args):
             print "[COUNT] Number of calls to secret function: %d" % (f.count,)
             return (0.2 + np.exp(-0.1*abs(x-2))) * np.cos(0.4*x)
         f.count = 0
-        f_sp = deterministic_typed(f, [t.NumberType()], t.NumberType())
-        ripl.bind_foreign_sp('blackbox_f', f_sp)
+        blackbox_f_sp = deterministic_typed(f, [t.NumberType()], t.NumberType())
+        ripl.bind_foreign_sp('get_bayesopt_blackbox', deterministic_typed(
+            lambda: sp.VentureSPRecord(blackbox_f_sp), [], sp.SPType([t.NumberType()], t.NumberType())))
 
 
         # Accumulator for plot datas
