@@ -20,7 +20,7 @@ import argparse
 
 from models.tools import array
 
-from bayesopt_plugin import neal_f_noiseless
+from gppaper_plugin import neal_f_noiseless
 
 def sample_curve_from_gp(plot_data, curve_xs):
     noiseless_cov = squared_exponential(plot_data.sf, plot_data.l)
