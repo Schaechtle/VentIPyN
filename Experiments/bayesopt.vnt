@@ -2,7 +2,7 @@
 
 [ASSUME sf1 (tag 'hyper 0 (log (uniform_continuous 0 10)))]
 [ASSUME l1 (tag 'hyper 1 (log (uniform_continuous 0 10)))]
-[ASSUME se (make_se sf1 l1)]
+[ASSUME se (make_squaredexp sf1 l1)]
 [ASSUME blackbox_f (get_bayesopt_blackbox)]
 [ASSUME compute_and_emu (gpmem blackbox_f se)]
 
