@@ -29,14 +29,14 @@
 
       ;; Stats collection
       (stats_before <- (extract_stats (second compute_and_emu)))
-      (call_back collect_plot_data sf1 l1 ',stats_before)
+      (call_back collect_bayesopt_plot_data sf1 l1 ',stats_before)
 
       ;; Hyperparameter inference
       (mh 'hyper one 50)
 
       ;; More stats collection
       (stats_after <- (extract_stats (second compute_and_emu)))
-      (call_back collect_plot_data sf1 l1 ',stats_after)))]
+      (call_back collect_bayesopt_plot_data sf1 l1 ',stats_after)))]
 
-[INFER (call_back dump_plot_data)]
+[INFER (call_back dump_bayesopt_plot_data)]
 

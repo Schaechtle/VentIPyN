@@ -96,8 +96,8 @@ def __venture_start__(ripl, *args):
                     pickle.dump(BAYESOPT_PLOT_DATAS, f)
                 print "Done."
 
-        ripl.bind_callback("collect_plot_data", CollectPlotDataCallback())
-        ripl.bind_callback("dump_plot_data", DumpPlotDataCallback())
+        ripl.bind_callback("collect_bayesopt_plot_data", CollectPlotDataCallback())
+        ripl.bind_callback("dump_bayesopt_plot_data", DumpPlotDataCallback())
 
     if args[0] == 'neal':
         # Noise model
