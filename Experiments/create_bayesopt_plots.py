@@ -16,7 +16,6 @@ import venture.lite.types as t
 from venture.lite.function import VentureFunction
 import gp_der
 import pickle
-from without_gpmem import PlotData, f_true
 import argparse
 
 from models.tools import array
@@ -64,19 +63,19 @@ def sample_curve_from_gp(plot_data, curve_xs):
     ys = np.random.multivariate_normal(mu, sigma)
     return ys
 
+def f_true(x):
+    return (0.2 + np.exp(-0.1*abs(x-2))) * np.cos(0.4*x)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('case', type=str, choices=('with_gpmem', 'without_gpmem'))
+    parser.add_argument('case', type=str, choices=('with_gpmem',))
     parser.add_argument('--max-stages', type=int,
             help='Only plot the first at most MAX_STAGES stages in the data set')
     ns = parser.parse_args()
     ## Load in the data from log
     if ns.case == 'with_gpmem':
-        datafname='log_with_gpmem/plot_data.pkl'
-        fig_fname_prefix = 'BayesOpt_gpmem_sequence'
-    elif ns.case == 'without_gpmem':
-        datafname='log_without_gpmem/plot_datas.pkl'
-        fig_fname_prefix = 'BayesOpt_nogpmem_sequence'
+        datafname='bayesopt_output/plot_data.pkl'
+        fig_fname_prefix = 'bayesopt_output/BayesOpt_gpmem_sequence'
     else:
         raise Exception('How did you get past argparse...')
 

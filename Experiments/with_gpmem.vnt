@@ -1,4 +1,4 @@
-[INFER (load_plugin (quote symbol<"bayesopt_plugin.py">))]
+[INFER (load_plugin (quote symbol<"bayesopt_plugin.py">) 'bayesopt)]
 
 [ASSUME sf1 (tag 'hyper 0 (log (uniform_continuous 0 10)))]
 [ASSUME l1 (tag 'hyper 1 (log (uniform_continuous 0 10)))]

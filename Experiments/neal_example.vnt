@@ -18,10 +18,30 @@
 
 
 ;; Create a prober and emulator using gpmem
+[ASSUME f_restr (get_neal_prober)]
 [ASSUME compute_and_emu (gpmem f_restr composite_covariance)]
+
+;; Plot data collection
+[INFER (do
+    (stats <- (extract_stats (second compute_and_emu)))
+    (call_back collect_neal_plot_data 'before_probes sf l sigma ',stats))]
+
 ;; Probe all data points
 [PREDICT (mapv (first compute_and_emu) (get_neal_data_xs))]
+
+;; Plot data collection
+[INFER (do
+    (stats <- (extract_stats (second compute_and_emu)))
+    (call_back collect_neal_plot_data 'after_probes sf l sigma ',stats))]
+
 ;; Infer hypers and hyperhypers
 [INFER (repeat 100 (do
     (mh 'hyperhyper one 2)
     (mh 'hyper one 1)))]
+
+;; Plot data collection
+[INFER (do
+    (stats <- (extract_stats (second compute_and_emu)))
+    (call_back collect_neal_plot_data 'after_hyperinf sf l sigma ',stats))]
+
+[INFER (call_back dump_neal_plot_data)]
