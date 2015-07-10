@@ -126,35 +126,44 @@ ripl.assume('gp',"""(tag (quote model) 0
 makeObservations(X,y)
 ripl.infer("(mh (quote hypers) one "+mh+" )")
 
-ripl.assume('gp_LINxSE',"(make_gp_part_der zero (apply_function func_plus se2 lin))")
-ripl.assume('gp_LINxPER',"(make_gp_part_der zero (apply_function func_plus se2 per))")
-ripl.assume('gp_LINxRQ',"(make_gp_part_der zero (apply_function func_plus se2 rq))")
+ripl.assume('gp_SExLIN',"(make_gp_part_der zero (apply_function func_plus se2 lin))")
+ripl.assume('gp_SExPER',"(make_gp_part_der zero (apply_function func_plus se2 per))")
+ripl.assume('gp_SExRQ',"(make_gp_part_der zero (apply_function func_plus se2 rq))")
 ripl.assume('gp_SE',"(make_gp_part_der zero se1 )")
 
+def predictions(gp_string,ripl):
+    sample_string=genSamples(X,gp_string)
+    y_predicted = []
+    for i in range(n_samples):
+        y_predicted.append(ripl.sample(sample_string))
 
-figlength = 30
-figheigth = 15
-fig = plt.figure(figsize=(figlength,figheigth), dpi=200)
-sampleString=genSamples(X,'(gp_LINxSE')
-
-y_predicted = []
-for i in range(n_samples):
-
-    y_predicted.append(ripl.sample(sampleString))
-
-mean_pred = np.mean(y_predicted,axis=0)
-print(mean_pred.shape)
-
-
+    mean_pred = np.mean(y_predicted,axis=0)
+    np.save("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset+"/"+experiment+"/y_"+gp_string[1:]+"predictions.npy", mean_pred)
 
 if not os.path.exists("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset):
         os.makedirs("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset)
 if not os.path.exists("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset+"/"+experiment):
         os.makedirs("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset+"/"+experiment)
 
-plt.scatter(X,y-mean_pred)
-plt.plot(X,mean_pred,c="red")
-plt.xlim([1950,2020])
-#plt.savefig("/home/ulli/Dropbox/gpmemplots/syndata/"+dir_name+'/neal_contour_' + var1 + '_vs_' + var2 + '_' + no + '_' + str(n_iteration) + '_' + name + '.png', dpi=200, bbox_inches='tight')
-plt.savefig("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset+"/"+experiment+"/LINxSE.png")
-plt.clf()
+predictions("(gp",ripl)
+predictions("(gp_SExLIN ",ripl)
+predictions("(gp_SExPER ",ripl)
+predictions("(gp_SExRQ ",ripl)
+predictions("(gp_SE ",ripl)
+
+
+
+
+
+
+
+#print(y_predict_SExLIN.shape)
+
+
+
+
+
+
+
+
+
