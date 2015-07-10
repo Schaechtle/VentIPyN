@@ -138,7 +138,7 @@ def predictions(gp_string,ripl):
     for i in range(n_samples):
         y_predicted.append(ripl.sample(sample_string))
 
-    mean_pred = np.mean(y_predicted,axis=0)
+    mean_pred = np.median(y_predicted,axis=0)
     np.save("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset+"/"+experiment+"/y_"+gp_string[1:]+"predictions.npy", mean_pred)
 
 if not os.path.exists("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset):
