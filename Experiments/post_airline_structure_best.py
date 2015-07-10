@@ -145,11 +145,11 @@ if not os.path.exists("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset
 if not os.path.exists("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset+"/"+experiment):
         os.makedirs("/home/ulli/Dropbox/gpmemplots/parsing_residuals/"+dataset+"/"+experiment)
 
-predictions("(gp",ripl)
+predictions("(gp")
 makeObservations(X,y,"(gp_SExLIN")
-predictions("(gp_SExLIN",ripl)
+predictions("(gp_SExLIN")
 makeObservations(X,y,"(gp_SExPERxRQ")
-predictions("(gp_SExPERxRQ",ripl)
+predictions("(gp_SExPERxRQ")
 
 
 
