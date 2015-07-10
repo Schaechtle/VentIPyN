@@ -55,7 +55,7 @@ def __venture_start__(ripl, *args):
     ripl.bind_foreign_sp('gpmem', gpmem.gpmemSP)
     ripl.bind_foreign_inference_sp('argmax_of_array', argmaxSP)
     ripl.bind_foreign_sp('abs', absSP)
-    ripl.bind_foreign_sp('make_se', make_se_SP)
+    ripl.bind_foreign_sp('make_squaredexp', make_se_SP)
     ripl.bind_foreign_sp('add_funcs', add_funcs_SP)
     ripl.bind_foreign_sp('make_whitenoise', make_whitenoise_SP)
 

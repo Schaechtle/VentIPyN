@@ -12,7 +12,7 @@
 [ASSUME l (tag 'hyper 1 (log (gamma alpha_l beta_l )))]
 [ASSUME sigma (tag 'hyper 2 (uniform_continuous 0 2 ))]
 ;;  The covariance function
-[ASSUME se (make_se sf l)]
+[ASSUME se (make_squaredexp sf l)]
 [ASSUME wn (make_whitenoise sigma)]
 [ASSUME composite_covariance (add_funcs se wn)]
 
