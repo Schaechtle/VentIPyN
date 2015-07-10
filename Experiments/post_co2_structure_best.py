@@ -21,11 +21,7 @@ from models.tools import array
 
 no = "a"
 test_problem="mauna"
-mat_contents =scio.loadmat("real_world_data/"+test_problem+".mat")
-X = mat_contents['X']
-X= np.reshape(X,X.shape[0]).tolist()
-y= mat_contents['y']
-y= np.reshape(y,y.shape[0]).tolist()
+
 
 sns.set(font_scale=2)
 
@@ -49,7 +45,7 @@ for i in range(1, len(sys.argv)):
 def array(xs):
   return t.VentureArrayUnboxed(np.array(xs),  t.NumberType())
 
-def makeObservations(x,y):
+def makeObservations(x,y,ripl):
     xString = genSamples(x)
     ripl.observe(xString, array(y))
 
@@ -61,6 +57,11 @@ def genSamples(x,gp_str='(gp '):
     #print(sampleString)
     return sampleString
 
+mat_contents =scio.loadmat("real_world_data/"+test_problem+".mat")
+X = mat_contents['X']
+X= np.reshape(X,X.shape[0]).tolist()
+y= mat_contents['y']
+y= np.reshape(y,y.shape[0]).tolist()
 
 
 ripl = shortcuts.make_lite_church_prime_ripl()
@@ -123,7 +124,7 @@ ripl.assume('gp',"""(tag (quote model) 0
                         )
                     )""")
 
-makeObservations(X,y)
+makeObservations(X,y,ripl)
 ripl.infer("(mh (quote hypers) one "+mh+" )")
 
 ripl.assume('gp_SExLIN',"(make_gp_part_der zero (apply_function func_plus se2 lin))")
