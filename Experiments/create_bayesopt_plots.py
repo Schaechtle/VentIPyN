@@ -6,6 +6,7 @@ import numpy as np
 import numpy.linalg as la
 import pandas as pd
 from matplotlib import patches, pyplot as plt
+from matplotlib.patches import Ellipse, Rectangle
 import scipy.io as scio
 from models.covFunctions import *
 
@@ -70,7 +71,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--max-stages', type=int,
             help='Only plot the first at most MAX_STAGES stages in the data set')
+    parser.add_argument('--num-blendcurves', type=int, default=100,
+            help='When drawing the posterior, blend NUM_BLENDCURVES curves together')
+    parser.add_argument('--blendcurve-alpha', type=float, default=0.1,
+            help='Alpha parameter for blending posterior sample curves together')
     ns = parser.parse_args()
+    assert ns.num_blendcurves > 0
+    assert ns.blendcurve_alpha >= 0.0 and ns.blendcurve_alpha <= 1.0
 
     datafname='bayesopt_output/plot_data.pkl'
     fig_fname_prefix = 'bayesopt_output/BayesOpt_gpmem_sequence'
@@ -98,25 +105,26 @@ if __name__ == '__main__':
 
     xpost = np.linspace(-20, 20, 100)
 
-    def draw_plot(plot_data, ax, circle_at=None):
-        for i in range(100):
+    def draw_plot(plot_data, ax, decorations=[]):
+        for i in range(ns.num_blendcurves):
             #ripl = make_ripl_with_g(plot_data)
             #sampleString = '(g (array %s))' % (' '.join(str(x) for x in xpost),)
             #ypost = ripl.sample(sampleString)
             #yp = [y for (x,y) in sorted(zip(xpost,ypost))]
             yp = sample_curve_from_gp(plot_data, xpost)
-            ax.plot(xpost, yp, c="red", alpha=0.1, linewidth=2)
+            ax.plot(xpost, yp, c="red", alpha=ns.blendcurve_alpha, linewidth=2)
 
         ax.plot(xpost, [f_true(x) for x in xpost], 'b-', label='true')
         ax.scatter(plot_data.Xseen, plot_data.Yseen,
                 color='black', marker='x', s=400, edgecolor='black', linewidth='3')
-        if circle_at is not None:
-            ax.add_artist(patches.Ellipse(
-                circle_at, 1.5, 0.3, color='green', linewidth=15, fill=False))
+        ax.axes.xaxis.set_ticklabels([])
+        ax.axes.yaxis.set_ticklabels([])
+        for artist in decorations:
+            ax.add_artist(artist)
 
         ax.set_xlim(-20, 20)
         ax.set_ylim(-1.5, 1.5)
-        ax.legend()
+        # ax.legend()
 
     for (index, plot_data) in np.ndenumerate(plot_datas):
         print "Plotting new panel at index %s:" % (index,)
@@ -124,12 +132,13 @@ if __name__ == '__main__':
         print "Xseen = ", plot_data.Xseen
         print "Yseen = ", plot_data.Yseen
         (row, col) = index
+        best_coords = max(zip(plot_data.Xseen, plot_data.Yseen), key=lambda p: p[1])
+        decorations = [Rectangle(np.array([-0.75, -0.15]) + best_coords, 1.5, 0.3, color='purple', linewidth=15, fill=False)]
         if col == 1 and row < plot_datas.shape[0] - 1:
             next_pd = plot_datas[row+1,0]
-            draw_plot(plot_data, axs[index],
-                    circle_at=(next_pd.Xseen[-1], next_pd.Yseen[-1]))
-        else:
-            draw_plot(plot_data, axs[index])
+            next_probe = (next_pd.Xseen[-1], next_pd.Yseen[-1])
+            decorations.append(Ellipse(next_probe, 1.5, 0.3, color='green', linewidth=15, fill=False))
+        draw_plot(plot_data, axs[index], decorations=decorations)
 
     print "Saving figures %s.{svg,png}" % (fig_fname_prefix,)
     fig.savefig('%s.svg' % (fig_fname_prefix,), dpi=fig.dpi,bbox_inches='tight')
