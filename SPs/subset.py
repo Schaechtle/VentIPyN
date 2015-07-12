@@ -24,7 +24,7 @@ class Subset(RandomPSP):
     list_of_items= args.operandValues[0]
     p = args.operandValues[1]
     #import ipdb;ipdb.set_trace()
-    return np.log(sc.factorial(len(val))/sc.factorial(len(list_of_items))) +np.log(p[len(val)-1])
+    return np.log(sc.factorial(len(val))/sc.factorial(len(list_of_items))) +np.log(1./len(val))
 
 
 
