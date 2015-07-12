@@ -15,7 +15,7 @@ class Subset(RandomPSP):
   def simulate(self,args):
     list_of_items= args.operandValues[0]
     p = args.operandValues[1]
-    subset_size = np.random.multinomial(1, p).argmax()+1
+    subset_size = np.random.multinomial(1, [1./p]*p).argmax()+1
     assert subset_size <= len(list_of_items)
     return random.sample(list_of_items,subset_size)
 
