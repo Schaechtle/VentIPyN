@@ -5,7 +5,7 @@ from venture.lite.function import VentureFunction
 from venture.lite.types import VentureSimplex
 import venture.lite.types as t
 from venture.lite.value import VentureSymbol,VentureArray
-from covFunctions_labeled import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise,makeRQ,makeLiftedAdd,makeLiftedMult
+from covFunctions_labeled import makePeriodic,constantType,makeConst,makeLinear,makeSquaredExponential,covfunctionType,makeNoise,makeCP,makeLiftedAdd,makeLiftedMult
 from venture.lite.sp_help import typed_nr,deterministic_typed
 import itertools
 import sys
@@ -24,7 +24,7 @@ class Grammar_Venture_GP_model_cp(Venture_GP_model):
         ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
         #ripl.assume('make_rq', VentureFunction(makeRQ, [t.NumberType(), t.NumberType(), t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
         ripl.assume('make_const_cov', VentureFunction(makeConst, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
-        ripl.assume('make_CP', VentureFunction(covs.makeCP, [t.NumberType(),t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
+        ripl.assume('make_CP', VentureFunction(makeCP, [t.NumberType(),t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
 
 
         ripl.assume('hyper_parameter','(mem(lambda (i j) (tag (quote i) j   (uniform_continuous  0.01 100))))')
