@@ -38,7 +38,7 @@ class Grammar_Venture_GP_model_cp(Venture_GP_model):
         #ripl.assume('rq', "(apply_function make_rq (hyper_parameter 4 0) (hyper_parameter 4 1)  (hyper_parameter 4 2) 4)")
         ripl.assume('cp', "(apply_function make_CP (hyper_parameter 4 0) (hyper_parameter 4 1) 4)")
         ripl.assume('cp_inv',"(apply_function make_CP (negate (hyper_parameter 4 0)) (hyper_parameter 4 1) 4)")
-        ripl.assume('c',"(apply_function make_const_cov (hyper_parameter 5 0)  5 )")
+        #ripl.assume('c',"(apply_function make_const_cov (hyper_parameter 5 0)  5 )")
 
          #### GP Structure Prior
 
@@ -48,10 +48,10 @@ class Grammar_Venture_GP_model_cp(Venture_GP_model):
         ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
 
 
-        ripl.assume('cov_list','(list lin per se wn c)')
+        ripl.assume('cov_list','(list lin per se wn )')
         ripl.bind_foreign_sp("subset",typed_nr(Subset(), [t.ListType(),t.SimplexType()], t.ListType()))
 
-        number = 5
+        number = 4
 
         total_perms =0
         perms = []
