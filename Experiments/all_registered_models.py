@@ -76,3 +76,8 @@ registered_models['venture-cov-learning-unif-co2']=venture_cov_learning_unif_mau
 from models.cov_by_grammar_gp_airold import Grammar_Venture_GP_model_airold
 venture_cov_learning_airold = Grammar_Venture_GP_model_airold()
 registered_models['venture-cov-learning-airold']=venture_cov_learning_airold
+
+# first dynamically scoped inference
+from models.cov_smart_grammar import Grammar_Venture_GP_model_Smart
+venture_cov_learning_smart = Grammar_Venture_GP_model_Smart()
+registered_models['venture-cov-learning-smart']=venture_cov_learning_smart
