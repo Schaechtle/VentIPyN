@@ -82,3 +82,8 @@ registered_models['venture-cov-learning-airold']=venture_cov_learning_airold
 from models.cov_smart_grammar import Grammar_Venture_GP_model_Smart
 venture_cov_learning_smart = Grammar_Venture_GP_model_Smart()
 registered_models['venture-cov-learning-smart']=venture_cov_learning_smart
+
+# dynamically scoped inference and change points
+from models.cov_cp_grammar import Grammar_Venture_GP_model_cp
+venture_cov_learning_cp= Grammar_Venture_GP_model_cp()
+registered_models['venture-cov-learning-cp']=venture_cov_learning_cp

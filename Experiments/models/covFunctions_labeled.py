@@ -256,7 +256,7 @@ def changePoint(steepness,center):
 
 
 def makeCP(log_steepness,log_center,label=[]):
-   return VentureFunction(changePoint(log_steepness,log_center), sp_type=covfunctionType,name="CP",derivatives={},parameter=[log_steepness,log_center],label_list=[v.VentureInteger(label)])
+   return VentureFunction(changePoint(log_steepness,log_center), sp_type=covfunctionType,name="CP",derivatives={0:0},parameter=[log_steepness,log_center],label_list=[v.VentureInteger(label)])
 
 
 #### Binary Operators

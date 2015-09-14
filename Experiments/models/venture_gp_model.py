@@ -41,6 +41,7 @@ class Venture_GP_model():
         assert len(self.inf_cycles)==len(self.inf_strings)
         step_counter = 0
         for i in range(int(outer_mcmc_steps)):
+            print(i)
             for j in range(len(self.inf_strings)):
                 for k in range(int(self.inf_cycles[j])):
                     #import pdb; pdb.set_trace()
@@ -54,6 +55,7 @@ class Venture_GP_model():
                     sampleString=self.genSamples(x_test)
                     y_posterior = self.ripl.sample(sampleString)
                     residuals.append(f_test - y_posterior)
+                    print(np.mean(residuals))
                     parameters.append(self.collect_parameters(self.ripl))
                     #assert current_global_posterior[0] <= 0
 
@@ -67,6 +69,7 @@ class Venture_GP_model():
                     mcmc_cycle.append(j)
                     if self.record_interpretation:
                         interpreation.append(self.ripl.sample("(covariance_string cov_structure)"))
+                        print(self.ripl.sample("(covariance_string cov_structure)"))
         return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,interpreation,parameters
 
     def get_inf_string(self,inf_string):
@@ -90,6 +93,7 @@ class Venture_GP_model():
     def dynamicInferece(self,scope_instruction,n_steps):
         kernel_functions_used = self.ripl.sample(scope_instruction)
         for label in kernel_functions_used:
+            print("(mh (quote "+str(label)+" ) one "+n_steps+")")
             self.ripl.infer("(mh (quote "+str(label)+" ) one "+n_steps+")")
 
 
