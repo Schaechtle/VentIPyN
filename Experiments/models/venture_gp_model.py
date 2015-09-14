@@ -74,7 +74,7 @@ class Venture_GP_model():
         self.inf_cycles=[]
 
         for inf_routine in inf_string.split(','):
-            if inf_routine.startswith()=="ds":
+            if inf_routine.startswith("ds"):
                 self.scope_instruction,self.n_steps=inf_routine[2:].split('_')
                 self.inf_strings.append(inf_routine)
                 self.inf_cycles.append('1')
