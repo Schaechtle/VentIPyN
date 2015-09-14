@@ -22,6 +22,7 @@ class Grammar_Venture_GP_model_Smart(Venture_GP_model):
         ripl.assume('make_periodic', VentureFunction(makePeriodic, [t.NumberType(), t.NumberType(), t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
         ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
         ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
+        #ripl.assume('make_rq', VentureFunction(makeRQ, [t.NumberType(), t.NumberType(), t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
         ripl.assume('make_const_cov', VentureFunction(makeConst, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
 
 
@@ -30,8 +31,9 @@ class Grammar_Venture_GP_model_Smart(Venture_GP_model):
         ripl.assume('lin', "(apply_function make_linear (hyper_parameter 0 0)  0 )")
         ripl.assume('per', "(apply_function make_periodic (hyper_parameter 1 0) (hyper_parameter 1 1) (hyper_parameter 1 2) 1 ) ")
         ripl.assume('se', "(apply_function make_se (hyper_parameter 2 0 ) (hyper_parameter 2 1) 2 )")
+        #ripl.assume('rq', "(apply_function make_rq (hyper_parameter 3 0) (hyper_parameter 3 1)  (hyper_parameter 3 2) 3)")
         ripl.assume('wn', "(apply_function make_noise (hyper_parameter 3 0)  3 )")
-        ripl.assume('c',"(apply_function make_const_cov (hyper_parameter 4 0)  4 )")
+        #ripl.assume('c',"(apply_function make_const_cov (hyper_parameter 4 0)  4 )")
         #ripl.assume('se2', "(apply_function make_se(hyper_parameter 3 0) (hyper_parameter 3 1) 3 )")
         #ripl.assume('rq', "(apply_function make_rq (hyper_parameter 4 0) (hyper_parameter 4 1)  (hyper_parameter 4 2) 4)")
 
@@ -44,10 +46,10 @@ class Grammar_Venture_GP_model_Smart(Venture_GP_model):
         ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
 
 
-        ripl.assume('cov_list','(list lin per se wn c)')
+        ripl.assume('cov_list','(list lin per se wn )')
         ripl.bind_foreign_sp("subset",typed_nr(Subset(), [t.ListType(),t.SimplexType()], t.ListType()))
 
-        number = 5
+        number = 4
 
         total_perms =0
         perms = []
