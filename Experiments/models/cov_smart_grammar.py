@@ -25,7 +25,7 @@ class Grammar_Venture_GP_model_Smart(Venture_GP_model):
         ripl.assume('make_const_cov', VentureFunction(makeConst, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
 
 
-        ripl.assume('hyper_parameter','(mem(lambda (i j) (tag (quote i) j   (uniform_continuous  0.01 100))))')
+        ripl.assume('hyper_parameter','(mem(lambda (i j) (tag (quote i) j   (uniform_continuous  0.01 8))))')
 
         ripl.assume('lin', "(apply_function make_linear (hyper_parameter 0 0)  0 )")
         ripl.assume('per', "(apply_function make_periodic (hyper_parameter 1 0) (hyper_parameter 1 1) (hyper_parameter 1 2) 1 ) ")
