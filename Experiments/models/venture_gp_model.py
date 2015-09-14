@@ -48,7 +48,7 @@ class Venture_GP_model():
                         self.dynamicInferece(self.scope_instruction,self.n_steps)
                     else:
                         self.ripl.infer(self.inf_strings[j])
-                    current_global_posterior= self.ripl.infer("global_posterior")
+                    current_global_posterior= 0# this throws an error, why so ever. Was: self.ripl.infer("global_posterior")
 
                     global_logs_core.append(current_global_posterior)
                     sampleString=self.genSamples(x_test)
