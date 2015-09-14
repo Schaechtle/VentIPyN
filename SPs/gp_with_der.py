@@ -217,7 +217,7 @@ class MakeGPOutputPSP(DeterministicMakerAAAPSP):
     mean = args.operandValues()[0]
     covariance = args.operandValues()[1]
     return VentureSPRecord(GPSP(mean, covariance))
-   
+
   def gradientOfLogDensityOfCounts(self,aux,args):
     mean_array = args.operandValues()[0]
     cov_matrix = args.operandValues()[1]
@@ -242,8 +242,9 @@ class MakeGPOutputPSP(DeterministicMakerAAAPSP):
     x_array = xs.tolist()
     import ipdb;ipdb.set_trace()
     #    return (0,dlZ)
-    return [v.VentureNumber(0),t.VentureArrayUnboxed(np.array(dlZ),t.NumberType())] 
-  
+
+    return [v.VentureNumber(0),t.VentureArrayUnboxed(np.array(dlZ),t.NumberType())]
+
 
   def cov_matrix(self, x1s, x2s=None):
     if x2s is None:
