@@ -47,11 +47,11 @@ The number of  MCMC-steps in the inner loop is controlled by what comes after th
 
 Every single model must have at least one experimental setting for inference. Testing more than one can be  indicated with ';'after each inference routine of interest. 
 
-Edit, 2015-09-14: We want to allow for dynamic inference, that is only infer over  hyper-parameters that are actually used in the current structure. We add the prefix "ds" for dynamically scoped. e.g "dsfoo_bar", to every inference string that has is dynamically scoped. foo is a Venture string that if samples returns a list of integers. The integers indicate scopes. For every item in this list of integers the inference will run ("(mh (quote "+str(item)+" ) one bar)"). bar is the number of mh steps we take for every scope.
+Edit, 2015-09-14: We want to allow for dynamic inference, that is only infer over  hyper-parameters that are actually used in the current structure. We add the prefix "ds" for dynamically scoped. e.g "dsfoo:bar", to every inference string that has is dynamically scoped. foo is a Venture string that if samples returns a list of integers. The integers indicate scopes. For every item in this list of integers the inference will run ("(mh (quote "+str(item)+" ) one bar)"). bar is the number of mh steps we take for every scope.
 
 An example instructions for this could by
 
-venture-cov-learning=ds(covariance_label cov_structure)_5,(mh (quote grammar) one 1):1
+venture-cov-learning=ds(covariance_label cov_structure):5,(mh (quote grammar) one 1):1
 
 Models
 
