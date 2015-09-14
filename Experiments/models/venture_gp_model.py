@@ -44,7 +44,10 @@ class Venture_GP_model():
             for j in range(len(self.inf_strings)):
                 for k in range(int(self.inf_cycles[j])):
                     #import pdb; pdb.set_trace()
-                    self.ripl.infer(self.inf_strings[j])
+                    if self.inf_strings[j].startswith("ds"):
+                        self.dynamicInferece(self.scope_instruction,self.n_steps)
+                    else:
+                        self.ripl.infer(self.inf_strings[j])
                     current_global_posterior= self.ripl.infer("global_posterior")
 
                     global_logs_core.append(current_global_posterior)
@@ -63,19 +66,32 @@ class Venture_GP_model():
                     current_index+=1
                     mcmc_cycle.append(j)
                     if self.record_interpretation:
-                        interpreation.append(self.ripl.sample("interp"))
+                        interpreation.append(self.ripl.sample("(covariance_string cov_structure)"))
         return global_logs_core,residuals,base_line,mcmc_index,mcmc_cycle,interpreation,parameters
 
     def get_inf_string(self,inf_string):
         self.inf_strings=[]
         self.inf_cycles=[]
+
         for inf_routine in inf_string.split(','):
-            inf_step,repeat_step=inf_routine.split(':')
-            self.inf_strings.append(inf_step)
-            self.inf_cycles.append(repeat_step)
+            if inf_routine.startswith()=="ds":
+                self.scope_instructio,self.n_steps=inf_routine[2:].split('_')
+                self.inf_strings.append(inf_routine)
+                self.inf_cycles.append('1')
+
+            else:
+                inf_step,repeat_step=inf_routine.split(':')
+                self.inf_strings.append(inf_step)
+                self.inf_cycles.append(repeat_step)
         # e.g.:
         # venture-gp-LIN=(mh (quote parameter) 0 1):10,(hmc (quote hypers) 0 0.1 1 1):10
         # venture-gp-SE=(mh (quote parameter) 0 1):10
+
+    def dynamicInferece(self,scope_instruction,n_steps):
+        kernel_functions_used = self.ripl.sample(scope_instruction)
+        for label in kernel_functions_used:
+            self.ripl.infer("(mh (quote "+str(label)+" ) one "+n_steps+")")
+
 
     def genSamples(self,x):
         sampleString='(gp (array '
