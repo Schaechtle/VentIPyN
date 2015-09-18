@@ -87,3 +87,7 @@ registered_models['venture-cov-learning-smart']=venture_cov_learning_smart
 from models.cov_cp_grammar import Grammar_Venture_GP_model_cp
 venture_cov_learning_cp= Grammar_Venture_GP_model_cp()
 registered_models['venture-cov-learning-cp']=venture_cov_learning_cp
+
+from models.cov_smart_simple import Grammar_Venture_GP_smart_simple
+venture_cov_learning_smart_simple = Grammar_Venture_GP_smart_simple()
+registered_models['venture-cov-learning-smart-simple']=venture_cov_learning_smart_simple
