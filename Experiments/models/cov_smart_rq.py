@@ -20,10 +20,10 @@ class Grammar_Venture_GP_smart_rq(Venture_GP_model):
     def make_gp(self, ripl):
         ripl.assume('make_linear', VentureFunction(makeLinear, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
         ripl.assume('make_periodic', VentureFunction(makePeriodic, [t.NumberType(), t.NumberType(), t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
-        ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
-        ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
-        #ripl.assume('make_rq', VentureFunction(makeRQ, [t.NumberType(), t.NumberType(), t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
-        ripl.assume('make_const_cov', VentureFunction(makeConst, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
+        #ripl.assume('make_se',VentureFunction(makeSquaredExponential,[t.NumberType(), t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
+        #ripl.assume('make_noise', VentureFunction(makeNoise, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
+        ripl.assume('make_rq', VentureFunction(makeRQ, [t.NumberType(), t.NumberType(), t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
+        #ripl.assume('make_const_cov', VentureFunction(makeConst, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
 
 
         ripl.assume('hyper_parameter','(mem(lambda (i j) (tag (quote i) j   (uniform_continuous  0.01 8))))')
