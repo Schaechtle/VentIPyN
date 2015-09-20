@@ -30,6 +30,7 @@ class Subset(RandomPSP):
 
 
 def desc_product(n, k):
+  """ Returns n * (n-1) * ... * (n-k+1). """
   return reduce(lambda x,y: x*y, range(n, n-k, -1), 1)
 
 def log_desc_product(n, k):
