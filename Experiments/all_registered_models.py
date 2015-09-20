@@ -95,3 +95,10 @@ registered_models['venture-cov-learning-smart-simple']=venture_cov_learning_smar
 from models.cov_smart_rq import Grammar_Venture_GP_smart_rq
 venture_cov_learning_smart_rq = Grammar_Venture_GP_smart_rq()
 registered_models['venture-cov-learning-smart-rq']=venture_cov_learning_smart_rq
+
+
+
+
+from models.cov_by_grammar_gp_simpleSELINPER import Grammar_Venture_GP_model_simpleSELINPER
+venture_cov_simpleSELINPER = Grammar_Venture_GP_model_simpleSELINPER()
+registered_models['venture_cov_simple_selinper']=venture_cov_simpleSELINPER
