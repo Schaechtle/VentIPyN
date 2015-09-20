@@ -26,9 +26,15 @@ class Subset(RandomPSP):
     list_of_items= vals[0]
     p = vals[1]
     #import ipdb;ipdb.set_trace()
-    return np.log(sc.factorial(len(val))/sc.factorial(len(list_of_items))) +np.log(p[len(val)-1])
+    return -np.log(desc_product(len(list_of_items), len(vals))) + np.log(p[len(val)-1])
 
 
+def desc_product(n, k):
+  return reduce(lambda x,y: x*y, range(n, n-k, -1), 1)
+
+def log_desc_product(n, k):
+  """ This is probably preferable to log(desc_product(n, k)) if n and k are large. """
+  return sum(np.log(n-i) for i in range(k))
 
 
 
