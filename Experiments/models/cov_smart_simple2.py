@@ -49,7 +49,7 @@ class Grammar_Venture_GP_smart_simple2(Venture_GP_model):
         ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
 
 
-        ripl.assume('cov_list','(list lin per  rq)')
+        ripl.assume('cov_list','(list lin per )')
         ripl.bind_foreign_sp("subset",typed_nr(Subset(), [t.ListType(),t.SimplexType()], t.ListType()))
 
         number = 2
