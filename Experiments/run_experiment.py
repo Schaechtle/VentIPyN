@@ -58,12 +58,7 @@ if __name__ == '__main__':
         from multiprocessing import Pool
         pool = Pool(cores)
         pool.map(f_exp, condition)
-    with open("meta-file.txt") as input:
-        # Read non-empty lines from input file
-        lines = [line for line in input if line.strip()]
-    with open("meta-file.txt", "w") as output:
-        for line in lines:
-            output.write(line)
+    with open("meta-file.txt", "a") as output:
         output.write("-------------------------\n")
         output.write(str(datetime.date.today())+"\n")
         output.write(ini_file_path+"\n")

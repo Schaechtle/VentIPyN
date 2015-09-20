@@ -33,7 +33,7 @@ def experiment(key, infer, total_steps_outer, test_problem, number_test_points, 
        pass
    else:
         if not os.path.exists(directory):
-            os.mkdir(directory)
+            os.makedirs(directory)
             os.mkdir(directory+'/XYdata')
         model = registered_models[key]
         if test_problem.startswith("real_world_"):
