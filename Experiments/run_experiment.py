@@ -1,5 +1,5 @@
 import ConfigParser
-import sys
+import argparse
 from util import Config,ConfigSectionMap
 from gp_experiment import experiment
 import datetime
@@ -8,22 +8,23 @@ def f_exp(arg_list):
 
 if __name__ == '__main__':
 
-    ini_file_path="experiment.ini"
-    date_exp=datetime.date.today()
-    run_locally=False
-    cores  = 60
-    message = " no message "
-    for i in range(1,len(sys.argv)):
-            if str(sys.argv[i])=="-f":
-                ini_file_path = str(sys.argv[i+1])
-            if str(sys.argv[i])=="-d":
-                date_exp = str(sys.argv[i+1])
-            if str(sys.argv[i])=="--local":
-                run_locally = True
-            if str(sys.argv[i])=="--cores":
-                cores  = int(sys.argv[i+1])
-            if str(sys.argv[i])=="-m":
-                message = str(sys.argv[i+1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ini-file-path", type=str, default="experiment'ini",
+            help="Path for configuration file")
+    parser.add_argument("-d", metavar="DATE", type=str, default=datetime.date.today(),
+            help="Date")
+    parser.add_argument("--local", action="store_true",
+            help="Do not use parallelism")
+    parser.add_argument("--cores", type=int, default=60,
+            help="Number of cores")
+    parser.add_argument("-m", metavar="MESSAGE", type=str, default=" no message ", help="Message")
+
+    ns = parser.parse_args()
+    ini_file_path = ns.ini_file_path
+    date_exp = ns.d
+    run_locally = ns.local
+    cores = ns.cores
+    message = ns.m
 
     Config.read(ini_file_path)
     Config.sections()
