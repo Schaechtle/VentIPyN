@@ -31,52 +31,6 @@ from models.se_times_per_gp_model import SE_T_PER_Venture_GP_Model
 se_t_per_gp = SE_T_PER_Venture_GP_Model()
 registered_models['venture-gp-se-t-per']=se_t_per_gp
 
-'''
-from models.cov_by_grammar_gp import Grammar_Venture_GP_model
-venture_cov_learning = Grammar_Venture_GP_model()
-registered_models['venture-cov-learning']=venture_cov_learning
-
-from models.cov_by_grammar_gp_unif_number import Grammar_Venture_GP_model_unif
-venture_cov_learning_unif = Grammar_Venture_GP_model_unif()
-registered_models['venture-cov-learning-unif']=venture_cov_learning_unif
-
-
-from models.cov_by_grammar_gp_simple import Grammar_Venture_GP_model_simple
-venture_cov_simple = Grammar_Venture_GP_model_simple()
-registered_models['venture_cov_simple']=venture_cov_simple
-
-from models.cov_by_grammar_gp_simpleSELINPER import Grammar_Venture_GP_model_simpleSELINPER
-venture_cov_simpleSELINPER = Grammar_Venture_GP_model_simpleSELINPER()
-registered_models['venture_cov_simple_selinper']=venture_cov_simpleSELINPER
-
-from models.cov_by_grammar_gp_simpleLINPERWN import Grammar_Venture_GP_model_simpleLINPERWN
-venture_cov_simpleLINPERWN = Grammar_Venture_GP_model_simpleLINPERWN()
-registered_models['venture gp cov learning 4']=venture_cov_simpleLINPERWN
-
-from models.cov_by_grammar_gp_airline import Grammar_Venture_GP_model_airline
-venture_cov_learning_airline = Grammar_Venture_GP_model_airline()
-registered_models['venture-cov-learning-airline']=venture_cov_learning_airline
-
-from models.cov_by_grammar_gp_unif_number_airline import Grammar_Venture_GP_model_unif_airline
-venture_cov_learning_unif_airline = Grammar_Venture_GP_model_unif_airline()
-registered_models['venture-cov-learning-unif-airline']=venture_cov_learning_unif_airline
-
-from models.cov_by_grammar_gp_unif_number_gamma import Grammar_Venture_GP_model_unif_gamma
-venture_cov_learning_unif_gamma = Grammar_Venture_GP_model_unif_gamma()
-registered_models['venture-cov-learning-unif-gamma']=venture_cov_learning_unif_gamma
-
-from models.cov_by_grammar_gp_co2 import Grammar_Venture_GP_model_mauna
-venture_cov_learning_mauna = Grammar_Venture_GP_model_mauna()
-registered_models['venture-cov-learning-co2']=venture_cov_learning_mauna
-
-from models.cov_by_grammar_gp_unif_number_co2 import Grammar_Venture_GP_model_unif_mauna
-venture_cov_learning_unif_mauna = Grammar_Venture_GP_model_unif_mauna()
-registered_models['venture-cov-learning-unif-co2']=venture_cov_learning_unif_mauna
-
-from models.cov_by_grammar_gp_airold import Grammar_Venture_GP_model_airold
-venture_cov_learning_airold = Grammar_Venture_GP_model_airold()
-registered_models['venture-cov-learning-airold']=venture_cov_learning_airold
-'''
 
 # first dynamically scoped inference
 from models.cov_smart_grammar import Grammar_Venture_GP_model_Smart
@@ -95,6 +49,7 @@ registered_models['venture-cov-learning-smart-simple']=venture_cov_learning_smar
 from models.cov_smart_rq import Grammar_Venture_GP_smart_rq
 venture_cov_learning_smart_rq = Grammar_Venture_GP_smart_rq()
 registered_models['venture-cov-learning-smart-rq']=venture_cov_learning_smart_rq
+<<<<<<< HEAD
 
 
 
@@ -102,3 +57,5 @@ registered_models['venture-cov-learning-smart-rq']=venture_cov_learning_smart_rq
 from models.cov_by_grammar_gp_simpleSELINPER import Grammar_Venture_GP_model_simpleSELINPER
 venture_cov_simpleSELINPER = Grammar_Venture_GP_model_simpleSELINPER()
 registered_models['venture_cov_simple_selinper']=venture_cov_simpleSELINPER
+=======
+>>>>>>> 0c478d2a61c8519f3134e686e012a5c4663a4cd9
