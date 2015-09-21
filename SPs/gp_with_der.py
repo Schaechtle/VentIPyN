@@ -99,9 +99,7 @@ class GP(object):
     alpha = solve_chol(L,y-m)/sn2
     nlZ = np.dot((y-m).T,alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
     lD = -float(nlZ)
-    if lD>0:
-        print("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
-        return -float('Inf')
+    print(lD)
     return lD
 
 
@@ -110,14 +108,27 @@ class GP(object):
     """Log density of the current samples."""
     if len(self.samples) == 0:
       return 0
-    
+
     xs = self.samples.keys()
     os = self.samples.values()
-    
-    mu = self.mean_array(xs)
-    sigma = self.cov_matrix(xs, xs)
-    
-    return multivariate_normal_logpdf(col_vec(os), mu, sigma)
+    n = len(xs)
+    K = self.cov_matrix(xs,xs)            # evaluate covariance matrix
+    m = self.mean_array(xs)
+    y = np.asmatrix(os).T                        # evaluate mean vector
+    #print("np.exp(likfunc.hyp[0])",np.exp(likfunc.hyp[0]))
+    sn2   = 0.1                       # noise variance of likGauss
+    #L     = np.linalg.cholesky(K/sn2+np.eye(n)).T         # Cholesky factor of covariance with noise
+    try:
+        L     = jitchol(K/sn2+np.eye(n)).T                     # Cholesky factor of covariance with noise
+    except:
+        #print("numerical issues with K, trying the naive way")
+        mu, sigma = self.getNormal(xs)
+        return multivariate_normal_logpdf(col_vec(os), mu, sigma)
+    alpha = solve_chol(L,y-m)/sn2
+    nlZ = np.dot((y-m).T,alpha)/2. + np.log(np.diag(L)).sum() + n*np.log(2*np.pi)/2. # -log marg lik
+    lD = -float(nlZ)
+    return lD
+
   
   def gradient(self):
     xs = self.samples.keys()
@@ -240,7 +251,7 @@ class MakeGPOutputPSP(DeterministicMakerAAAPSP):
     for i in range(len(partial_derivatives)):
         dlZ.append((Q*partial_derivatives[i](xs,xs)).sum()/2.)
     x_array = xs.tolist()
-    import ipdb;ipdb.set_trace()
+    #import ipdb;ipdb.set_trace()
     #    return (0,dlZ)
 
     return [v.VentureNumber(0),t.VentureArrayUnboxed(np.array(dlZ),t.NumberType())]
