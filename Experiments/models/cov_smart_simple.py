@@ -35,7 +35,7 @@ class Grammar_Venture_GP_smart_simple(Venture_GP_model):
         #ipl.assume('wn', "(apply_function make_noise (hyper_parameter 3 0)  3 )")
         #ripl.assume('c',"(apply_function make_const_cov (hyper_parameter 4 0)  4 )")
         #ripl.assume('se2', "(apply_function make_se(hyper_parameter 3 0) (hyper_parameter 3 1) 3 )")
-        #ripl.assume('rq', "(apply_function make_rq (hyper_parameter 4 0) (hyper_parameter 4 1)  (hyper_parameter 4 2) 4)")
+        #ripl.assume('rq', "(apply_function make_rq (hyper_parameter 3 0) (hyper_parameter 3 1)  (hyper_parameter 3 2) 3)")
 
 
          #### GP Structure Prior
@@ -46,7 +46,7 @@ class Grammar_Venture_GP_smart_simple(Venture_GP_model):
         ripl.assume("func_plus", makeLiftedAdd(lambda x1, x2: x1 + x2))
 
 
-        ripl.assume('cov_list','(list lin per  )')
+        ripl.assume('cov_list','(list lin per  rq)')
         ripl.bind_foreign_sp("subset",typed_nr(Subset(), [t.ListType(),t.SimplexType()], t.ListType()))
 
         number = 2
