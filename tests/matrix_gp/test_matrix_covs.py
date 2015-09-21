@@ -142,13 +142,13 @@ def test_linear():
   cov_train,cov_test = apply_cov(f)
   expect_cov_train = np.zeros((3,3))
   expect_cov_train[0][0]= 7.4529
-  expect_cov_train[0][1]=  11.4660
-  expect_cov_train[1][0]=  11.4660
+  expect_cov_train[0][1]=  -11.4660
+  expect_cov_train[1][0]=  -11.4660
   expect_cov_train[1][1]=  17.64
   expect_cov_test = np.zeros((3,2))
   expect_cov_test[0][0]= 7.4529
-  expect_cov_test[0][1]= 18.3456
-  expect_cov_test[1][0]=  11.4660
+  expect_cov_test[0][1]= -18.3456
+  expect_cov_test[1][0]=  -11.4660
   expect_cov_test[1][1]=  28.224
   np.testing.assert_almost_equal(cov_train, expect_cov_train, decimal=4)
   np.testing.assert_almost_equal(cov_test, expect_cov_test, decimal=4)
