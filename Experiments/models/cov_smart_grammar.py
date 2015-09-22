@@ -26,14 +26,14 @@ class Grammar_Venture_GP_model_Smart(Venture_GP_model):
         #ripl.assume('make_const_cov', VentureFunction(makeConst, [t.NumberType(),t.IntegerType()], t.AnyType("VentureFunction")))
 
 
-        ripl.assume('a',' (tag (quote 0 ) 0 (uniform_continuous  0.01 10))')
+        ripl.assume('a',' (tag (quote 0 ) 0 (uniform_continuous  0 10))')
 
-        ripl.assume('l',' (tag (quote 1) 0 (uniform_continuous  0.01 10))')
+        ripl.assume('l',' (tag (quote 1) 0 (uniform_continuous  0 10))')
         ripl.assume('q',' (tag (quote 1 ) 1 (uniform_continuous  0.01 10))')
-        ripl.assume('s','(tag (quote 1 ) 2 (uniform_continuous  0.01 10))')
+        ripl.assume('s','(tag (quote 1 ) 2 (uniform_continuous  0 10))')
 
-        ripl.assume('ell',' (tag (quote 2) 0 (uniform_continuous  0.01 10))')
-        ripl.assume('sf',' (tag (quote 2 ) 1 (uniform_continuous  0.01 10))')
+        ripl.assume('ell',' (tag (quote 2) 0 (uniform_continuous  0 10))')
+        ripl.assume('sf',' (tag (quote 2 ) 1 (uniform_continuous  0 10))')
 
         ripl.assume('n','(tag (quote 3 ) 0 (uniform_continuous  0.01 10))')
 
