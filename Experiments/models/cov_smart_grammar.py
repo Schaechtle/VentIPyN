@@ -30,17 +30,17 @@ class Grammar_Venture_GP_model_Smart(Venture_GP_model):
 
         ripl.assume('l',' (tag (quote 1) 0 (uniform_continuous  0 10))')
         ripl.assume('q',' (tag (quote 1 ) 1 (uniform_continuous  0.01 10))')
-        ripl.assume('s','(tag (quote 1 ) 2 (uniform_continuous  0 10))')
+        ripl.assume('sf1','(tag (quote 1 ) 2 (uniform_continuous  0 10))')
 
         ripl.assume('ell',' (tag (quote 2) 0 (uniform_continuous  0 10))')
-        ripl.assume('sf',' (tag (quote 2 ) 1 (uniform_continuous  0 10))')
+        ripl.assume('sf2',' (tag (quote 2 ) 1 (uniform_continuous  0 10))')
 
         ripl.assume('n','(tag (quote 3 ) 0 (uniform_continuous  0.01 10))')
 
 
         ripl.assume('lin', "(apply_function make_linear a  0 )")
-        ripl.assume('per', "(apply_function make_periodic l q s 1 ) ")
-        ripl.assume('se', "(apply_function make_se ell sf 2 )")
+        ripl.assume('per', "(apply_function make_periodic l q sf1 1 ) ")
+        ripl.assume('se', "(apply_function make_se ell sf2 2 )")
         #ripl.assume('rq', "(apply_function make_rq (hyper_parameter 3 0) (hyper_parameter 3 1)  (hyper_parameter 3 2) 3)")
         ripl.assume('wn', "(apply_function make_noise n  3 )")
         #ripl.assume('c',"(apply_function make_const_cov (hyper_parameter 4 0)  4 )")
