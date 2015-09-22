@@ -267,7 +267,7 @@ def load_posterior_structure(ini_file_path,date_exp):
                                 ("could not open "+output_file_name)
 
     df_experiment=pd.concat(df_list)
-    df_experiment['Covariance Structure']=df_experiment['Covariance Structure'].apply(simplify)
+    #df_experiment['Covariance Structure']=df_experiment['Covariance Structure'].apply(simplify)
     df_experiment.to_pickle("results/structure_posterior"+date_exp)
 
     return  df_experiment
