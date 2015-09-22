@@ -42,7 +42,7 @@ class Grammar_Venture_GP_model_Smart(Venture_GP_model):
         ripl.assume('per', "(apply_function make_periodic l q s 1 ) ")
         ripl.assume('se', "(apply_function make_se ell sf 2 )")
         #ripl.assume('rq', "(apply_function make_rq (hyper_parameter 3 0) (hyper_parameter 3 1)  (hyper_parameter 3 2) 3)")
-        ripl.assume('wn', "(apply_function make_noise (n  3 )")
+        ripl.assume('wn', "(apply_function make_noise n  3 )")
         #ripl.assume('c',"(apply_function make_const_cov (hyper_parameter 4 0)  4 )")
         #ripl.assume('se2', "(apply_function make_se(hyper_parameter 3 0) (hyper_parameter 3 1) 3 )")
         #ripl.assume('rq', "(apply_function make_rq (hyper_parameter 4 0) (hyper_parameter 4 1)  (hyper_parameter 4 2) 4)")
