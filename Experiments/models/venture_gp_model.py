@@ -11,7 +11,7 @@ class Venture_GP_model():
         self.inf_strings=[]
         self.inf_cycles=[]
         self.record_interpretation = False
-        self.label_parameter_count ={0:'1',1:'3',2:'2',3:'1',4:'2'} # number of parameters for lin,per,se,wn,cp
+        self.label_parameter_count ={0:'1',1:'3',2:'2',3:'1',4:'2',5:'1',6:'2'} # number of parameters for lin,per,se,wn,cp
     def run(self,x_training,y_training,x_test,y_test,f_test,f_error,inf_string,outer_mcmc_steps):
         self.ripl= init_gp_ripl()
         self.get_inf_string(inf_string)
