@@ -58,4 +58,4 @@ registered_models['venture-cov-learning-smart-simple2']=venture_cov_learning_sma
 
 from models.cov_smart_grammar_larger import Grammar_Venture_GP_model_Smart_larger
 venture_cov_learning_smart_larger = Grammar_Venture_GP_model_Smart_larger()
-registered_models['venture-cov-learning-smart_larger']=venture_cov_learning_smart_larger
+registered_models['venture-cov-learning-smart-larger']=venture_cov_learning_smart_larger
