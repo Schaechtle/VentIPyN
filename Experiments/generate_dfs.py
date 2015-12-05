@@ -40,8 +40,8 @@ if mean_residuals:
     _ = get_dataFrame(date_experiment,experiment_ini_file,overwrite_existing)
 if median_residuals:
     _ = get_dataFrame_median(date_experiment,experiment_ini_file,overwrite_existing)
-if last_n_residuals:
-   os.system("preprocess_residuals.py -d "+date_experiment+" -f "+experiment_ini_file)
+#if last_n_residuals:
+#   os.system("preprocess_residuals.py -d "+date_experiment+" -f "+experiment_ini_file)
 if overwrite_existing and last_n_residuals:
     print("Warning - cannot overwrite last n residuals - needs to be deleted by hand")
 if simple_df_load:
